@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>远海钓鱼区域系统</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  >
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"
+    crossorigin=""
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="left-panel">
+      <div class="sidebar__brand">
+        <p class="eyebrow">Offshore Fishing Region System</p>
+        <h1>远海钓鱼区域系统</h1>
+        <p class="intro">上传海图、绘制区域、配置区域结构化字段，并按 5 个属性分区查看与编辑。</p>
+      </div>
+
+      <section class="panel panel--glow">
+        <div class="panel__header">
+          <span>海图与数据</span>
+          <span class="panel__meta">Storage</span>
+        </div>
+        <div class="form-grid">
+          <label class="form-field">
+            <span>上传海图</span>
+            <input id="map-upload" type="file" accept="image/*">
+          </label>
+          <label class="form-field">
+            <span>导入 JSON</span>
+            <input id="config-upload" type="file" accept=".json,.txt,application/json,text/plain">
+          </label>
+          <div class="button-row button-row--dual">
+            <button id="export-config" class="focus-button" type="button">导出 JSON</button>
+            <button id="clear-storage" class="secondary-button secondary-button--danger" type="button">清空本地数据</button>
+          </div>
+          <div class="inline-note">区域数据会自动保存到浏览器本地存储。导出的 JSON 可以手工编辑后再导入。</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <span>字段与 Schema</span>
+          <span class="panel__meta">Schema</span>
+        </div>
+        <div class="form-grid">
+          <label class="form-field form-field--full">
+            <span>Tags（每行一个）</span>
+            <textarea id="options-tags" rows="6"></textarea>
+          </label>
+          <label class="form-field form-field--full">
+            <span>RegionCategory（每行一个）</span>
+            <textarea id="options-categories" rows="4"></textarea>
+          </label>
+          <label class="form-field form-field--full">
+            <span>Region Schema JSON</span>
+            <textarea id="schema-config" rows="18" placeholder='{"sections":[...]}'></textarea>
+          </label>
+        </div>
+        <div class="button-row button-row--dual">
+          <button id="apply-options" class="focus-button" type="button">应用 Schema</button>
+          <button id="load-sample" class="secondary-button" type="button">载入 Sample</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <span>筛选面板</span>
+          <span class="panel__meta">Filters</span>
+        </div>
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Tag 筛选</span>
+            <select id="tag-filter-select" multiple size="6"></select>
+          </label>
+          <label class="form-field">
+            <span>FishSpawnProfile 筛选</span>
+            <select id="fish-filter-select" multiple size="6"></select>
+          </label>
+          <label class="form-field">
+            <span>RegionCategory</span>
+            <select id="category-filter-select" multiple size="4"></select>
+          </label>
+          <label class="form-field">
+            <span>Enabled</span>
+            <select id="mode-filter-select" multiple size="2"></select>
+          </label>
+          <div class="button-row button-row--dual">
+            <button id="reset-filters" class="secondary-button" type="button">重置筛选</button>
+            <button id="toggle-unmatched" class="secondary-button" type="button">显示全部</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <span>区域列表</span>
+          <span class="panel__meta">Regions</span>
+        </div>
+        <div id="region-list" class="region-list"></div>
+      </section>
+    </aside>
+
+    <main class="map-stage">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Map Workspace</p>
+          <h2>海图绘制区</h2>
+        </div>
+        <div class="topbar__actions">
+          <div class="brush-toolbar">
+            <button id="toggle-brush" class="secondary-button" type="button">开启涂抹</button>
+            <label class="brush-size">
+              <span>笔刷半径</span>
+              <input id="brush-size" type="range" min="8" max="80" value="28">
+              <strong id="brush-size-value">28</strong>
+            </label>
+            <button id="toggle-sketch" class="secondary-button" type="button">开启线稿</button>
+            <label class="brush-size">
+              <span>线宽</span>
+              <input id="sketch-width" type="range" min="1" max="12" value="3">
+              <strong id="sketch-width-value">3</strong>
+            </label>
+          </div>
+          <div class="inline-toolbar">
+            <span class="toolbar-tip">使用左上角绘图工具创建 Polygon / Rectangle / Circle，也支持编辑与删除几何。</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="map-wrapper">
+        <div id="map"></div>
+
+        <div class="floating-panel floating-panel--stats">
+          <div class="stat-card">
+            <span class="stat-card__label">当前区域</span>
+            <strong id="active-region-name">未选择</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card__label">可见区域</span>
+            <strong id="visible-region-count">0</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card__label">游标坐标</span>
+            <strong id="cursor-coords">--, --</strong>
+          </div>
+        </div>
+
+        <div class="floating-panel floating-panel--legend">
+          <div class="panel__header">
+            <span>颜色图例</span>
+            <span class="panel__meta">Category</span>
+          </div>
+          <div class="legend">
+            <div><i class="legend-dot legend-dot--base"></i><span>BaseSeaArea</span></div>
+            <div><i class="legend-dot legend-dot--function"></i><span>PoiInfluenceArea</span></div>
+            <div><i class="legend-dot legend-dot--poi"></i><span>EventArea</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="right-panel">
+      <section class="panel">
+        <div class="panel__header">
+          <span>图层列表</span>
+          <span class="panel__meta">Layers</span>
+        </div>
+        <div id="layer-list" class="region-list"></div>
+        <div class="button-row button-row--dual">
+          <button id="delete-layer" class="secondary-button secondary-button--danger" type="button">删除当前图层</button>
+        </div>
+      </section>
+
+      <section class="panel panel--glow">
+        <div class="panel__header">
+          <span>区域详情</span>
+          <span class="panel__meta" id="detail-category">None</span>
+        </div>
+        <h3 id="detail-name">未选择区域</h3>
+        <p id="detail-description">点击一个区域后，这里会按 5 个属性分区显示字段信息。</p>
+        <div class="detail-tags" id="detail-tags"></div>
+        <div id="detail-sections" class="schema-sections"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <span>编辑区域</span>
+          <span class="panel__meta">Editor</span>
+        </div>
+        <div id="region-editor-sections" class="schema-sections"></div>
+        <div class="button-row">
+          <button id="save-region" class="focus-button" type="button">保存区域</button>
+          <button id="reset-editor" class="secondary-button" type="button">新建编辑</button>
+          <button id="delete-region" class="secondary-button secondary-button--danger" type="button" disabled>删除区域</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" crossorigin=""></script>
+  <script src="./sea-tool-v2.js"></script>
+</body>
+</html>

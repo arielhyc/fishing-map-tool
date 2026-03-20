@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1499" height="808" viewBox="0 0 1499 808" fill="none">
+  <defs>
+    <linearGradient id="meadow" x1="71" y1="46" x2="1393" y2="768" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7DA15A"/>
+      <stop offset="0.52" stop-color="#5E8948"/>
+      <stop offset="1" stop-color="#6D9D59"/>
+    </linearGradient>
+    <radialGradient id="lightPool" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(743 391) rotate(96.4207) scale(555.567 913.934)">
+      <stop stop-color="#8CBC63" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#8CBC63" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="riverBody" x1="1088" y1="0" x2="720" y2="808" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#173238"/>
+      <stop offset="0.35" stop-color="#10262A"/>
+      <stop offset="1" stop-color="#0B171A"/>
+    </linearGradient>
+    <linearGradient id="riverHighlight" x1="1046" y1="20" x2="760" y2="754" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#385B5A" stop-opacity="0.65"/>
+      <stop offset="0.55" stop-color="#6E8E84" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#7BA09A" stop-opacity="0.35"/>
+    </linearGradient>
+    <radialGradient id="pond" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(743 126) rotate(90) scale(73 69)">
+      <stop stop-color="#153138"/>
+      <stop offset="0.6" stop-color="#0D1F24"/>
+      <stop offset="1" stop-color="#091214"/>
+    </radialGradient>
+    <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="groundNoise" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="8" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.05"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="treeShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.6"/>
+    </filter>
+    <g id="pine">
+      <ellipse cx="0" cy="10" rx="10" ry="18" fill="#315737"/>
+      <path d="M0 -18L-14 8H14L0 -18Z" fill="#466E40"/>
+      <path d="M0 -8L-12 16H12L0 -8Z" fill="#3B633B"/>
+      <rect x="-1.4" y="12" width="2.8" height="8" fill="#6D4A33"/>
+    </g>
+    <g id="pineSmall">
+      <ellipse cx="0" cy="7" rx="7" ry="12" fill="#3C6A3F"/>
+      <path d="M0 -12L-10 4H10L0 -12Z" fill="#4D7B48"/>
+      <path d="M0 -3L-8 11H8L0 -3Z" fill="#416A40"/>
+      <rect x="-1" y="8" width="2" height="6" fill="#6D4A33"/>
+    </g>
+  </defs>
+
+  <rect width="1499" height="808" fill="url(#meadow)"/>
+  <rect width="1499" height="808" fill="url(#lightPool)"/>
+  <rect width="1499" height="808" filter="url(#groundNoise)" opacity="0.65"/>
+
+  <path d="M1102 0C1072 57 1058 108 1038 168C1012 244 923 279 886 347C846 419 854 485 839 573C826 650 787 718 770 808H859C873 758 916 700 938 640C963 571 948 514 967 448C992 361 1085 340 1114 274C1141 212 1152 144 1171 71C1177 47 1186 23 1199 0H1102Z" fill="url(#riverBody)"/>
+  <path d="M1075 10C1052 58 1039 111 1020 163C994 232 907 278 875 343C838 418 844 482 830 562C819 626 795 689 778 746" stroke="url(#riverHighlight)" stroke-width="31" stroke-linecap="round" opacity="0.65"/>
+  <path d="M1083 0C1056 55 1046 111 1025 164C998 235 911 275 878 343C840 423 848 486 830 564C815 635 787 707 765 808" stroke="#CAA281" stroke-width="10" stroke-linecap="round" opacity="0.58"/>
+  <path d="M1110 2C1084 58 1074 115 1052 173C1023 246 931 287 895 353C858 420 865 488 850 572C839 635 812 706 794 780" stroke="#F2D5B8" stroke-width="4" stroke-linecap="round" opacity="0.2"/>
+
+  <ellipse cx="743" cy="126" rx="69" ry="65" fill="url(#pond)"/>
+  <ellipse cx="743" cy="126" rx="80" ry="75" stroke="#CAA281" stroke-width="8" opacity="0.55"/>
+  <ellipse cx="729" cy="111" rx="17" ry="13" fill="#1D3941" opacity="0.65"/>
+  <ellipse cx="755" cy="138" rx="11" ry="9" fill="#203942" opacity="0.45"/>
+
+  <path d="M431 321H555V487H431Z" fill="#8D5D46"/>
+  <path d="M421 322L494 292L568 322L555 330H431L421 322Z" fill="#724635"/>
+  <path d="M440 330L494 304L549 330" stroke="#5A372B" stroke-width="8" stroke-linecap="round"/>
+  <path d="M444 356H542" stroke="#A7745A" stroke-width="3" opacity="0.6"/>
+  <path d="M444 382H542" stroke="#A7745A" stroke-width="3" opacity="0.45"/>
+  <path d="M444 408H542" stroke="#A7745A" stroke-width="3" opacity="0.4"/>
+  <rect x="539" y="374" width="7" height="66" fill="#5D3A2C"/>
+
+  <path d="M708 386L755 360L783 384V462L708 447V386Z" fill="#8B6A49"/>
+  <path d="M708 386L755 360L783 384" stroke="#B08A5F" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M713 397L777 412" stroke="#A9855E" stroke-width="2.5" opacity="0.5"/>
+  <path d="M721 423L776 435" stroke="#A9855E" stroke-width="2.5" opacity="0.35"/>
+
+  <circle cx="742" cy="405" r="10" fill="#FF9C69"/>
+  <circle cx="742" cy="405" r="22" fill="#FF9C69" opacity="0.36" filter="url(#softBlur)"/>
+  <circle cx="742" cy="405" r="40" fill="#FFB37E" opacity="0.14" filter="url(#softBlur)"/>
+
+  <path d="M969 205L1003 190L1009 241L978 255L969 205Z" fill="#202B2A"/>
+  <path d="M974 208L1000 196L1004 236L981 247L974 208Z" stroke="#4A5450" stroke-width="2" opacity="0.5"/>
+
+  <circle cx="758" cy="657" r="22" fill="#8A8676"/>
+  <circle cx="745" cy="652" r="18" fill="#938E7D"/>
+  <circle cx="770" cy="648" r="16" fill="#7D796A"/>
+  <circle cx="762" cy="666" r="12" fill="#6E695C"/>
+
+  <path d="M682 613C682 613 670 622 668 646C666 669 669 698 669 730" stroke="#D9CBB1" stroke-width="6" stroke-linecap="round"/>
+  <path d="M646 316C681 336 704 366 722 394" stroke="#C6BB9F" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  <path d="M638 318C650 325 659 329 671 337" stroke="#E2D5BA" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M486 289C491 275 490 256 486 241" stroke="#C6BB9F" stroke-width="4" stroke-linecap="round" opacity="0.65"/>
+  <path d="M485 242L494 232L501 242" stroke="#D8CAB0" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+
+  <g opacity="0.82">
+    <use href="#pine" transform="translate(95 82) scale(1.15)"/>
+    <use href="#pine" transform="translate(145 60) scale(1.05)"/>
+    <use href="#pine" transform="translate(204 94) scale(1.12)"/>
+    <use href="#pineSmall" transform="translate(275 118) scale(1.2)"/>
+    <use href="#pineSmall" transform="translate(332 84) scale(1.15)"/>
+    <use href="#pine" transform="translate(124 180) scale(1.1)"/>
+    <use href="#pine" transform="translate(187 213) scale(1.16)"/>
+    <use href="#pineSmall" transform="translate(254 184) scale(1.1)"/>
+    <use href="#pineSmall" transform="translate(334 211) scale(1.15)"/>
+    <use href="#pine" transform="translate(70 274) scale(1.18)"/>
+    <use href="#pine" transform="translate(151 304) scale(1.08)"/>
+    <use href="#pineSmall" transform="translate(246 276) scale(1.18)"/>
+    <use href="#pineSmall" transform="translate(127 406) scale(1.08)"/>
+    <use href="#pine" transform="translate(88 503) scale(1.2)"/>
+    <use href="#pine" transform="translate(172 551) scale(1.1)"/>
+    <use href="#pineSmall" transform="translate(256 520) scale(1.2)"/>
+    <use href="#pine" transform="translate(147 680) scale(1.2)"/>
+    <use href="#pineSmall" transform="translate(222 728) scale(1.15)"/>
+    <use href="#pine" transform="translate(311 734) scale(1.1)"/>
+    <use href="#pineSmall" transform="translate(1325 116) scale(1.15)"/>
+    <use href="#pine" transform="translate(1248 82) scale(1.08)"/>
+    <use href="#pine" transform="translate(1166 128) scale(1.1)"/>
+    <use href="#pineSmall" transform="translate(1371 220) scale(1.14)"/>
+    <use href="#pine" transform="translate(1298 272) scale(1.2)"/>
+    <use href="#pine" transform="translate(1188 332) scale(1.15)"/>
+    <use href="#pineSmall" transform="translate(1366 406) scale(1.12)"/>
+    <use href="#pine" transform="translate(1277 472) scale(1.16)"/>
+    <use href="#pineSmall" transform="translate(1174 550) scale(1.1)"/>
+    <use href="#pine" transform="translate(1345 601) scale(1.15)"/>
+    <use href="#pine" transform="translate(1240 694) scale(1.22)"/>
+    <use href="#pineSmall" transform="translate(1140 740) scale(1.16)"/>
+    <use href="#pineSmall" transform="translate(916 96) scale(1)"/>
+    <use href="#pineSmall" transform="translate(849 162) scale(1.06)"/>
+    <use href="#pineSmall" transform="translate(609 86) scale(1)"/>
+    <use href="#pineSmall" transform="translate(540 171) scale(1.12)"/>
+    <use href="#pineSmall" transform="translate(911 332) scale(1.02)"/>
+    <use href="#pineSmall" transform="translate(990 560) scale(1.06)"/>
+    <use href="#pineSmall" transform="translate(618 612) scale(1.02)"/>
+    <use href="#pineSmall" transform="translate(582 724) scale(1.1)"/>
+    <use href="#pineSmall" transform="translate(1018 694) scale(1.06)"/>
+  </g>
+
+  <g opacity="0.28" filter="url(#treeShadow)">
+    <ellipse cx="125" cy="690" rx="140" ry="46" fill="#20311E"/>
+    <ellipse cx="1235" cy="702" rx="154" ry="50" fill="#20311E"/>
+    <ellipse cx="140" cy="114" rx="124" ry="42" fill="#223421"/>
+    <ellipse cx="1318" cy="236" rx="122" ry="44" fill="#223421"/>
+  </g>
+
+  <path d="M0 0H1499V808H0V0Z" stroke="#E9F2D7" stroke-opacity="0.04" stroke-width="24"/>
+</svg>

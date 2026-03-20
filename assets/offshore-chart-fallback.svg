@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="1600" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#11324D"/>
+      <stop offset="0.45" stop-color="#0C4464"/>
+      <stop offset="1" stop-color="#0A2A43"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(798 461) rotate(90) scale(460 980)">
+      <stop stop-color="#1D7DAE" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#1D7DAE" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="noise" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008" numOctaves="2" seed="7"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.08"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sea)"/>
+  <rect width="1600" height="900" fill="url(#glow)"/>
+  <rect width="1600" height="900" filter="url(#noise)" opacity="0.55"/>
+  <g opacity="0.22" stroke="#B7E7FF" stroke-width="2">
+    <path d="M75 177C276 137 388 202 576 177C754 153 899 79 1080 123C1242 162 1328 236 1521 213"/>
+    <path d="M58 298C272 268 420 347 612 332C796 317 943 252 1109 280C1264 307 1385 379 1540 363"/>
+    <path d="M80 431C261 414 406 451 575 449C797 447 937 367 1142 389C1309 407 1406 487 1535 481"/>
+    <path d="M57 589C221 553 390 596 547 603C760 613 915 526 1110 539C1295 551 1392 641 1549 627"/>
+    <path d="M63 746C254 688 379 735 587 760C798 786 930 677 1126 675C1304 673 1411 742 1532 721"/>
+  </g>
+  <g opacity="0.18" stroke="#D4F4FF" stroke-width="1.6" stroke-dasharray="10 10">
+    <path d="M210 93V806"/>
+    <path d="M420 69V829"/>
+    <path d="M640 44V852"/>
+    <path d="M860 59V838"/>
+    <path d="M1080 76V816"/>
+    <path d="M1300 57V830"/>
+    <path d="M109 198H1492"/>
+    <path d="M102 385H1510"/>
+    <path d="M83 586H1520"/>
+    <path d="M105 770H1498"/>
+  </g>
+  <g opacity="0.8">
+    <circle cx="284" cy="250" r="3.5" fill="#FFD16F"/>
+    <circle cx="514" cy="463" r="4" fill="#FFD16F"/>
+    <circle cx="1218" cy="315" r="3.5" fill="#FFD16F"/>
+    <circle cx="1045" cy="648" r="4" fill="#FFD16F"/>
+    <circle cx="760" cy="196" r="3.5" fill="#FFD16F"/>
+  </g>
+  <text x="86" y="84" fill="#D8EFFA" font-size="26" font-family="Noto Sans SC, sans-serif">离岸作业海图（示意底图）</text>
+  <text x="86" y="122" fill="#93C9E0" font-size="16" font-family="Noto Sans SC, sans-serif">上传你自己的海图后，可在其上直接绘制远海钓鱼区域</text>
+</svg>

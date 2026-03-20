@@ -1,0 +1,113 @@
+﻿{
+  "version": 2,
+  "scene": {
+    "width": 1600,
+    "height": 900,
+    "url": "./assets/offshore-chart-fallback.svg"
+  },
+  "options": {
+    "Tags": ["近海", "外海", "深海", "礁石", "沉船", "灯塔", "港口", "危险", "稀有", "任务"],
+    "RegionCategory": ["BaseSeaArea", "PoiInfluenceArea", "EventArea"]
+  },
+  "schema": {
+    "sections": [
+      {
+        "id": "basic",
+        "title": "基础属性",
+        "fields": [
+          { "key": "RegionId", "label": "RegionId", "type": "text" },
+          { "key": "Name", "label": "Name", "type": "text" },
+          { "key": "RegionCategory", "label": "RegionCategory", "type": "select", "source": "RegionCategory" },
+          { "key": "Tags", "label": "Tags", "type": "multiselect", "source": "Tags" },
+          { "key": "Priority", "label": "Priority", "type": "number" },
+          { "key": "ParentRegionId", "label": "ParentRegionId", "type": "text" },
+          { "key": "Enabled", "label": "Enabled", "type": "boolean" }
+        ]
+      },
+      {
+        "id": "spatial",
+        "title": "空间范围",
+        "fields": [
+          { "key": "GeometryIds", "label": "GeometryIds", "type": "list" }
+        ]
+      },
+      {
+        "id": "interaction",
+        "title": "交互规则",
+        "fields": [
+          { "key": "AccessRuleProfileId", "label": "AccessRuleProfileId", "type": "text" },
+          { "key": "TraversalProfileId", "label": "TraversalProfileId", "type": "text" },
+          { "key": "InteractionProfileId", "label": "InteractionProfileId", "type": "text" },
+          { "key": "EnvironmentProfileId", "label": "EnvironmentProfileId", "type": "text" }
+        ]
+      },
+      {
+        "id": "output",
+        "title": "产出内容",
+        "fields": [
+          { "key": "FishSpawnProfileId", "label": "FishSpawnProfileId", "type": "text" }
+        ]
+      },
+      {
+        "id": "support",
+        "title": "辅助",
+        "fields": [
+          { "key": "LinkedPoiIds", "label": "LinkedPoiIds", "type": "list" },
+          { "key": "SortOrder", "label": "SortOrder", "type": "number" },
+          { "key": "Description", "label": "Description", "type": "textarea" }
+        ]
+      }
+    ]
+  },
+  "regions": [
+    {
+      "RegionId": "sea-region-001",
+      "Name": "北侧礁群缓冲区",
+      "RegionCategory": "PoiInfluenceArea",
+      "Tags": ["近海", "礁石", "危险"],
+      "Priority": 60,
+      "ParentRegionId": "sea-parent-001",
+      "Enabled": true,
+      "GeometryIds": ["geom-sea-region-001-a"],
+      "AccessRuleProfileId": "access-reef-caution",
+      "TraversalProfileId": "traversal-rock-current",
+      "InteractionProfileId": "interaction-reef-fishing",
+      "EnvironmentProfileId": "env-cold-surge-01",
+      "FishSpawnProfileId": "fishspawn-reef-night-a",
+      "LinkedPoiIds": ["poi-reef-01", "poi-wreck-02"],
+      "SortOrder": 10,
+      "Description": "礁石边缘浪涌明显，适合设计为高风险高回报的近海作业区。",
+      "Geometry": {
+        "Type": "Polygon",
+        "Points": [[280, 260], [520, 210], [610, 360], [340, 420]],
+        "Center": [],
+        "Radius": 0
+      }
+    },
+    {
+      "RegionId": "sea-region-002",
+      "Name": "外海灯塔事件圈",
+      "RegionCategory": "EventArea",
+      "Tags": ["外海", "灯塔", "任务", "稀有"],
+      "Priority": 80,
+      "ParentRegionId": "sea-parent-002",
+      "Enabled": true,
+      "GeometryIds": ["geom-sea-region-002-a"],
+      "AccessRuleProfileId": "access-event-window",
+      "TraversalProfileId": "traversal-open-sea",
+      "InteractionProfileId": "interaction-lighthouse-signal",
+      "EnvironmentProfileId": "env-storm-band-02",
+      "FishSpawnProfileId": "fishspawn-rare-pelagic",
+      "LinkedPoiIds": ["poi-lighthouse-07"],
+      "SortOrder": 20,
+      "Description": "事件区围绕灯塔影响生成，适合挂接限时事件、稀有鱼刷新和引导任务。",
+      "Geometry": {
+        "Type": "Circle",
+        "Points": [],
+        "Center": [980, 340],
+        "Radius": 130
+      }
+    }
+  ],
+  "sketchLayers": []
+}
