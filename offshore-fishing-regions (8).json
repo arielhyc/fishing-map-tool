@@ -1,0 +1,731 @@
+{
+    "version":  5,
+    "scene":  {
+                  "url":  "./assets/offshore-chart-fallback.svg",
+                  "width":  1600,
+                  "height":  900
+              },
+    "options":  {
+                    "Tags":  [
+                                 "闂備礁鎼ˇ顐﹀疾濠婂牆鍨傞柛顐ｆ礀缁?",
+                                 "婵犵數濮伴崹濂稿春閺嶎厽鍋嬫俊銈呮噹缁?",
+                                 "濠电姷鏁搁崕鎴犵礊閳ь剙顪冪€涙ɑ鍊愭?",
+                                 "缂傚倸鍊风拋鏌ュ磻閹捐秮褰掓晲閸噥浠╅梺?",
+                                 "濠电姷鏁搁崑娑㈡嚐椤栫倛鍥箮閽樺妲?",
+                                 "闂傚倷娴囬褍霉濮樿泛鍨傚ù鍏肩暘閳?",
+                                 "濠电姷鏁搁崑鐐哄箹閳哄懎鍨傞柟宄拌娴?"
+                             ],
+                    "RegionCategory":  [
+                                           "BaseSeaArea",
+                                           "PoiInfluenceArea",
+                                           "EventArea"
+                                       ]
+                },
+    "schema":  {
+                   "sections":  [
+                                    {
+                                        "id":  "basic",
+                                        "title":  "闂傚倷鑳剁涵鍫曞疾閻愭祴鏋嶉柨婵嗩槶閳ь兛绶氬畷銊╊敍濞嗘劕濯伴梻浣虹帛閸旀鎮伴妷鈺佺；?",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "RegionId",
+                                                           "label":  "RegionId",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "Name",
+                                                           "label":  "Name",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "RegionCategory",
+                                                           "label":  "RegionCategory",
+                                                           "type":  "select",
+                                                           "source":  "RegionCategory"
+                                                       },
+                                                       {
+                                                           "key":  "Tags",
+                                                           "label":  "Tags",
+                                                           "type":  "multiselect",
+                                                           "source":  "Tags"
+                                                       },
+                                                       {
+                                                           "key":  "Priority",
+                                                           "label":  "Priority",
+                                                           "type":  "number",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "ParentRegionId",
+                                                           "label":  "ParentRegionId",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "Enabled",
+                                                           "label":  "Enabled",
+                                                           "type":  "boolean",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "EnvironmentTag",
+                                                           "label":  "EnvironmentTag",
+                                                           "type":  "select",
+                                                           "source":  "EnvironmentTag"
+                                                       },
+                                                       {
+                                                           "key":  "AccessTag",
+                                                           "label":  "AccessTag",
+                                                           "type":  "select",
+                                                           "source":  "AccessTag"
+                                                       },
+                                                       {
+                                                           "key":  "FishingInteractionTag",
+                                                           "label":  "FishingInteractionTag",
+                                                           "type":  "select",
+                                                           "source":  "FishingInteractionTag"
+                                                       },
+                                                       {
+                                                           "key":  "NavigationInteractionTag",
+                                                           "label":  "NavigationInteractionTag",
+                                                           "type":  "select",
+                                                           "source":  "NavigationInteractionTag"
+                                                       },
+                                                       {
+                                                           "key":  "FishSpawnTag",
+                                                           "label":  "FishSpawnTag",
+                                                           "type":  "select",
+                                                           "source":  "FishSpawnTag"
+                                                       }
+                                                   ]
+                                    },
+                                    {
+                                        "id":  "spatial",
+                                        "title":  "缂傚倸鍊风粈渚€寮甸鈧—鍐寠婢光晜鐩畷绋课旀担鍛婎吇闂備礁鎲￠崝鎴﹀礉瀹ュ洨妫?",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "GeometryIds",
+                                                           "label":  "GeometryIds",
+                                                           "type":  "list",
+                                                           "source":  null
+                                                       }
+                                                   ]
+                                    },
+                                    {
+                                        "id":  "interaction",
+                                        "title":  "婵犵數鍋涢悺銊╁吹鎼淬劌纾归柟鐐劶婵娊鏌熷▓鍨灍闁哥姴妫濋弻娑㈠即閵娿儰绨婚梺?",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "AccessProfileId",
+                                                           "label":  "AccessProfileId",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "FishingInteractionProfileId",
+                                                           "label":  "FishingInteractionProfileId",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "NavigationInteractionProfileId",
+                                                           "label":  "NavigationInteractionProfileId",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "EnvironmentProfileId",
+                                                           "label":  "EnvironmentProfileId",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       }
+                                                   ]
+                                    },
+                                    {
+                                        "id":  "output",
+                                        "title":  "婵犵數鍋涢悺銊х尵閸岀偛绀冮柕濠忓濡叉﹢姊绘担鍛婂暈闁告梹娲熼獮濠冩償椤垶鏅?",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "FishSpawnProfileId",
+                                                           "label":  "FishSpawnProfileId",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       }
+                                                   ]
+                                    },
+                                    {
+                                        "id":  "support",
+                                        "title":  "闂備礁鎼ˇ顖炴偋閸℃稑绠犻幖娣灪閸?",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "LinkedPoiIds",
+                                                           "label":  "LinkedPoiIds",
+                                                           "type":  "list",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "SortOrder",
+                                                           "label":  "SortOrder",
+                                                           "type":  "number",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "Description",
+                                                           "label":  "Description",
+                                                           "type":  "textarea",
+                                                           "source":  null
+                                                       }
+                                                   ]
+                                    }
+                                ]
+               },
+    "demoConfig":  {
+                       "tagEnums":  {
+                                        "EnvironmentTag":  [
+                                                               "闂備礁鎼ˇ顐﹀疾濠婂牆鍨傞柛顐ｆ礀缁?",
+                                                               "闂備礁鎼ˇ顐﹀疾濠婂懎鍨濈€广儱顦粻?",
+                                                               "濠电姷鏁搁崑娑㈡儗娴ｇ硶鏋嶉柡鍥╁Х閻?",
+                                                               "濠电姷鏁搁崑鐐哄箹閳哄懎鍨傞柟宄拌娴?"
+                                                           ],
+                                        "AccessTag":  [
+                                                          "闂傚倷绀侀幉锟犳偡椤栫偛鍨傞柣銏犵仛瀹曞弶鎱ㄥ璇蹭壕閻?",
+                                                          "闂傚倸鍊搁崐鍝モ偓姘煎弮瀹曟繈寮撮姀鐘虫К濠德板€撻悞锔界閵堝棛绠鹃柟瀵镐紳椤忓嫷鍤?",
+                                                          "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋鐐垫噭濞存嚎鍊栫换娑㈠箣閻忔椿浜滈?"
+                                                      ],
+                                        "FishingInteractionTag":  [
+                                                                      "濠电姷鏁搁崑娑㈠嫉椤掍胶绠惧┑鐘叉搐缁犱即鏌?",
+                                                                      "濠电姵顔栭崰鏍ээр鏉堛劎绠鹃柍褜鍓熼弻鐔哄寲閺囩偘澹?",
+                                                                      "濠电姷鏁搁崑娑㈩敋椤撱垹绀傛慨妞诲亾妤犵偞鍔欓崺鈧?"
+                                                                  ],
+                                        "NavigationInteractionTag":  [
+                                                                         "闂傚倷绀侀幉锟犳偡椤栫偛鍨傞柣銏㈩焾閺勩儵鏌涘☉鍗炵仭闁?",
+                                                                         "闂傚倸鍊搁崐鍝モ偓姘煎弮瀹曟繈寮撮姀鐘虫К濠德板€曢幊蹇涘吹鐎ｎ偁浜滈煫鍥ㄦ尰缁佲晠鏌￠埀?",
+                                                                         "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋娆忕仾闁搞倕顑嗛妵鍕疀閹惧銈╅梺琛″亾?"
+                                                                     ],
+                                        "FishSpawnTag":  [
+                                                             "闂傚倷鑳剁涵鍫曞疾閻愭祴鏋嶉柨婵嗩槶閳ь兛绶氬畷銊╊敊閸濆嫪鍒掗梻浣侯焾缁绘宕戦幇顒夌劷?",
+                                                             "闂傚倷鑳剁划顖炪€冩径鎰剁稏濠㈣埖鍔栭崑鈺呮煃閸濆嫬鈧爼宕戦姀銈嗙厱闊洦鑹炬禍瑙勭箾?",
+                                                             "闂傚倷鑳剁划顖炪€冩径鎰剁稏濠㈣埖鍔栭崑鈺呮煃閸濆嫬鈧爼宕戦姀銈嗙厱闊洦鑹炬禍瑙勭箾?"
+                                                         ]
+                                    },
+                       "priorities":  {
+                                          "EnvironmentTag":  {
+                                                                 "StormEvent":  100,
+                                                                 "DeepSeaPressure":  80,
+                                                                 "OpenSeaCold":  60,
+                                                                 "NearshoreCalm":  40,
+                                                                 "闂備礁鎼ˇ顐﹀疾濠婂懎鍨濈€广儱顦粻?":  100,
+                                                                 "闂備礁鎼ˇ顐﹀疾濠婂牆鍨傞柛顐ｆ礀缁?":  80,
+                                                                 "濠电姷鏁搁崑鐐哄箹閳哄懎鍨傞柟宄拌娴?":  60,
+                                                                 "濠电姷鏁搁崑娑㈡儗娴ｇ硶鏋嶉柡鍥╁Х閻?":  40
+                                                             },
+                                          "AccessTag":  {
+                                                            "EventLockdown":  100,
+                                                            "RestrictedWaters":  80,
+                                                            "PublicRoute":  40,
+                                                            "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋鐐垫噭濞存嚎鍊栫换娑㈠箣閻忔椿浜滈?":  100,
+                                                            "闂傚倸鍊搁崐鍝モ偓姘煎弮瀹曟繈寮撮姀鐘虫К濠德板€撻悞锔界閵堝棛绠鹃柟瀵镐紳椤忓嫷鍤?":  80,
+                                                            "闂傚倷绀侀幉锟犳偡椤栫偛鍨傞柣銏犵仛瀹曞弶鎱ㄥ璇蹭壕閻?":  40
+                                                        },
+                                          "FishingInteractionTag":  {
+                                                                        "EventFishingBoost":  100,
+                                                                        "ReefFishing":  80,
+                                                                        "CoastalCast":  40,
+                                                                        "濠电姷鏁搁崑娑㈩敋椤撱垹绀傛慨妞诲亾妤犵偞鍔欓崺鈧?":  100,
+                                                                        "濠电姷鏁搁崑娑㈠嫉椤掍胶绠惧┑鐘叉搐缁犱即鏌?":  80,
+                                                                        "濠电姵顔栭崰鏍эры鏉堛劎绠鹃柍褜鍓熼弻鐔哄寲閺囩偘澹?":  40
+                                                                    },
+                                          "NavigationInteractionTag":  {
+                                                                           "NoAnchoring":  100,
+                                                                           "RockHazard":  80,
+                                                                           "SafeNavigation":  40,
+                                                                           "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋娆忕仾闁搞倕顑嗛妵鍕疀閹惧銈╅梺琛″亾?":  100,
+                                                                           "闂傚倸鍊搁崐鍝モ偓姘煎弮瀹曟繈寮撮姀鐘虫К濠德板€曢幊蹇涘吹鐎ｎ偁浜滈煫鍥ㄦ尰缁佲晠鏌￠埀?":  80,
+                                                                          "闂傚倷绀侀幉锟犳偡椤栫偛鍨傞柣銏㈩焾閺勩儵鏌涘☉鍗炵仭闁?":  40
+                                                                       },
+                                          "FishSpawnTag":  {
+                                                               "EventRareSpawn":  100,
+                                                               "ReefHabitat":  80,
+                                                               "CoastalSchool":  40,
+                                                               "闂傚倷鑳剁划顖炪€冩径鎰剁稏濠㈣埖鍔栭崑鈺呮煃閸濆嫬鈧爼宕戦姀銈嗙厱闊洦鑹炬禍瑙勭箾?":  100,
+                                                               "闂傚倷鑳剁划顖炪€冩径鎰剁稏濠㈣埖鍔栭崑鈺呮煃閸濆嫬鈧爼宕戦姀銈嗙厱闊洦鑹炬禍瑙勭箾?":  80,
+                                                               "闂傚倷鑳剁涵鍫曞疾閻愭祴鏋嶉柨婵嗩槶閳ь兛绶氬畷銊╊敊閸濆嫪鍒掗梻浣侯焾缁绘宕戦幇顒夌劷?":  40
+                                                           }
+                                      }
+                   },
+    "regions":  [
+                    {
+                        "RegionId":  "sea-base-001",
+                        "Name":  "濠电姷鏁搁崑鐐哄箰閹惰棄缁╅弶鍫氭櫅椤ユ岸姊洪鈧粔瀵哥矆瀹€鍕厱婵犻潧妫楅顐︽煕?",
+                        "RegionCategory":  "BaseSeaArea",
+                        "Tags":  [
+                                     "濠电姷鏁搁崕鎴犵礊閳ь剙顪冪€涙ɑ鍊愭?",
+                                     "婵犵數濮伴崹濂稿春閺嶎厽鍋嬫俊銈呮噹缁?"
+                                 ],
+                        "Priority":  20,
+                        "Enabled":  true,
+                        "GeometryIds":  [
+                                            "geom-sea-base-001"
+                                        ],
+                        "EnvironmentTag":  "闂備礁鎼ˇ顐﹀疾濠婂牆鍨傞柛顐ｆ礀缁?",
+                        "AccessTag":  "闂傚倷绀侀幉锟犳偡椤栫偛鍨傞柣銏犵仛瀹曞弶鎱ㄥ璇蹭壕閻?",
+                        "FishingInteractionTag":  "濠电姷鏁搁崑娑㈩敋椤撱垹绀傛慨妞诲亾妤犵偞鍔欓崺鈧?",
+                        "NavigationInteractionTag":  "闂傚倷绀侀幉锟犳偡椤栫偛鍨傞柣銏㈩焾閺勩儵鏌涘☉鍗炵仭闁?",
+                        "FishSpawnTag":  "闂傚倷鑳剁涵鍫曞疾閻愭祴鏋嶉柨婵嗩槶閳ь兛绶氬畷銊╊敊閸濆嫪鍒掗梻浣侯焾缁绘宕戦幇顒夌劷?",
+                        "AccessProfileId":  "AccessProfile-1",
+                        "FishingInteractionProfileId":  "FishingInteractionProfile-1",
+                        "NavigationInteractionProfileId":  "NavigationInteractionProfile-1",
+                        "EnvironmentProfileId":  "EnvironmentProfile-1",
+                        "FishSpawnProfileId":  "FishSpawnProfile-1",
+                        "SortOrder":  10,
+                        "Description":  "闂傚倷鑳剁涵鍫曞疾閻愭祴鏋嶉柨婵嗩槶閳ь兛绶氬畷銊╊敇閳ь剚鎯旈姀锛勭Ф闂侀潧顭粻鎴︽⒒椤栫偞鈷戦柛娑橈功婢ь亪鏌熺喊鍗炰喊闁诡喒鈧枼鏋庨柟鎯х摠濞呮牠鏌ｈ箛鏇炰沪闁稿骸纾濠囨偡閼割兘鍋撻幒鎴僵妞ゆ挾濮甸崚娑氱磽娓氬洤娅橀柛銊﹀▕楠炲繒鈧綆鍠栧洿闂佹悶鍎滈崨顖涙瘞婵犵數濮幏鍐礃閵婏附顔勯梺姹囧焺閸ㄦ澘煤椤撶偟鏆︽繝闈涙濡插牊淇婇妶鍛殶闁规彃娼￠幃妤€鈻撻崹顔界亐闂佺顑嗛幑鍥蓟閿熺姴鐒垫い鎺嶉檷閸嬪懘鏌涢幇鍓佸埌濞存粎鍋撻幈銊ノ熺拠鎻掝潽闂佽　鍋撳ù鐘差儐閻撴洟鏌嶉崫鍕仾妞ゅ繒濞€閺屾盯濡堕崨鏉戝及婵?",
+                        "AuraSummary":  {
+                                            "Environment":  [
+                                                                "WaveSpeed +2",
+                                                                "Visibility x0.7"
+                                                            ],
+                                            "Fishing":  [
+                                                            "WaitTime x1.0"
+                                                        ],
+                                            "Navigation":  [
+                                                               "闂傚倷绀侀幉锟犳偡椤栫偛鍨傞梺顒€绋侀弫鍡樼節婵犲倹鍣洪柡鍡樼矒閺岀喖姊荤壕瀣靛敼闂佺顑嗛幐鎼侊綖濠靛绀冮柤纰卞墮婵?"
+                                                           ],
+                                            "FishSpawn":  [
+                                                              "闂傚倷鑳剁涵鍫曞疾閻愭祴鏋嶉柨婵嗩槶閳ь兛绶氬畷銊╊敊閼测晝鐛梻浣告惈缁夋煡宕濆鍛殾闁告劕寮弬娆炬桨閻忕偞鍨濆Ч妤呮⒑?"
+                                                          ]
+                                        },
+                        "Geometry":  {
+                                         "Type":  "Polygon",
+                                         "Points":  [
+                                                        [
+                                                            180,
+                                                            140
+                                                        ],
+                                                        [
+                                                            1360,
+                                                            120
+                                                        ],
+                                                        [
+                                                            1460,
+                                                            740
+                                                        ],
+                                                        [
+                                                            220,
+                                                            800
+                                                        ]
+                                                    ],
+                                         "Center":  [
+
+                                                    ],
+                                         "Radius":  0
+                                     },
+                        "ParentRegionId":  "",
+                        "LinkedPoiIds":  [
+
+                                         ]
+                    },
+                    {
+                        "RegionId":  "sea-poi-reef-001",
+                        "Name":  "濠电姷鏁搁崑鐐哄箰閹惰棄缁╅弶鍫氭櫅椤ユ岸姊洪鈧粔瀵哥矆瀹€鍕厱婵犻潧妫楅顐︽煕?",
+                        "RegionCategory":  "PoiInfluenceArea",
+                        "Tags":  [
+                                     "闂備礁鎼ˇ顐﹀疾濠婂牆鍨傞柛顐ｆ礀缁?",
+                                     "缂傚倸鍊风拋鏌ュ磻閹捐秮褰掓晲閸噥浠╅梺?"
+                                 ],
+                        "Priority":  60,
+                        "Enabled":  true,
+                        "GeometryIds":  [
+                                            "geom-sea-poi-reef-001"
+                                        ],
+                        "EnvironmentTag":  "闂備礁鎼ˇ顐﹀疾濠婂牆鍨傞柛顐ｆ礀缁?",
+                        "AccessTag":  "闂傚倷绀侀幉锟犳偡椤栫偛鍨傞柣銏犵仛瀹曞弶鎱ㄥ璇蹭壕閻?",
+                        "FishingInteractionTag":  "濠电姷鏁搁崑娑㈩敋椤撱垹绀傛慨妞诲亾妤犵偞鍔欓崺鈧?",
+                        "NavigationInteractionTag":  "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋娆忕仾闁搞倕顑嗛妵鍕疀閹惧銈╅梺琛″亾?",
+                        "FishSpawnTag":  "闂傚倷鑳剁划顖炪€冩径鎰剁稏濠㈣埖鍔栭崑鈺呮煃閸濆嫬鈧爼宕戦姀銈嗙厱闊洦鑹炬禍瑙勭箾?",
+                        "AccessProfileId":  "AccessProfile-1",
+                        "FishingInteractionProfileId":  "FishingInteractionProfile-1",
+                        "NavigationInteractionProfileId":  "NavigationInteractionProfile-1",
+                        "EnvironmentProfileId":  "EnvironmentProfile-1",
+                        "FishSpawnProfileId":  "FishSpawnProfile-1",
+                        "SortOrder":  20,
+                        "Description":  "缂傚倸鍊风拋鏌ュ磻閹捐秮褰掓晲閸噥浠╅梺鍛婄懇缁犳牠寮诲☉妯锋闁哄诞鍐炬綂缂傚倷鐒﹀濠氬窗閺嵮呮殾闁绘顕ф导鐘绘煕閺囥劌骞栨鐐茬Ч濮婃椽骞愭惔锝傛闂佸吋妞块崹浼搭敊韫囨梹缍囬柍鍝勫€搁鈺呮⒑閸涘﹤濮傞柛鏂跨灱缁﹪顢曢敂瑙ｆ嫽闂佸憡娲忛崝宥呪枍閸儲鐓曢柍杞扮劍閸ｄ粙鏌熼钘夘棆濞寸媴绠撻幊鏍煛閸愨晛鏋︽繝鐢靛仦濞兼瑩宕ョ€ｎ喒鈧箓宕煎┑鎰櫊濠电娀娼ч悧蹇涙儗閸℃褰掓晲閸涱喗鍎撻梺鍛婄懃閸燁偉鐏冨┑顔界箓閼活垱绂嶈ぐ鎺撶厱閻庯絽澧庣粔顔尖攽?",
+                        "AuraSummary":  {
+                                            "Environment":  [
+                                                                "CurrentNoise +1"
+                                                            ],
+                                            "Fishing":  [
+                                                            "WaitTime x0.8",
+                                                            "HookRate +15%"
+                                                        ],
+                                            "Navigation":  [
+                                                               "闂備礁鎼ˇ閬嶅磿閹版澘绀堟繛鍡樻尭缁犳牗绻濇繝鍌涘櫝闁稿鎹囬幃鐑藉箥椤旀嫎銊╂⒑鏉炴壆顦﹂柨鏇ㄤ簻椤繘鎸婃径妯烘倯闂佸憡娲﹂崢鐐墡"
+                                                           ],
+                                            "FishSpawn":  [
+                                                              "缂傚倸鍊风拋鏌ュ磻閹捐秮褰掓晲閸涱喗鍎撻梺鍛婄懃閸燁偉鐏冪紓浣割儏閻忔繈骞冮幋锔界厽?"
+                                                          ]
+                                        },
+                        "Geometry":  {
+                                         "Type":  "Polygon",
+                                         "Points":  [
+                                                        [
+                                                            430,
+                                                            260
+                                                        ],
+                                                        [
+                                                            760,
+                                                            240
+                                                        ],
+                                                        [
+                                                            780,
+                                                            520
+                                                        ],
+                                                        [
+                                                            470,
+                                                            560
+                                                        ]
+                                                    ],
+                                         "Center":  [
+
+                                                    ],
+                                         "Radius":  0
+                                     },
+                        "ParentRegionId":  "",
+                        "LinkedPoiIds":  [
+
+                                         ]
+                    },
+                    {
+                        "RegionId":  "sea-event-001",
+                        "Name":  "濠电姷鏁搁崑鐐哄箰閹惰棄缁╅弶鍫氭櫅椤ユ岸姊洪鈧粔瀵哥矆瀹€鍕厱婵犻潧妫楅顐︽煕?",
+                        "RegionCategory":  "EventArea",
+                        "Tags":  [
+                                     "闂傚倷娴囬褍霉濮樿泛鍨傚ù鍏肩暘閳?"
+                                 ],
+                        "Priority":  90,
+                        "Enabled":  true,
+                        "GeometryIds":  [
+                                            "geom-sea-event-001"
+                                        ],
+                        "EnvironmentTag":  "闂備礁鎼ˇ顐﹀疾濠婂牆鍨傞柛顐ｆ礀缁?",
+                        "AccessTag":  "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋鐐垫噭濞存嚎鍊栫换娑㈠箣閻忔椿浜滈?",
+                        "FishingInteractionTag":  "濠电姷鏁搁崑娑㈩敋椤撱垹绀傛慨妞诲亾妤犵偞鍔欓崺鈧?",
+                        "NavigationInteractionTag":  "闂傚倸鍊搁崐鍝モ偓姘煎弮瀹曟繈寮撮姀鐘虫К濠德板€曢幊蹇涘吹鐎ｎ偁浜滈煫鍥ㄦ尰缁佲晠鏌￠埀?",
+                        "FishSpawnTag":  "闂傚倷鑳剁涵鍫曞疾閻愭祴鏋嶉柨婵嗩槶閳ь兛绶氬畷銊╊敊閸濆嫪鍒掗梻浣侯焾缁绘宕戦幇顒夌劷?",
+                        "AccessProfileId":  "AccessProfile-1",
+                        "FishingInteractionProfileId":  "FishingInteractionProfile-1",
+                        "NavigationInteractionProfileId":  "NavigationInteractionProfile-1",
+                        "EnvironmentProfileId":  "EnvironmentProfile-1",
+                        "FishSpawnProfileId":  "FishSpawnProfile-1",
+                        "SortOrder":  30,
+                        "Description":  "闂傚倷鐒﹂幃鍫曞磿闁稁鏁嬫い鎾跺Т閸ㄦ繃銇勯幇鍫曟闁稿﹨鍩栭妵鍕冀閵娿儱姣堥梺杞扮閿曨亪寮婚敐澶婎潊闁靛繒濮甸悗楣冩⒑閹肩偛濡界€光偓閹间礁绠氶柛鎰靛枛缁€瀣亜閺嶃劋绶遍柍褜鍓氶悷鈺呭蓟閿熺姴绀冮柍鍝勫€归悗顖滅磽娴ｉ潧濡搁柛鏂跨Ф缁骞掗弮鈧畷澶愭煟閹寸儐鐒介柣锝変憾濮婃椽骞愭惔锝傛闂佹椿鍓欓妶绋款嚕椤愶箑围濠㈣泛锕︽鍥⒑闂堟侗妾у┑鈥虫搐椤斿繐鈹戦崼銏紲闂侀€炲苯澧悡銈嗐亜韫囨挻顥滈柦鍌氼儐缁绘盯寮堕幋婵囧€梺鎸庡哺閺屾稑螣閼姐們鈧帡鏌ｉ妷顔绘捣妞わ箒浜槐鎺楀Ω閿濆懎顬夌紓浣稿€圭敮鐐哄箲閸曨剛鐟规い鏍ㄧ椤斿繐鈹戦悩顔肩伇闁糕晜鐗犻幆宀勵敋閳ь剟寮荤仦绛嬬叆闁告侗鍠栭弸鍌炴⒑閸涘﹥澶勯柛瀣閹﹢鎮㈤崗鑲╁幈闂佸啿鎼崯顐﹀几閺冣偓缁绘盯宕奸悢椋庝紝濡ょ姷鍋炵敮鈩冧繆閻ゎ垼妾ㄩ梺鍛婂焹閸嬫捇姊?",
+                        "AuraSummary":  {
+                                            "Environment":  [
+                                                                "StormIntensity +3",
+                                                                "Visibility x0.5"
+                                                            ],
+                                            "Fishing":  [
+                                                            "RareChance +40%"
+                                                        ],
+                                            "Navigation":  [
+                                                               "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋娆忕仼缁惧墽绮换婵囩節閸屾侗妫為梺?"
+                                                           ],
+                                            "FishSpawn":  [
+                                                              "濠电姷鏁搁崑鐘典焊椤忓牜鏁嬬憸搴ㄥ箞閵娾晛鐓涢柛灞久禒顕€姊虹粙璺ㄧ闁稿鍔曢…?"
+                                                          ]
+                                        },
+                        "Geometry":  {
+                                         "Type":  "Circle",
+                                         "Points":  [
+
+                                                    ],
+                                         "Center":  [
+                                                        700,
+                                                        420
+                                                    ],
+                                         "Radius":  170
+                                     },
+                        "ParentRegionId":  "",
+                        "LinkedPoiIds":  [
+
+                                         ]
+                    },
+                    {
+                        "Geometry":  {
+                                         "Type":  "Rectangle",
+                                         "Points":  [
+                                                        [
+                                                            435.25772784657846,
+                                                            459.03394639105034
+                                                        ],
+                                                        [
+                                                            435.25772784657846,
+                                                            646.9286705614803
+                                                        ],
+                                                        [
+                                                            593.3891902268863,
+                                                            646.9286705614803
+                                                        ],
+                                                        [
+                                                            593.3891902268863,
+                                                            459.03394639105034
+                                                        ]
+                                                    ],
+                                         "Center":  [
+
+                                                    ],
+                                         "Radius":  0
+                                     },
+                        "RegionId":  "region-1774262201668-0cc64e",
+                        "GeometryIds":  [
+                                            "geom-1774262201668-fef98c"
+                                        ],
+                        "Name":  "闂傚倷绀侀幉锟犳偋閺囥垹绠规い鎰堕檮閸嬪倹鎱ㄥΔ鍐⒏st1",
+                        "RegionCategory":  "BaseSeaArea",
+                        "Tags":  [
+
+                                 ],
+                        "Priority":  0,
+                        "Enabled":  true,
+                        "EnvironmentTag":  "闂備礁鎼ˇ顐﹀疾濠婂牆鍨傞柛顐ｆ礀缁?",
+                        "AccessTag":  "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋鐐垫噭濞存嚎鍊栫换娑㈠箣閻忔椿浜滈?",
+                        "FishingInteractionTag":  "濠电姷鏁搁崑娑㈩敋椤撱垹绀傛慨妞诲亾妤犵偞鍔欓崺鈧?",
+                        "NavigationInteractionTag":  "缂傚倸鍊风粈渚€宕愰悜鑺ュ€块柨鏇炲亞閺佸棙绻涢幋娆忕仾闁搞倕顑嗛妵鍕疀閹惧銈╅梺琛″亾?",
+                        "FishSpawnTag":  "闂傚倷鑳剁涵鍫曞疾閻愭祴鏋嶉柨婵嗩槶閳ь兛绶氬畷銊╊敊閸濆嫪鍒掗梻浣侯焾缁绘宕戦幇顒夌劷?",
+                        "EnvironmentProfileId":  "",
+                        "AccessProfileId":  "",
+                        "FishingInteractionProfileId":  "",
+                        "NavigationInteractionProfileId":  "",
+                        "FishSpawnProfileId":  "",
+                        "SortOrder":  0,
+                        "Description":  "",
+                        "AuraSummary":  {
+                                            "Environment":  [
+
+                                                            ],
+                                            "Fishing":  [
+
+                                                        ],
+                                            "Navigation":  [
+
+                                                           ],
+                                            "FishSpawn":  [
+
+                                                          ]
+                                        },
+                        "ParentRegionId":  "",
+                        "LinkedPoiIds":  [
+
+                                         ]
+                    }
+                ],
+    "sketchLayers":  [
+
+                     ],
+    "ruleProfiles":  {
+                         "AccessProfile":  {
+                                               "AccessProfile-1":  {
+                                                                       "ProfileId":  "AccessProfile-1",
+                                                                       "Name":  "Default Access",
+                                                                       "Description":  "Default access profile for standard sea regions.",
+                                                                       "Aura":  {
+                                                                                    "Environment":  [
+
+                                                                                                    ],
+                                                                                    "Fishing":  [
+
+                                                                                                ],
+                                                                                    "Navigation":  [
+                                                                                                       "Open navigation lane"
+                                                                                                   ],
+                                                                                    "FishSpawn":  [
+
+                                                                                                  ]
+                                                                                }
+                                                                   },
+                                               "AccessProfile-Blocked":  {
+                                                                             "ProfileId":  "AccessProfile-Blocked",
+                                                                             "Name":  "Blocked Access",
+                                                                             "Description":  "Demo profile for blocked entry areas.",
+                                                                             "Aura":  {
+                                                                                          "Environment":  [
+
+                                                                                                          ],
+                                                                                          "Fishing":  [
+
+                                                                                                      ],
+                                                                                          "Navigation":  [
+                                                                                                             "Entry denied"
+                                                                                                         ],
+                                                                                          "FishSpawn":  [
+
+                                                                                                        ]
+                                                                                      }
+                                                                         }
+                                           },
+                         "FishingInteractionProfile":  {
+                                                           "FishingInteractionProfile-1":  {
+                                                                                               "ProfileId":  "FishingInteractionProfile-1",
+                                                                                               "Name":  "Default Fishing",
+                                                                                               "Description":  "Standard fishing interaction profile.",
+                                                                                               "Aura":  {
+                                                                                                            "Environment":  [
+
+                                                                                                                            ],
+                                                                                                            "Fishing":  [
+                                                                                                                            "WaitTime x1.0"
+                                                                                                                        ],
+                                                                                                            "Navigation":  [
+
+                                                                                                                           ],
+                                                                                                            "FishSpawn":  [
+
+                                                                                                                          ]
+                                                                                                        }
+                                                                                           },
+                                                           "FishingInteractionProfile-ReefBonus":  {
+                                                                                                       "ProfileId":  "FishingInteractionProfile-ReefBonus",
+                                                                                                       "Name":  "Reef Bonus",
+                                                                                                       "Description":  "Demo profile for reef fishing bonuses.",
+                                                                                                       "Aura":  {
+                                                                                                                    "Environment":  [
+
+                                                                                                                                    ],
+                                                                                                                    "Fishing":  [
+                                                                                                                                    "WaitTime x0.8",
+                                                                                                                                    "HookRate +15%"
+                                                                                                                                ],
+                                                                                                                    "Navigation":  [
+
+                                                                                                                                   ],
+                                                                                                                    "FishSpawn":  [
+
+                                                                                                                                  ]
+                                                                                                                }
+                                                                                                   }
+                                                       },
+                         "NavigationInteractionProfile":  {
+                                                              "NavigationInteractionProfile-1":  {
+                                                                                                     "ProfileId":  "NavigationInteractionProfile-1",
+                                                                                                     "Name":  "Default Navigation",
+                                                                                                     "Description":  "Standard navigation interaction profile.",
+                                                                                                     "Aura":  {
+                                                                                                                  "Environment":  [
+
+                                                                                                                                  ],
+                                                                                                                  "Fishing":  [
+
+                                                                                                                              ],
+                                                                                                                  "Navigation":  [
+                                                                                                                                     "Safe passage"
+                                                                                                                                 ],
+                                                                                                                  "FishSpawn":  [
+
+                                                                                                                                ]
+                                                                                                              }
+                                                                                                 },
+                                                              "NavigationInteractionProfile-Restricted":  {
+                                                                                                              "ProfileId":  "NavigationInteractionProfile-Restricted",
+                                                                                                              "Name":  "Restricted Navigation",
+                                                                                                              "Description":  "Demo profile for restricted movement.",
+                                                                                                              "Aura":  {
+                                                                                                                           "Environment":  [
+
+                                                                                                                                           ],
+                                                                                                                           "Fishing":  [
+
+                                                                                                                                       ],
+                                                                                                                           "Navigation":  [
+                                                                                                                                              "Restricted navigation"
+                                                                                                                                          ],
+                                                                                                                           "FishSpawn":  [
+
+                                                                                                                                         ]
+                                                                                                                       }
+                                                                                                          }
+                                                          },
+                         "FishSpawnProfile":  {
+                                                  "FishSpawnProfile-1":  {
+                                                                             "ProfileId":  "FishSpawnProfile-1",
+                                                                             "Name":  "Default Fish Spawn",
+                                                                             "Description":  "Standard fish spawn profile.",
+                                                                             "Aura":  {
+                                                                                          "Environment":  [
+
+                                                                                                          ],
+                                                                                          "Fishing":  [
+
+                                                                                                      ],
+                                                                                          "Navigation":  [
+
+                                                                                                         ],
+                                                                                          "FishSpawn":  [
+                                                                                                            "Base fish school"
+                                                                                                        ]
+                                                                                      }
+                                                                         },
+                                                  "FishSpawnProfile-Event":  {
+                                                                                 "ProfileId":  "FishSpawnProfile-Event",
+                                                                                 "Name":  "Event Fish Spawn",
+                                                                                 "Description":  "Demo profile for event fish spawns.",
+                                                                                 "Aura":  {
+                                                                                              "Environment":  [
+
+                                                                                                              ],
+                                                                                              "Fishing":  [
+
+                                                                                                          ],
+                                                                                              "Navigation":  [
+
+                                                                                                             ],
+                                                                                              "FishSpawn":  [
+                                                                                                                "Event fish school"
+                                                                                                            ]
+                                                                                          }
+                                                                             }
+                                              },
+                         "EnvironmentProfile":  {
+                                                    "EnvironmentProfile-1":  {
+                                                                                 "ProfileId":  "EnvironmentProfile-1",
+                                                                                 "Name":  "Default Sea State",
+                                                                                 "Description":  "Standard offshore environment profile.",
+                                                                                 "Aura":  {
+                                                                                              "Environment":  [
+                                                                                                                  "WaveSpeed +2",
+                                                                                                                  "Visibility x0.7"
+                                                                                                              ],
+                                                                                              "Fishing":  [
+
+                                                                                                          ],
+                                                                                              "Navigation":  [
+
+                                                                                                             ],
+                                                                                              "FishSpawn":  [
+
+                                                                                                            ]
+                                                                                          }
+                                                                             },
+                                                    "EnvironmentProfile-Storm":  {
+                                                                                     "ProfileId":  "EnvironmentProfile-Storm",
+                                                                                     "Name":  "Storm Front",
+                                                                                     "Description":  "Demo profile for storm event conditions.",
+                                                                                     "Aura":  {
+                                                                                                  "Environment":  [
+                                                                                                                      "StormIntensity +3",
+                                                                                                                      "Visibility x0.5"
+                                                                                                                  ],
+                                                                                                  "Fishing":  [
+
+                                                                                                              ],
+                                                                                                  "Navigation":  [
+
+                                                                                                                 ],
+                                                                                                  "FishSpawn":  [
+
+                                                                                                                ]
+                                                                                              }
+                                                                                 }
+                                                }
+                     }
+}

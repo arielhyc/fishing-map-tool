@@ -72,3 +72,58 @@
 - 本地双击打开可运行
 - GitHub Pages 兼容
 - 老版本缺少新增字段的 JSON 在导入时会按默认值迁移
+
+## JSON 自定义增强
+
+现在可以把下面这些内容直接写进 JSON 后导入：
+
+- `demoConfig.tagEnums`：五类规则 Tag 的候选值
+- `demoConfig.priorities`：每类 Tag 的优先级
+- `schema.sections`：区域详情和编辑器的字段分区与字段定义
+- `regions[*]`：每个区域的具体字段内容
+
+当前版本会：
+
+- 保留并导出 schema 中定义的自定义字段
+- 按 schema 在右侧详情中分区显示这些字段
+- 按 schema 在右侧编辑器中生成输入控件
+- 导入后继续参与本地存储和后续导出
+
+建议做法：
+
+1. 在 `schema.sections` 中先声明字段
+2. 在 `regions` 的每个对象里填写对应字段值
+3. 如需新增规则 Tag 候选值，修改 `demoConfig.tagEnums`
+4. 导入 JSON 后即可在页面中看到完整数据
+
+## RulesProfile 与 Aura
+
+现在可以在 JSON 中单独定义 `ruleProfiles`，让区域只引用 `ProfileId`。
+
+结构示例：
+
+- `ruleProfiles.AccessProfile`
+- `ruleProfiles.FishingInteractionProfile`
+- `ruleProfiles.NavigationInteractionProfile`
+- `ruleProfiles.FishSpawnProfile`
+- `ruleProfiles.EnvironmentProfile`
+
+每个 Profile 建议包含：
+
+- `ProfileId`
+- `Name`
+- `Description`
+- `Aura`
+
+其中 `Aura` 结构为：
+
+- `Environment`
+- `Fishing`
+- `Navigation`
+- `FishSpawn`
+
+当前行为：
+
+- Region 仍然保存各类 `...ProfileId`
+- 页面会优先从 `ruleProfiles` 读取 Profile 名称和 Aura
+- 如果某个 Profile 没配到，才回退到 Region 自带的 `AuraSummary`

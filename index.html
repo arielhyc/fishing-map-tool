@@ -66,6 +66,10 @@
             <textarea id="options-categories" rows="4"></textarea>
           </label>
           <label class="form-field form-field--full">
+            <span>Tag / Priority 配置 JSON</span>
+            <textarea id="demo-config" rows="12" placeholder='{"tagEnums":{...},"priorities":{...}}'></textarea>
+          </label>
+          <label class="form-field form-field--full">
             <span>Region Schema JSON</span>
             <textarea id="schema-config" rows="14" placeholder='{"sections":[...]}'></textarea>
           </label>
@@ -155,19 +159,6 @@
             </div>
           </div>
           <div class="brush-toolbar">
-            <button id="toggle-point-analysis" class="secondary-button" type="button">点位分析开启</button>
-            <button id="toggle-brush" class="secondary-button" type="button">开启涂抹</button>
-            <label class="brush-size">
-              <span>笔刷半径</span>
-              <input id="brush-size" type="range" min="8" max="80" value="28">
-              <strong id="brush-size-value">28</strong>
-            </label>
-            <button id="toggle-sketch" class="secondary-button" type="button">开启线稿</button>
-            <label class="brush-size">
-              <span>线宽</span>
-              <input id="sketch-width" type="range" min="1" max="12" value="3">
-              <strong id="sketch-width-value">3</strong>
-            </label>
           </div>
         </div>
       </header>
@@ -206,7 +197,7 @@
     </main>
 
     <aside class="right-panel">
-      <section class="panel">
+      <section id="layer-panel" class="panel">
         <div class="panel__header">
           <span>图层列表</span>
           <span class="panel__meta">Layers</span>
@@ -217,7 +208,7 @@
         </div>
       </section>
 
-      <section class="panel panel--glow">
+      <section id="detail-panel" class="panel panel--glow">
         <div class="panel__header">
           <span>区域详情</span>
           <span id="detail-category" class="panel__meta">None</span>
@@ -228,7 +219,7 @@
         <div id="detail-sections" class="schema-sections"></div>
       </section>
 
-      <section class="panel panel--glow">
+      <section id="rule-panel" class="panel panel--glow">
         <div class="panel__header">
           <span>Rule Resolution</span>
           <span class="panel__meta">Analysis</span>
@@ -238,7 +229,7 @@
         <div id="rule-resolution-list" class="resolution-list"></div>
       </section>
 
-      <section class="panel panel--glow">
+      <section id="aura-panel" class="panel panel--glow">
         <div class="panel__header">
           <span>Aura View</span>
           <span class="panel__meta">Resolved</span>
@@ -246,7 +237,7 @@
         <div id="aura-grid" class="aura-grid"></div>
       </section>
 
-      <section class="panel">
+      <section id="editor-panel" class="panel">
         <div class="panel__header">
           <span>编辑区域</span>
           <span class="panel__meta">Editor</span>

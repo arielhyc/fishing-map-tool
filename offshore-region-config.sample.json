@@ -1,226 +1,866 @@
 ﻿{
-  "version": 3,
-  "scene": {
-    "width": 1600,
-    "height": 900,
-    "url": "./assets/offshore-chart-fallback.svg"
-  },
-  "options": {
-    "Tags": ["近海", "外海", "深海", "礁石", "沉船", "灯塔", "港口", "危险", "稀有", "任务"],
-    "RegionCategory": ["BaseSeaArea", "PoiInfluenceArea", "EventArea"]
-  },
-  "demoConfig": {
-    "tagEnums": {
-      "EnvironmentTag": ["NearshoreCalm", "OpenSeaCold", "DeepSeaPressure", "StormEvent"],
-      "AccessTag": ["PublicRoute", "RestrictedWaters", "EventLockdown"],
-      "FishingInteractionTag": ["CoastalCast", "ReefFishing", "EventFishingBoost"],
-      "NavigationInteractionTag": ["SafeNavigation", "RockHazard", "NoAnchoring"],
-      "FishSpawnTag": ["CoastalSchool", "ReefHabitat", "EventRareSpawn"]
-    },
-    "priorities": {
-      "EnvironmentTag": { "StormEvent": 100, "DeepSeaPressure": 80, "OpenSeaCold": 60, "NearshoreCalm": 40 },
-      "AccessTag": { "EventLockdown": 100, "RestrictedWaters": 80, "PublicRoute": 40 },
-      "FishingInteractionTag": { "EventFishingBoost": 100, "ReefFishing": 80, "CoastalCast": 40 },
-      "NavigationInteractionTag": { "NoAnchoring": 100, "RockHazard": 80, "SafeNavigation": 40 },
-      "FishSpawnTag": { "EventRareSpawn": 100, "ReefHabitat": 80, "CoastalSchool": 40 }
-    }
-  },
-  "schema": {
-    "sections": [
-      {
-        "id": "basic",
-        "title": "基础属性",
-        "fields": [
-          { "key": "RegionId", "label": "RegionId", "type": "text" },
-          { "key": "Name", "label": "Name", "type": "text" },
-          { "key": "RegionCategory", "label": "RegionCategory", "type": "select", "source": "RegionCategory" },
-          { "key": "Tags", "label": "Tags", "type": "multiselect", "source": "Tags" },
-          { "key": "Priority", "label": "Priority", "type": "number" },
-          { "key": "ParentRegionId", "label": "ParentRegionId", "type": "text" },
-          { "key": "Enabled", "label": "Enabled", "type": "boolean" },
-          { "key": "EnvironmentTag", "label": "EnvironmentTag", "type": "select", "source": "EnvironmentTag" },
-          { "key": "AccessTag", "label": "AccessTag", "type": "select", "source": "AccessTag" },
-          { "key": "FishingInteractionTag", "label": "FishingInteractionTag", "type": "select", "source": "FishingInteractionTag" },
-          { "key": "NavigationInteractionTag", "label": "NavigationInteractionTag", "type": "select", "source": "NavigationInteractionTag" },
-          { "key": "FishSpawnTag", "label": "FishSpawnTag", "type": "select", "source": "FishSpawnTag" }
-        ]
-      },
-      {
-        "id": "spatial",
-        "title": "空间范围",
-        "fields": [
-          { "key": "GeometryIds", "label": "GeometryIds", "type": "list" }
-        ]
-      },
-      {
-        "id": "interaction",
-        "title": "交互规则",
-        "fields": [
-          { "key": "AccessProfileId", "label": "AccessProfileId", "type": "text" },
-          { "key": "FishingInteractionProfileId", "label": "FishingInteractionProfileId", "type": "text" },
-          { "key": "NavigationInteractionProfileId", "label": "NavigationInteractionProfileId", "type": "text" },
-          { "key": "EnvironmentProfileId", "label": "EnvironmentProfileId", "type": "text" }
-        ]
-      },
-      {
-        "id": "output",
-        "title": "产出内容",
-        "fields": [
-          { "key": "FishSpawnProfileId", "label": "FishSpawnProfileId", "type": "text" }
-        ]
-      },
-      {
-        "id": "support",
-        "title": "辅助",
-        "fields": [
-          { "key": "LinkedPoiIds", "label": "LinkedPoiIds", "type": "list" },
-          { "key": "SortOrder", "label": "SortOrder", "type": "number" },
-          { "key": "Description", "label": "Description", "type": "textarea" }
-        ]
-      }
-    ]
-  },
-  "regions": [
-    {
-      "RegionId": "sea-base-001",
-      "Name": "北部深海基底区",
-      "RegionCategory": "BaseSeaArea",
-      "Tags": ["深海", "外海"],
-      "Priority": 20,
-      "ParentRegionId": "",
-      "Enabled": true,
-      "GeometryIds": ["geom-sea-base-001"],
-      "EnvironmentTag": "DeepSeaPressure",
-      "AccessTag": "PublicRoute",
-      "FishingInteractionTag": "CoastalCast",
-      "NavigationInteractionTag": "SafeNavigation",
-      "FishSpawnTag": "CoastalSchool",
-      "EnvironmentProfileId": "env-deep-pressure",
-      "AccessProfileId": "access-public-lane",
-      "FishingInteractionProfileId": "fish-standard-cast",
-      "NavigationInteractionProfileId": "nav-safe-passage",
-      "FishSpawnProfileId": "spawn-open-ocean",
-      "LinkedPoiIds": [],
-      "SortOrder": 10,
-      "Description": "基础深海区域，提供默认环境压力与开放通行基线。",
-      "AuraSummary": {
-        "Environment": ["WaveSpeed +2", "Visibility x0.7"],
-        "Fishing": ["WaitTime x1.0"],
-        "Navigation": ["可正常通航"],
-        "FishSpawn": ["基础外海鱼群"]
-      },
-      "Geometry": {
-        "Type": "Polygon",
-        "Points": [[180, 140], [1360, 120], [1460, 740], [220, 800]],
-        "Center": [],
-        "Radius": 0
-      }
-    },
-    {
-      "RegionId": "sea-poi-reef-001",
-      "Name": "西礁群影响区",
-      "RegionCategory": "PoiInfluenceArea",
-      "Tags": ["近海", "礁石", "危险"],
-      "Priority": 60,
-      "ParentRegionId": "sea-base-001",
-      "Enabled": true,
-      "GeometryIds": ["geom-sea-poi-reef-001"],
-      "EnvironmentTag": "NearshoreCalm",
-      "AccessTag": "RestrictedWaters",
-      "FishingInteractionTag": "ReefFishing",
-      "NavigationInteractionTag": "RockHazard",
-      "FishSpawnTag": "ReefHabitat",
-      "EnvironmentProfileId": "env-reef-current",
-      "AccessProfileId": "access-reef-restricted",
-      "FishingInteractionProfileId": "fish-reef-bonus",
-      "NavigationInteractionProfileId": "nav-rock-hazard",
-      "FishSpawnProfileId": "spawn-reef-cluster",
-      "LinkedPoiIds": ["poi-reef-west"],
-      "SortOrder": 20,
-      "Description": "礁石周边区域，强调危险航行与优质礁群鱼点。",
-      "AuraSummary": {
-        "Environment": ["CurrentNoise +1"],
-        "Fishing": ["WaitTime x0.8", "HookRate +15%"],
-        "Navigation": ["转向容错降低"],
-        "FishSpawn": ["礁群鱼池"]
-      },
-      "Geometry": {
-        "Type": "Polygon",
-        "Points": [[430, 260], [760, 240], [780, 520], [470, 560]],
-        "Center": [],
-        "Radius": 0
-      }
-    },
-    {
-      "RegionId": "sea-event-001",
-      "Name": "灯塔活动事件圈",
-      "RegionCategory": "EventArea",
-      "Tags": ["灯塔", "任务", "稀有"],
-      "Priority": 90,
-      "ParentRegionId": "sea-base-001",
-      "Enabled": true,
-      "GeometryIds": ["geom-sea-event-001"],
-      "EnvironmentTag": "StormEvent",
-      "AccessTag": "EventLockdown",
-      "FishingInteractionTag": "EventFishingBoost",
-      "NavigationInteractionTag": "NoAnchoring",
-      "FishSpawnTag": "EventRareSpawn",
-      "EnvironmentProfileId": "env-event-storm",
-      "AccessProfileId": "access-event-lockdown",
-      "FishingInteractionProfileId": "fish-event-boost",
-      "NavigationInteractionProfileId": "nav-no-anchoring",
-      "FishSpawnProfileId": "spawn-rare-event",
-      "LinkedPoiIds": ["poi-lighthouse-01"],
-      "SortOrder": 30,
-      "Description": "围绕灯塔生成的限时事件圈，用来演示高优先级事件对多个规则域的接管。",
-      "AuraSummary": {
-        "Environment": ["StormIntensity +3", "Visibility x0.5"],
-        "Fishing": ["RareChance +40%"],
-        "Navigation": ["禁止停船"],
-        "FishSpawn": ["活动鱼池"]
-      },
-      "Geometry": {
-        "Type": "Circle",
-        "Points": [],
-        "Center": [700, 420],
-        "Radius": 170
-      }
-    },
-    {
-      "RegionId": "sea-access-001",
-      "Name": "外侧航道保护带",
-      "RegionCategory": "PoiInfluenceArea",
-      "Tags": ["港口", "任务"],
-      "Priority": 70,
-      "ParentRegionId": "sea-base-001",
-      "Enabled": true,
-      "GeometryIds": ["geom-sea-access-001"],
-      "EnvironmentTag": "OpenSeaCold",
-      "AccessTag": "RestrictedWaters",
-      "FishingInteractionTag": "CoastalCast",
-      "NavigationInteractionTag": "SafeNavigation",
-      "FishSpawnTag": "CoastalSchool",
-      "EnvironmentProfileId": "env-cold-open-sea",
-      "AccessProfileId": "access-controlled-lane",
-      "FishingInteractionProfileId": "fish-standard-cast",
-      "NavigationInteractionProfileId": "nav-guided-lane",
-      "FishSpawnProfileId": "spawn-lane-school",
-      "LinkedPoiIds": ["poi-harbor-east"],
-      "SortOrder": 40,
-      "Description": "和事件区、礁石区重叠的航道带，用来展示 Access 与 Navigation 规则可由不同区域主导。",
-      "AuraSummary": {
-        "Environment": ["ColdWater +1"],
-        "Fishing": ["WaitTime x1.1"],
-        "Navigation": ["航道引导"],
-        "FishSpawn": ["常规航道鱼群"]
-      },
-      "Geometry": {
-        "Type": "Rectangle",
-        "Points": [[620, 220], [1080, 620]],
-        "Center": [],
-        "Radius": 0
-      }
-    }
-  ],
-  "sketchLayers": []
+    "version":  5,
+    "scene":  {
+                  "width":  1600,
+                  "height":  900,
+                  "url":  "./assets/offshore-chart-fallback.svg"
+              },
+    "options":  {
+                    "Tags":  [
+                                 "近海",
+                                 "外海",
+                                 "深海",
+                                 "礁石",
+                                 "沉船",
+                                 "灯塔",
+                                 "港口",
+                                 "危险",
+                                 "稀有",
+                                 "任务"
+                             ],
+                    "RegionCategory":  [
+                                           "BaseSeaArea",
+                                           "PoiInfluenceArea",
+                                           "EventArea"
+                                       ]
+                },
+    "demoConfig":  {
+                       "tagEnums":  {
+                                        "EnvironmentTag":  [
+                                                               "NearshoreCalm",
+                                                               "OpenSeaCold",
+                                                               "DeepSeaPressure",
+                                                               "StormEvent"
+                                                           ],
+                                        "AccessTag":  [
+                                                          "PublicRoute",
+                                                          "RestrictedWaters",
+                                                          "EventLockdown"
+                                                      ],
+                                        "FishingInteractionTag":  [
+                                                                      "CoastalCast",
+                                                                      "ReefFishing",
+                                                                      "EventFishingBoost"
+                                                                  ],
+                                        "NavigationInteractionTag":  [
+                                                                         "SafeNavigation",
+                                                                         "RockHazard",
+                                                                         "NoAnchoring"
+                                                                     ],
+                                        "FishSpawnTag":  [
+                                                             "CoastalSchool",
+                                                             "ReefHabitat",
+                                                             "EventRareSpawn"
+                                                         ]
+                                    },
+                       "priorities":  {
+                                          "EnvironmentTag":  {
+                                                                 "StormEvent":  100,
+                                                                 "DeepSeaPressure":  80,
+                                                                 "OpenSeaCold":  60,
+                                                                 "NearshoreCalm":  40
+                                                             },
+                                          "AccessTag":  {
+                                                            "EventLockdown":  100,
+                                                            "RestrictedWaters":  80,
+                                                            "PublicRoute":  40
+                                                        },
+                                          "FishingInteractionTag":  {
+                                                                        "EventFishingBoost":  100,
+                                                                        "ReefFishing":  80,
+                                                                        "CoastalCast":  40
+                                                                    },
+                                          "NavigationInteractionTag":  {
+                                                                           "NoAnchoring":  100,
+                                                                           "RockHazard":  80,
+                                                                           "SafeNavigation":  40
+                                                                       },
+                                          "FishSpawnTag":  {
+                                                               "EventRareSpawn":  100,
+                                                               "ReefHabitat":  80,
+                                                               "CoastalSchool":  40
+                                                           }
+                                      }
+                   },
+    "schema":  {
+                   "sections":  [
+                                    {
+                                        "id":  "basic",
+                                        "title":  "基础属性",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "RegionId",
+                                                           "label":  "RegionId",
+                                                           "type":  "text"
+                                                       },
+                                                       {
+                                                           "key":  "Name",
+                                                           "label":  "Name",
+                                                           "type":  "text"
+                                                       },
+                                                       {
+                                                           "key":  "RegionCategory",
+                                                           "label":  "RegionCategory",
+                                                           "type":  "select",
+                                                           "source":  "RegionCategory"
+                                                       },
+                                                       {
+                                                           "key":  "Tags",
+                                                           "label":  "Tags",
+                                                           "type":  "multiselect",
+                                                           "source":  "Tags"
+                                                       },
+                                                       {
+                                                           "key":  "Enabled",
+                                                           "label":  "Enabled",
+                                                           "type":  "boolean"
+                                                       },
+                                                       {
+                                                           "key":  "EnvironmentTag",
+                                                           "label":  "EnvironmentTag",
+                                                           "type":  "select",
+                                                           "source":  "EnvironmentTag"
+                                                       },
+                                                       {
+                                                           "key":  "AccessTag",
+                                                           "label":  "AccessTag",
+                                                           "type":  "select",
+                                                           "source":  "AccessTag"
+                                                       },
+                                                       {
+                                                           "key":  "FishingInteractionTag",
+                                                           "label":  "FishingInteractionTag",
+                                                           "type":  "select",
+                                                           "source":  "FishingInteractionTag"
+                                                       },
+                                                       {
+                                                           "key":  "NavigationInteractionTag",
+                                                           "label":  "NavigationInteractionTag",
+                                                           "type":  "select",
+                                                           "source":  "NavigationInteractionTag"
+                                                       },
+                                                       {
+                                                           "key":  "FishSpawnTag",
+                                                           "label":  "FishSpawnTag",
+                                                           "type":  "select",
+                                                           "source":  "FishSpawnTag"
+                                                       },
+                                                       {
+                                                           "key":  "SeaStateLabel",
+                                                           "label":  "海况标签",
+                                                           "type":  "text",
+                                                           "source":  null
+                                                       },
+                                                       {
+                                                           "key":  "DesignerNotes",
+                                                           "label":  "策划短注",
+                                                           "type":  "textarea",
+                                                           "source":  null
+                                                       }
+                                                   ]
+                                    },
+                                    {
+                                        "id":  "spatial",
+                                        "title":  "空间范围",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "GeometryIds",
+                                                           "label":  "GeometryIds",
+                                                           "type":  "list"
+                                                       }
+                                                   ]
+                                    },
+                                    {
+                                        "id":  "interaction",
+                                        "title":  "交互规则",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "AccessProfileId",
+                                                           "label":  "AccessProfileId",
+                                                           "type":  "text"
+                                                       },
+                                                       {
+                                                           "key":  "FishingInteractionProfileId",
+                                                           "label":  "FishingInteractionProfileId",
+                                                           "type":  "text"
+                                                       },
+                                                       {
+                                                           "key":  "NavigationInteractionProfileId",
+                                                           "label":  "NavigationInteractionProfileId",
+                                                           "type":  "text"
+                                                       },
+                                                       {
+                                                           "key":  "EnvironmentProfileId",
+                                                           "label":  "EnvironmentProfileId",
+                                                           "type":  "text"
+                                                       },
+                                                       {
+                                                           "key":  "InteractionHint",
+                                                           "label":  "交互提示",
+                                                           "type":  "textarea",
+                                                           "source":  null
+                                                       }
+                                                   ]
+                                    },
+                                    {
+                                        "id":  "output",
+                                        "title":  "产出内容",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "FishSpawnProfileId",
+                                                           "label":  "FishSpawnProfileId",
+                                                           "type":  "text"
+                                                       }
+                                                   ]
+                                    },
+                                    {
+                                        "id":  "support",
+                                        "title":  "辅助",
+                                        "fields":  [
+                                                       {
+                                                           "key":  "SortOrder",
+                                                           "label":  "SortOrder",
+                                                           "type":  "number"
+                                                       },
+                                                       {
+                                                           "key":  "Description",
+                                                           "label":  "Description",
+                                                           "type":  "textarea"
+                                                       }
+                                                   ]
+                                    }
+                                ]
+               },
+    "regions":  [
+                    {
+                        "RegionId":  "sea-base-001",
+                        "Name":  "北部深海基底区",
+                        "RegionCategory":  "BaseSeaArea",
+                        "Tags":  [
+                                     "深海",
+                                     "外海"
+                                 ],
+                        "Enabled":  true,
+                        "GeometryIds":  [
+                                            "geom-sea-base-001"
+                                        ],
+                        "EnvironmentTag":  "DeepSeaPressure",
+                        "AccessTag":  "PublicRoute",
+                        "FishingInteractionTag":  "CoastalCast",
+                        "NavigationInteractionTag":  "SafeNavigation",
+                        "FishSpawnTag":  "CoastalSchool",
+                        "EnvironmentProfileId":  "env-deep-pressure",
+                        "AccessProfileId":  "access-public-lane",
+                        "FishingInteractionProfileId":  "fish-standard-cast",
+                        "NavigationInteractionProfileId":  "nav-safe-passage",
+                        "FishSpawnProfileId":  "spawn-open-ocean",
+                        "SortOrder":  10,
+                        "Description":  "基础深海区域，提供默认环境压力与开放通行基线。",
+                        "AuraSummary":  {
+                                            "Environment":  [
+                                                                "WaveSpeed +2",
+                                                                "Visibility x0.7"
+                                                            ],
+                                            "Fishing":  [
+                                                            "WaitTime x1.0"
+                                                        ],
+                                            "Navigation":  [
+                                                               "可正常通航"
+                                                           ],
+                                            "FishSpawn":  [
+                                                              "基础外海鱼群"
+                                                          ]
+                                        },
+                        "Geometry":  {
+                                         "Type":  "Polygon",
+                                         "Points":  [
+                                                        [
+                                                            180,
+                                                            140
+                                                        ],
+                                                        [
+                                                            1360,
+                                                            120
+                                                        ],
+                                                        [
+                                                            1460,
+                                                            740
+                                                        ],
+                                                        [
+                                                            220,
+                                                            800
+                                                        ]
+                                                    ],
+                                         "Center":  [
+
+                                                    ],
+                                         "Radius":  0
+                                     },
+                        "SeaStateLabel":  "深水寒流",
+                        "DesignerNotes":  "示例：基础海域可追加任何 schema 中声明的新字段。",
+                        "InteractionHint":  "进入区域后可触发对应规则。"
+                    },
+                    {
+                        "RegionId":  "sea-poi-reef-001",
+                        "Name":  "西礁群影响区",
+                        "RegionCategory":  "PoiInfluenceArea",
+                        "Tags":  [
+                                     "近海",
+                                     "礁石",
+                                     "危险"
+                                 ],
+                        "Enabled":  true,
+                        "GeometryIds":  [
+                                            "geom-sea-poi-reef-001"
+                                        ],
+                        "EnvironmentTag":  "NearshoreCalm",
+                        "AccessTag":  "RestrictedWaters",
+                        "FishingInteractionTag":  "ReefFishing",
+                        "NavigationInteractionTag":  "RockHazard",
+                        "FishSpawnTag":  "ReefHabitat",
+                        "EnvironmentProfileId":  "env-reef-current",
+                        "AccessProfileId":  "access-reef-restricted",
+                        "FishingInteractionProfileId":  "fish-reef-bonus",
+                        "NavigationInteractionProfileId":  "nav-rock-hazard",
+                        "FishSpawnProfileId":  "spawn-reef-cluster",
+                        "SortOrder":  20,
+                        "Description":  "礁石周边区域，强调危险航行与优质礁群鱼点。",
+                        "AuraSummary":  {
+                                            "Environment":  [
+                                                                "CurrentNoise +1"
+                                                            ],
+                                            "Fishing":  [
+                                                            "WaitTime x0.8",
+                                                            "HookRate +15%"
+                                                        ],
+                                            "Navigation":  [
+                                                               "转向容错降低"
+                                                           ],
+                                            "FishSpawn":  [
+                                                              "礁群鱼池"
+                                                          ]
+                                        },
+                        "Geometry":  {
+                                         "Type":  "Polygon",
+                                         "Points":  [
+                                                        [
+                                                            430,
+                                                            260
+                                                        ],
+                                                        [
+                                                            760,
+                                                            240
+                                                        ],
+                                                        [
+                                                            780,
+                                                            520
+                                                        ],
+                                                        [
+                                                            470,
+                                                            560
+                                                        ]
+                                                    ],
+                                         "Center":  [
+
+                                                    ],
+                                         "Radius":  0
+                                     },
+                        "SeaStateLabel":  "礁群回流",
+                        "DesignerNotes":  "可在导入 JSON 中继续扩展字段。",
+                        "InteractionHint":  "礁石边缘适合短时垂钓，但航行容错降低。"
+                    },
+                    {
+                        "RegionId":  "sea-event-001",
+                        "Name":  "灯塔活动事件圈",
+                        "RegionCategory":  "EventArea",
+                        "Tags":  [
+                                     "灯塔",
+                                     "任务",
+                                     "稀有"
+                                 ],
+                        "Enabled":  true,
+                        "GeometryIds":  [
+                                            "geom-sea-event-001"
+                                        ],
+                        "EnvironmentTag":  "StormEvent",
+                        "AccessTag":  "EventLockdown",
+                        "FishingInteractionTag":  "EventFishingBoost",
+                        "NavigationInteractionTag":  "NoAnchoring",
+                        "FishSpawnTag":  "EventRareSpawn",
+                        "EnvironmentProfileId":  "env-event-storm",
+                        "AccessProfileId":  "access-event-lockdown",
+                        "FishingInteractionProfileId":  "fish-event-boost",
+                        "NavigationInteractionProfileId":  "nav-no-anchoring",
+                        "FishSpawnProfileId":  "spawn-rare-event",
+                        "SortOrder":  30,
+                        "Description":  "围绕灯塔生成的限时事件圈，用来演示高优先级事件对多个规则域的接管。",
+                        "AuraSummary":  {
+                                            "Environment":  [
+                                                                "StormIntensity +3",
+                                                                "Visibility x0.5"
+                                                            ],
+                                            "Fishing":  [
+                                                            "RareChance +40%"
+                                                        ],
+                                            "Navigation":  [
+                                                               "禁止停船"
+                                                           ],
+                                            "FishSpawn":  [
+                                                              "活动鱼池"
+                                                          ]
+                                        },
+                        "Geometry":  {
+                                         "Type":  "Circle",
+                                         "Points":  [
+
+                                                    ],
+                                         "Center":  [
+                                                        700,
+                                                        420
+                                                    ],
+                                         "Radius":  170
+                                     },
+                        "SeaStateLabel":  "活动风暴眼",
+                        "DesignerNotes":  "示例：事件区导入后会完整显示自定义字段。",
+                        "InteractionHint":  "进入区域后可触发对应规则。"
+                    },
+                    {
+                        "RegionId":  "sea-access-001",
+                        "Name":  "外侧航道保护带",
+                        "RegionCategory":  "PoiInfluenceArea",
+                        "Tags":  [
+                                     "港口",
+                                     "任务"
+                                 ],
+                        "Enabled":  true,
+                        "GeometryIds":  [
+                                            "geom-sea-access-001"
+                                        ],
+                        "EnvironmentTag":  "OpenSeaCold",
+                        "AccessTag":  "RestrictedWaters",
+                        "FishingInteractionTag":  "CoastalCast",
+                        "NavigationInteractionTag":  "SafeNavigation",
+                        "FishSpawnTag":  "CoastalSchool",
+                        "EnvironmentProfileId":  "env-cold-open-sea",
+                        "AccessProfileId":  "access-controlled-lane",
+                        "FishingInteractionProfileId":  "fish-standard-cast",
+                        "NavigationInteractionProfileId":  "nav-guided-lane",
+                        "FishSpawnProfileId":  "spawn-lane-school",
+                        "SortOrder":  40,
+                        "Description":  "和事件区、礁石区重叠的航道带，用来展示 Access 与 Navigation 规则可由不同区域主导。",
+                        "AuraSummary":  {
+                                            "Environment":  [
+                                                                "ColdWater +1"
+                                                            ],
+                                            "Fishing":  [
+                                                            "WaitTime x1.1"
+                                                        ],
+                                            "Navigation":  [
+                                                               "航道引导"
+                                                           ],
+                                            "FishSpawn":  [
+                                                              "常规航道鱼群"
+                                                          ]
+                                        },
+                        "Geometry":  {
+                                         "Type":  "Rectangle",
+                                         "Points":  [
+                                                        [
+                                                            620,
+                                                            220
+                                                        ],
+                                                        [
+                                                            1080,
+                                                            620
+                                                        ]
+                                                    ],
+                                         "Center":  [
+
+                                                    ],
+                                         "Radius":  0
+                                     },
+                        "SeaStateLabel":  "外侧冷水航道",
+                        "DesignerNotes":  "可在导入 JSON 中继续扩展字段。",
+                        "InteractionHint":  "进入区域后可触发对应规则。"
+                    }
+                ],
+    "sketchLayers":  [
+
+                     ],
+    "ruleProfiles":  {
+                         "AccessProfile":  {
+                                               "access-public-lane":  {
+                                                                          "ProfileId":  "access-public-lane",
+                                                                          "Name":  "公共航线",
+                                                                          "Description":  "允许正常进入和航行。",
+                                                                          "Aura":  {
+                                                                                       "Environment":  [
+
+                                                                                                       ],
+                                                                                       "Fishing":  [
+
+                                                                                                   ],
+                                                                                       "Navigation":  [
+                                                                                                          "可正常通航"
+                                                                                                      ],
+                                                                                       "FishSpawn":  [
+
+                                                                                                     ]
+                                                                                   }
+                                                                      },
+                                               "access-reef-restricted":  {
+                                                                              "ProfileId":  "access-reef-restricted",
+                                                                              "Name":  "礁区限制",
+                                                                              "Description":  "限制靠近礁区的航行行为。",
+                                                                              "Aura":  {
+                                                                                           "Environment":  [
+
+                                                                                                           ],
+                                                                                           "Fishing":  [
+
+                                                                                                       ],
+                                                                                           "Navigation":  [
+                                                                                                              "限制航行"
+                                                                                                          ],
+                                                                                           "FishSpawn":  [
+
+                                                                                                         ]
+                                                                                       }
+                                                                          },
+                                               "access-event-lockdown":  {
+                                                                             "ProfileId":  "access-event-lockdown",
+                                                                             "Name":  "事件封锁",
+                                                                             "Description":  "事件期间禁止进入。",
+                                                                             "Aura":  {
+                                                                                          "Environment":  [
+
+                                                                                                          ],
+                                                                                          "Fishing":  [
+
+                                                                                                      ],
+                                                                                          "Navigation":  [
+                                                                                                             "禁止进入"
+                                                                                                         ],
+                                                                                          "FishSpawn":  [
+
+                                                                                                        ]
+                                                                                      }
+                                                                         },
+                                               "access-controlled-lane":  {
+                                                                              "ProfileId":  "access-controlled-lane",
+                                                                              "Name":  "受控航道",
+                                                                              "Description":  "允许沿航道通行。",
+                                                                              "Aura":  {
+                                                                                           "Environment":  [
+
+                                                                                                           ],
+                                                                                           "Fishing":  [
+
+                                                                                                       ],
+                                                                                           "Navigation":  [
+                                                                                                              "沿航道通行"
+                                                                                                          ],
+                                                                                           "FishSpawn":  [
+
+                                                                                                         ]
+                                                                                       }
+                                                                          }
+                                           },
+                         "FishingInteractionProfile":  {
+                                                           "fish-standard-cast":  {
+                                                                                      "ProfileId":  "fish-standard-cast",
+                                                                                      "Name":  "标准抛投",
+                                                                                      "Description":  "常规海钓交互。",
+                                                                                      "Aura":  {
+                                                                                                   "Environment":  [
+
+                                                                                                                   ],
+                                                                                                   "Fishing":  [
+                                                                                                                   "WaitTime x1.0"
+                                                                                                               ],
+                                                                                                   "Navigation":  [
+
+                                                                                                                  ],
+                                                                                                   "FishSpawn":  [
+
+                                                                                                                 ]
+                                                                                               }
+                                                                                  },
+                                                           "fish-reef-bonus":  {
+                                                                                   "ProfileId":  "fish-reef-bonus",
+                                                                                   "Name":  "礁区增益",
+                                                                                   "Description":  "礁区提供更好的上钩率。",
+                                                                                   "Aura":  {
+                                                                                                "Environment":  [
+
+                                                                                                                ],
+                                                                                                "Fishing":  [
+                                                                                                                "WaitTime x0.8",
+                                                                                                                "HookRate +15%"
+                                                                                                            ],
+                                                                                                "Navigation":  [
+
+                                                                                                               ],
+                                                                                                "FishSpawn":  [
+
+                                                                                                              ]
+                                                                                            }
+                                                                               },
+                                                           "fish-event-boost":  {
+                                                                                    "ProfileId":  "fish-event-boost",
+                                                                                    "Name":  "活动加成",
+                                                                                    "Description":  "活动期间钓鱼收益提升。",
+                                                                                    "Aura":  {
+                                                                                                 "Environment":  [
+
+                                                                                                                 ],
+                                                                                                 "Fishing":  [
+                                                                                                                 "RareChance +40%"
+                                                                                                             ],
+                                                                                                 "Navigation":  [
+
+                                                                                                                ],
+                                                                                                 "FishSpawn":  [
+
+                                                                                                               ]
+                                                                                             }
+                                                                                }
+                                                       },
+                         "NavigationInteractionProfile":  {
+                                                              "nav-safe-passage":  {
+                                                                                       "ProfileId":  "nav-safe-passage",
+                                                                                       "Name":  "安全通行",
+                                                                                       "Description":  "正常航行。",
+                                                                                       "Aura":  {
+                                                                                                    "Environment":  [
+
+                                                                                                                    ],
+                                                                                                    "Fishing":  [
+
+                                                                                                                ],
+                                                                                                    "Navigation":  [
+                                                                                                                       "可正常通航"
+                                                                                                                   ],
+                                                                                                    "FishSpawn":  [
+
+                                                                                                                  ]
+                                                                                                }
+                                                                                   },
+                                                              "nav-rock-hazard":  {
+                                                                                      "ProfileId":  "nav-rock-hazard",
+                                                                                      "Name":  "礁石风险",
+                                                                                      "Description":  "存在搁浅和碰撞风险。",
+                                                                                      "Aura":  {
+                                                                                                   "Environment":  [
+
+                                                                                                                   ],
+                                                                                                   "Fishing":  [
+
+                                                                                                               ],
+                                                                                                   "Navigation":  [
+                                                                                                                      "转向容错降低"
+                                                                                                                  ],
+                                                                                                   "FishSpawn":  [
+
+                                                                                                                 ]
+                                                                                               }
+                                                                                  },
+                                                              "nav-no-anchoring":  {
+                                                                                       "ProfileId":  "nav-no-anchoring",
+                                                                                       "Name":  "禁止停船",
+                                                                                       "Description":  "事件区禁止停船。",
+                                                                                       "Aura":  {
+                                                                                                    "Environment":  [
+
+                                                                                                                    ],
+                                                                                                    "Fishing":  [
+
+                                                                                                                ],
+                                                                                                    "Navigation":  [
+                                                                                                                       "禁止停船"
+                                                                                                                   ],
+                                                                                                    "FishSpawn":  [
+
+                                                                                                                  ]
+                                                                                                }
+                                                                                   },
+                                                              "nav-guided-lane":  {
+                                                                                      "ProfileId":  "nav-guided-lane",
+                                                                                      "Name":  "航道引导",
+                                                                                      "Description":  "沿既定航道移动。",
+                                                                                      "Aura":  {
+                                                                                                   "Environment":  [
+
+                                                                                                                   ],
+                                                                                                   "Fishing":  [
+
+                                                                                                               ],
+                                                                                                   "Navigation":  [
+                                                                                                                      "航道引导"
+                                                                                                                  ],
+                                                                                                   "FishSpawn":  [
+
+                                                                                                                 ]
+                                                                                               }
+                                                                                  }
+                                                          },
+                         "FishSpawnProfile":  {
+                                                  "spawn-open-ocean":  {
+                                                                           "ProfileId":  "spawn-open-ocean",
+                                                                           "Name":  "外海基础鱼群",
+                                                                           "Description":  "基础外海鱼群分布。",
+                                                                           "Aura":  {
+                                                                                        "Environment":  [
+
+                                                                                                        ],
+                                                                                        "Fishing":  [
+
+                                                                                                    ],
+                                                                                        "Navigation":  [
+
+                                                                                                       ],
+                                                                                        "FishSpawn":  [
+                                                                                                          "基础外海鱼群"
+                                                                                                      ]
+                                                                                    }
+                                                                       },
+                                                  "spawn-reef-cluster":  {
+                                                                             "ProfileId":  "spawn-reef-cluster",
+                                                                             "Name":  "礁群鱼池",
+                                                                             "Description":  "礁区群聚刷鱼。",
+                                                                             "Aura":  {
+                                                                                          "Environment":  [
+
+                                                                                                          ],
+                                                                                          "Fishing":  [
+
+                                                                                                      ],
+                                                                                          "Navigation":  [
+
+                                                                                                         ],
+                                                                                          "FishSpawn":  [
+                                                                                                            "礁群鱼池"
+                                                                                                        ]
+                                                                                      }
+                                                                         },
+                                                  "spawn-rare-event":  {
+                                                                           "ProfileId":  "spawn-rare-event",
+                                                                           "Name":  "活动鱼池",
+                                                                           "Description":  "限时活动稀有鱼群。",
+                                                                           "Aura":  {
+                                                                                        "Environment":  [
+
+                                                                                                        ],
+                                                                                        "Fishing":  [
+
+                                                                                                    ],
+                                                                                        "Navigation":  [
+
+                                                                                                       ],
+                                                                                        "FishSpawn":  [
+                                                                                                          "活动鱼池"
+                                                                                                      ]
+                                                                                    }
+                                                                       },
+                                                  "spawn-lane-school":  {
+                                                                            "ProfileId":  "spawn-lane-school",
+                                                                            "Name":  "航道鱼群",
+                                                                            "Description":  "沿航道出现的常规鱼群。",
+                                                                            "Aura":  {
+                                                                                         "Environment":  [
+
+                                                                                                         ],
+                                                                                         "Fishing":  [
+
+                                                                                                     ],
+                                                                                         "Navigation":  [
+
+                                                                                                        ],
+                                                                                         "FishSpawn":  [
+                                                                                                           "常规航道鱼群"
+                                                                                                       ]
+                                                                                     }
+                                                                        }
+                                              },
+                         "EnvironmentProfile":  {
+                                                    "env-deep-pressure":  {
+                                                                              "ProfileId":  "env-deep-pressure",
+                                                                              "Name":  "深海压强",
+                                                                              "Description":  "深海基础环境。",
+                                                                              "Aura":  {
+                                                                                           "Environment":  [
+                                                                                                               "WaveSpeed +2",
+                                                                                                               "Visibility x0.7"
+                                                                                                           ],
+                                                                                           "Fishing":  [
+
+                                                                                                       ],
+                                                                                           "Navigation":  [
+
+                                                                                                          ],
+                                                                                           "FishSpawn":  [
+
+                                                                                                         ]
+                                                                                       }
+                                                                          },
+                                                    "env-reef-current":  {
+                                                                             "ProfileId":  "env-reef-current",
+                                                                             "Name":  "礁流",
+                                                                             "Description":  "礁区局部水流影响。",
+                                                                             "Aura":  {
+                                                                                          "Environment":  [
+                                                                                                              "CurrentNoise +1"
+                                                                                                          ],
+                                                                                          "Fishing":  [
+
+                                                                                                      ],
+                                                                                          "Navigation":  [
+
+                                                                                                         ],
+                                                                                          "FishSpawn":  [
+
+                                                                                                        ]
+                                                                                      }
+                                                                         },
+                                                    "env-event-storm":  {
+                                                                            "ProfileId":  "env-event-storm",
+                                                                            "Name":  "风暴事件",
+                                                                            "Description":  "事件生成的风暴环境。",
+                                                                            "Aura":  {
+                                                                                         "Environment":  [
+                                                                                                             "StormIntensity +3",
+                                                                                                             "Visibility x0.5"
+                                                                                                         ],
+                                                                                         "Fishing":  [
+
+                                                                                                     ],
+                                                                                         "Navigation":  [
+
+                                                                                                        ],
+                                                                                         "FishSpawn":  [
+
+                                                                                                       ]
+                                                                                     }
+                                                                        },
+                                                    "env-cold-open-sea":  {
+                                                                              "ProfileId":  "env-cold-open-sea",
+                                                                              "Name":  "冷水航道",
+                                                                              "Description":  "冷流经过的外海航道。",
+                                                                              "Aura":  {
+                                                                                           "Environment":  [
+                                                                                                               "ColdWater +1"
+                                                                                                           ],
+                                                                                           "Fishing":  [
+
+                                                                                                       ],
+                                                                                           "Navigation":  [
+
+                                                                                                          ],
+                                                                                           "FishSpawn":  [
+
+                                                                                                         ]
+                                                                                       }
+                                                                          }
+                                                }
+                     }
 }
