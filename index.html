@@ -26,7 +26,7 @@
       <div class="sidebar__brand">
         <p class="eyebrow">Offshore Fishing Region System</p>
         <h1>远海钓鱼区域系统</h1>
-        <p class="intro">上传海图、绘制区域、配置区域结构化字段，并按 5 个属性分区查看与编辑。</p>
+        <p class="intro">保留区域绘制、导入导出与本地存储能力，并把“区域标签如何决定规则和最终效果”做成可视化解释器。</p>
       </div>
 
       <section class="panel panel--glow">
@@ -47,7 +47,7 @@
             <button id="export-config" class="focus-button" type="button">导出 JSON</button>
             <button id="clear-storage" class="secondary-button secondary-button--danger" type="button">清空本地数据</button>
           </div>
-          <div class="inline-note">区域数据会自动保存到浏览器本地存储。导出的 JSON 可以手工编辑后再导入。</div>
+          <div class="inline-note">演示数据里已经包含重叠区域、Tag 优先级和点击任意点的规则仲裁结果。</div>
         </div>
       </section>
 
@@ -67,7 +67,7 @@
           </label>
           <label class="form-field form-field--full">
             <span>Region Schema JSON</span>
-            <textarea id="schema-config" rows="18" placeholder='{"sections":[...]}'></textarea>
+            <textarea id="schema-config" rows="14" placeholder='{"sections":[...]}'></textarea>
           </label>
         </div>
         <div class="button-row button-row--dual">
@@ -78,17 +78,22 @@
 
       <section class="panel">
         <div class="panel__header">
+          <span>规则配置</span>
+          <span class="panel__meta">Rule Binding</span>
+        </div>
+        <div id="rule-binding-list" class="rule-summary-list"></div>
+        <div id="priority-board" class="priority-board"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
           <span>筛选面板</span>
           <span class="panel__meta">Filters</span>
         </div>
         <div class="form-grid">
           <label class="form-field">
-            <span>Tag 筛选</span>
+            <span>Tags</span>
             <select id="tag-filter-select" multiple size="6"></select>
-          </label>
-          <label class="form-field">
-            <span>FishSpawnProfile 筛选</span>
-            <select id="fish-filter-select" multiple size="6"></select>
           </label>
           <label class="form-field">
             <span>RegionCategory</span>
@@ -96,7 +101,27 @@
           </label>
           <label class="form-field">
             <span>Enabled</span>
-            <select id="mode-filter-select" multiple size="2"></select>
+            <select id="enabled-filter-select" multiple size="2"></select>
+          </label>
+          <label class="form-field">
+            <span>EnvironmentTag</span>
+            <select id="environment-filter-select" multiple size="4"></select>
+          </label>
+          <label class="form-field">
+            <span>AccessTag</span>
+            <select id="access-filter-select" multiple size="4"></select>
+          </label>
+          <label class="form-field">
+            <span>FishingInteractionTag</span>
+            <select id="fishing-filter-select" multiple size="4"></select>
+          </label>
+          <label class="form-field">
+            <span>NavigationInteractionTag</span>
+            <select id="navigation-filter-select" multiple size="4"></select>
+          </label>
+          <label class="form-field">
+            <span>FishSpawnTag</span>
+            <select id="spawn-filter-select" multiple size="4"></select>
           </label>
           <div class="button-row button-row--dual">
             <button id="reset-filters" class="secondary-button" type="button">重置筛选</button>
@@ -121,7 +146,16 @@
           <h2>海图绘制区</h2>
         </div>
         <div class="topbar__actions">
+          <div class="view-mode-group">
+            <span>View Mode</span>
+            <div id="view-mode-control" class="segmented-control">
+              <button data-view-mode="region" class="is-active" type="button">Region View</button>
+              <button data-view-mode="rule" type="button">Rule View</button>
+              <button data-view-mode="aura" type="button">Aura View</button>
+            </div>
+          </div>
           <div class="brush-toolbar">
+            <button id="toggle-point-analysis" class="secondary-button" type="button">点位分析开启</button>
             <button id="toggle-brush" class="secondary-button" type="button">开启涂抹</button>
             <label class="brush-size">
               <span>笔刷半径</span>
@@ -134,9 +168,6 @@
               <input id="sketch-width" type="range" min="1" max="12" value="3">
               <strong id="sketch-width-value">3</strong>
             </label>
-          </div>
-          <div class="inline-toolbar">
-            <span class="toolbar-tip">使用左上角绘图工具创建 Polygon / Rectangle / Circle，也支持编辑与删除几何。</span>
           </div>
         </div>
       </header>
@@ -154,8 +185,8 @@
             <strong id="visible-region-count">0</strong>
           </div>
           <div class="stat-card">
-            <span class="stat-card__label">游标坐标</span>
-            <strong id="cursor-coords">--, --</strong>
+            <span class="stat-card__label">分析点</span>
+            <strong id="analysis-coords">--, --</strong>
           </div>
         </div>
 
@@ -169,6 +200,7 @@
             <div><i class="legend-dot legend-dot--function"></i><span>PoiInfluenceArea</span></div>
             <div><i class="legend-dot legend-dot--poi"></i><span>EventArea</span></div>
           </div>
+          <div class="inline-note">Rule View 会强调胜出区域，Aura View 会突出最终生效效果摘要。</div>
         </div>
       </div>
     </main>
@@ -188,12 +220,30 @@
       <section class="panel panel--glow">
         <div class="panel__header">
           <span>区域详情</span>
-          <span class="panel__meta" id="detail-category">None</span>
+          <span id="detail-category" class="panel__meta">None</span>
         </div>
         <h3 id="detail-name">未选择区域</h3>
-        <p id="detail-description">点击一个区域后，这里会按 5 个属性分区显示字段信息。</p>
-        <div class="detail-tags" id="detail-tags"></div>
+        <p id="detail-description">点击一个区域后，这里会按五类分区显示字段、规则映射和 Aura 摘要。</p>
+        <div id="detail-tags" class="detail-tags"></div>
         <div id="detail-sections" class="schema-sections"></div>
+      </section>
+
+      <section class="panel panel--glow">
+        <div class="panel__header">
+          <span>Rule Resolution</span>
+          <span class="panel__meta">Analysis</span>
+        </div>
+        <div id="analysis-summary" class="analysis-summary"></div>
+        <div id="hit-region-list" class="hit-region-list"></div>
+        <div id="rule-resolution-list" class="resolution-list"></div>
+      </section>
+
+      <section class="panel panel--glow">
+        <div class="panel__header">
+          <span>Aura View</span>
+          <span class="panel__meta">Resolved</span>
+        </div>
+        <div id="aura-grid" class="aura-grid"></div>
       </section>
 
       <section class="panel">

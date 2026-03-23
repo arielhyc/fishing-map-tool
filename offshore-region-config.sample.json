@@ -1,5 +1,5 @@
 ﻿{
-  "version": 2,
+  "version": 3,
   "scene": {
     "width": 1600,
     "height": 900,
@@ -8,6 +8,22 @@
   "options": {
     "Tags": ["近海", "外海", "深海", "礁石", "沉船", "灯塔", "港口", "危险", "稀有", "任务"],
     "RegionCategory": ["BaseSeaArea", "PoiInfluenceArea", "EventArea"]
+  },
+  "demoConfig": {
+    "tagEnums": {
+      "EnvironmentTag": ["NearshoreCalm", "OpenSeaCold", "DeepSeaPressure", "StormEvent"],
+      "AccessTag": ["PublicRoute", "RestrictedWaters", "EventLockdown"],
+      "FishingInteractionTag": ["CoastalCast", "ReefFishing", "EventFishingBoost"],
+      "NavigationInteractionTag": ["SafeNavigation", "RockHazard", "NoAnchoring"],
+      "FishSpawnTag": ["CoastalSchool", "ReefHabitat", "EventRareSpawn"]
+    },
+    "priorities": {
+      "EnvironmentTag": { "StormEvent": 100, "DeepSeaPressure": 80, "OpenSeaCold": 60, "NearshoreCalm": 40 },
+      "AccessTag": { "EventLockdown": 100, "RestrictedWaters": 80, "PublicRoute": 40 },
+      "FishingInteractionTag": { "EventFishingBoost": 100, "ReefFishing": 80, "CoastalCast": 40 },
+      "NavigationInteractionTag": { "NoAnchoring": 100, "RockHazard": 80, "SafeNavigation": 40 },
+      "FishSpawnTag": { "EventRareSpawn": 100, "ReefHabitat": 80, "CoastalSchool": 40 }
+    }
   },
   "schema": {
     "sections": [
@@ -21,7 +37,12 @@
           { "key": "Tags", "label": "Tags", "type": "multiselect", "source": "Tags" },
           { "key": "Priority", "label": "Priority", "type": "number" },
           { "key": "ParentRegionId", "label": "ParentRegionId", "type": "text" },
-          { "key": "Enabled", "label": "Enabled", "type": "boolean" }
+          { "key": "Enabled", "label": "Enabled", "type": "boolean" },
+          { "key": "EnvironmentTag", "label": "EnvironmentTag", "type": "select", "source": "EnvironmentTag" },
+          { "key": "AccessTag", "label": "AccessTag", "type": "select", "source": "AccessTag" },
+          { "key": "FishingInteractionTag", "label": "FishingInteractionTag", "type": "select", "source": "FishingInteractionTag" },
+          { "key": "NavigationInteractionTag", "label": "NavigationInteractionTag", "type": "select", "source": "NavigationInteractionTag" },
+          { "key": "FishSpawnTag", "label": "FishSpawnTag", "type": "select", "source": "FishSpawnTag" }
         ]
       },
       {
@@ -35,9 +56,9 @@
         "id": "interaction",
         "title": "交互规则",
         "fields": [
-          { "key": "AccessRuleProfileId", "label": "AccessRuleProfileId", "type": "text" },
-          { "key": "TraversalProfileId", "label": "TraversalProfileId", "type": "text" },
-          { "key": "InteractionProfileId", "label": "InteractionProfileId", "type": "text" },
+          { "key": "AccessProfileId", "label": "AccessProfileId", "type": "text" },
+          { "key": "FishingInteractionProfileId", "label": "FishingInteractionProfileId", "type": "text" },
+          { "key": "NavigationInteractionProfileId", "label": "NavigationInteractionProfileId", "type": "text" },
           { "key": "EnvironmentProfileId", "label": "EnvironmentProfileId", "type": "text" }
         ]
       },
@@ -61,51 +82,143 @@
   },
   "regions": [
     {
-      "RegionId": "sea-region-001",
-      "Name": "北侧礁群缓冲区",
-      "RegionCategory": "PoiInfluenceArea",
-      "Tags": ["近海", "礁石", "危险"],
-      "Priority": 60,
-      "ParentRegionId": "sea-parent-001",
+      "RegionId": "sea-base-001",
+      "Name": "北部深海基底区",
+      "RegionCategory": "BaseSeaArea",
+      "Tags": ["深海", "外海"],
+      "Priority": 20,
+      "ParentRegionId": "",
       "Enabled": true,
-      "GeometryIds": ["geom-sea-region-001-a"],
-      "AccessRuleProfileId": "access-reef-caution",
-      "TraversalProfileId": "traversal-rock-current",
-      "InteractionProfileId": "interaction-reef-fishing",
-      "EnvironmentProfileId": "env-cold-surge-01",
-      "FishSpawnProfileId": "fishspawn-reef-night-a",
-      "LinkedPoiIds": ["poi-reef-01", "poi-wreck-02"],
+      "GeometryIds": ["geom-sea-base-001"],
+      "EnvironmentTag": "DeepSeaPressure",
+      "AccessTag": "PublicRoute",
+      "FishingInteractionTag": "CoastalCast",
+      "NavigationInteractionTag": "SafeNavigation",
+      "FishSpawnTag": "CoastalSchool",
+      "EnvironmentProfileId": "env-deep-pressure",
+      "AccessProfileId": "access-public-lane",
+      "FishingInteractionProfileId": "fish-standard-cast",
+      "NavigationInteractionProfileId": "nav-safe-passage",
+      "FishSpawnProfileId": "spawn-open-ocean",
+      "LinkedPoiIds": [],
       "SortOrder": 10,
-      "Description": "礁石边缘浪涌明显，适合设计为高风险高回报的近海作业区。",
+      "Description": "基础深海区域，提供默认环境压力与开放通行基线。",
+      "AuraSummary": {
+        "Environment": ["WaveSpeed +2", "Visibility x0.7"],
+        "Fishing": ["WaitTime x1.0"],
+        "Navigation": ["可正常通航"],
+        "FishSpawn": ["基础外海鱼群"]
+      },
       "Geometry": {
         "Type": "Polygon",
-        "Points": [[280, 260], [520, 210], [610, 360], [340, 420]],
+        "Points": [[180, 140], [1360, 120], [1460, 740], [220, 800]],
         "Center": [],
         "Radius": 0
       }
     },
     {
-      "RegionId": "sea-region-002",
-      "Name": "外海灯塔事件圈",
-      "RegionCategory": "EventArea",
-      "Tags": ["外海", "灯塔", "任务", "稀有"],
-      "Priority": 80,
-      "ParentRegionId": "sea-parent-002",
+      "RegionId": "sea-poi-reef-001",
+      "Name": "西礁群影响区",
+      "RegionCategory": "PoiInfluenceArea",
+      "Tags": ["近海", "礁石", "危险"],
+      "Priority": 60,
+      "ParentRegionId": "sea-base-001",
       "Enabled": true,
-      "GeometryIds": ["geom-sea-region-002-a"],
-      "AccessRuleProfileId": "access-event-window",
-      "TraversalProfileId": "traversal-open-sea",
-      "InteractionProfileId": "interaction-lighthouse-signal",
-      "EnvironmentProfileId": "env-storm-band-02",
-      "FishSpawnProfileId": "fishspawn-rare-pelagic",
-      "LinkedPoiIds": ["poi-lighthouse-07"],
+      "GeometryIds": ["geom-sea-poi-reef-001"],
+      "EnvironmentTag": "NearshoreCalm",
+      "AccessTag": "RestrictedWaters",
+      "FishingInteractionTag": "ReefFishing",
+      "NavigationInteractionTag": "RockHazard",
+      "FishSpawnTag": "ReefHabitat",
+      "EnvironmentProfileId": "env-reef-current",
+      "AccessProfileId": "access-reef-restricted",
+      "FishingInteractionProfileId": "fish-reef-bonus",
+      "NavigationInteractionProfileId": "nav-rock-hazard",
+      "FishSpawnProfileId": "spawn-reef-cluster",
+      "LinkedPoiIds": ["poi-reef-west"],
       "SortOrder": 20,
-      "Description": "事件区围绕灯塔影响生成，适合挂接限时事件、稀有鱼刷新和引导任务。",
+      "Description": "礁石周边区域，强调危险航行与优质礁群鱼点。",
+      "AuraSummary": {
+        "Environment": ["CurrentNoise +1"],
+        "Fishing": ["WaitTime x0.8", "HookRate +15%"],
+        "Navigation": ["转向容错降低"],
+        "FishSpawn": ["礁群鱼池"]
+      },
+      "Geometry": {
+        "Type": "Polygon",
+        "Points": [[430, 260], [760, 240], [780, 520], [470, 560]],
+        "Center": [],
+        "Radius": 0
+      }
+    },
+    {
+      "RegionId": "sea-event-001",
+      "Name": "灯塔活动事件圈",
+      "RegionCategory": "EventArea",
+      "Tags": ["灯塔", "任务", "稀有"],
+      "Priority": 90,
+      "ParentRegionId": "sea-base-001",
+      "Enabled": true,
+      "GeometryIds": ["geom-sea-event-001"],
+      "EnvironmentTag": "StormEvent",
+      "AccessTag": "EventLockdown",
+      "FishingInteractionTag": "EventFishingBoost",
+      "NavigationInteractionTag": "NoAnchoring",
+      "FishSpawnTag": "EventRareSpawn",
+      "EnvironmentProfileId": "env-event-storm",
+      "AccessProfileId": "access-event-lockdown",
+      "FishingInteractionProfileId": "fish-event-boost",
+      "NavigationInteractionProfileId": "nav-no-anchoring",
+      "FishSpawnProfileId": "spawn-rare-event",
+      "LinkedPoiIds": ["poi-lighthouse-01"],
+      "SortOrder": 30,
+      "Description": "围绕灯塔生成的限时事件圈，用来演示高优先级事件对多个规则域的接管。",
+      "AuraSummary": {
+        "Environment": ["StormIntensity +3", "Visibility x0.5"],
+        "Fishing": ["RareChance +40%"],
+        "Navigation": ["禁止停船"],
+        "FishSpawn": ["活动鱼池"]
+      },
       "Geometry": {
         "Type": "Circle",
         "Points": [],
-        "Center": [980, 340],
-        "Radius": 130
+        "Center": [700, 420],
+        "Radius": 170
+      }
+    },
+    {
+      "RegionId": "sea-access-001",
+      "Name": "外侧航道保护带",
+      "RegionCategory": "PoiInfluenceArea",
+      "Tags": ["港口", "任务"],
+      "Priority": 70,
+      "ParentRegionId": "sea-base-001",
+      "Enabled": true,
+      "GeometryIds": ["geom-sea-access-001"],
+      "EnvironmentTag": "OpenSeaCold",
+      "AccessTag": "RestrictedWaters",
+      "FishingInteractionTag": "CoastalCast",
+      "NavigationInteractionTag": "SafeNavigation",
+      "FishSpawnTag": "CoastalSchool",
+      "EnvironmentProfileId": "env-cold-open-sea",
+      "AccessProfileId": "access-controlled-lane",
+      "FishingInteractionProfileId": "fish-standard-cast",
+      "NavigationInteractionProfileId": "nav-guided-lane",
+      "FishSpawnProfileId": "spawn-lane-school",
+      "LinkedPoiIds": ["poi-harbor-east"],
+      "SortOrder": 40,
+      "Description": "和事件区、礁石区重叠的航道带，用来展示 Access 与 Navigation 规则可由不同区域主导。",
+      "AuraSummary": {
+        "Environment": ["ColdWater +1"],
+        "Fishing": ["WaitTime x1.1"],
+        "Navigation": ["航道引导"],
+        "FishSpawn": ["常规航道鱼群"]
+      },
+      "Geometry": {
+        "Type": "Rectangle",
+        "Points": [[620, 220], [1080, 620]],
+        "Center": [],
+        "Radius": 0
       }
     }
   ],
