@@ -1,4 +1,4 @@
-﻿{
+{
     "version":  5,
     "scene":  {
                   "width":  1600,
@@ -6,18 +6,6 @@
                   "url":  "./assets/offshore-chart-fallback.svg"
               },
     "options":  {
-                    "Tags":  [
-                                 "近海",
-                                 "外海",
-                                 "深海",
-                                 "礁石",
-                                 "沉船",
-                                 "灯塔",
-                                 "港口",
-                                 "危险",
-                                 "稀有",
-                                 "任务"
-                             ],
                     "RegionCategory":  [
                                            "BaseSeaArea",
                                            "PoiInfluenceArea",
@@ -105,12 +93,6 @@
                                                            "source":  "RegionCategory"
                                                        },
                                                        {
-                                                           "key":  "Tags",
-                                                           "label":  "Tags",
-                                                           "type":  "multiselect",
-                                                           "source":  "Tags"
-                                                       },
-                                                       {
                                                            "key":  "Enabled",
                                                            "label":  "Enabled",
                                                            "type":  "boolean"
@@ -147,15 +129,8 @@
                                                        },
                                                        {
                                                            "key":  "SeaStateLabel",
-                                                           "label":  "海况标签",
-                                                           "type":  "text",
-                                                           "source":  null
-                                                       },
-                                                       {
-                                                           "key":  "DesignerNotes",
-                                                           "label":  "策划短注",
-                                                           "type":  "textarea",
-                                                           "source":  null
+                                                           "label":  "SeaStateLabel",
+                                                           "type":  "text"
                                                        }
                                                    ]
                                     },
@@ -196,9 +171,8 @@
                                                        },
                                                        {
                                                            "key":  "InteractionHint",
-                                                           "label":  "交互提示",
-                                                           "type":  "textarea",
-                                                           "source":  null
+                                                           "label":  "InteractionHint",
+                                                           "type":  "textarea"
                                                        }
                                                    ]
                                     },
@@ -226,6 +200,11 @@
                                                            "key":  "Description",
                                                            "label":  "Description",
                                                            "type":  "textarea"
+                                                       },
+                                                       {
+                                                           "key":  "DesignerNotes",
+                                                           "label":  "DesignerNotes",
+                                                           "type":  "textarea"
                                                        }
                                                    ]
                                     }
@@ -236,10 +215,6 @@
                         "RegionId":  "sea-base-001",
                         "Name":  "北部深海基底区",
                         "RegionCategory":  "BaseSeaArea",
-                        "Tags":  [
-                                     "深海",
-                                     "外海"
-                                 ],
                         "Enabled":  true,
                         "GeometryIds":  [
                                             "geom-sea-base-001"
@@ -297,18 +272,13 @@
                                          "Radius":  0
                                      },
                         "SeaStateLabel":  "深水寒流",
-                        "DesignerNotes":  "示例：基础海域可追加任何 schema 中声明的新字段。",
+                        "DesignerNotes":  "基础海域示例。",
                         "InteractionHint":  "进入区域后可触发对应规则。"
                     },
                     {
                         "RegionId":  "sea-poi-reef-001",
                         "Name":  "西礁群影响区",
                         "RegionCategory":  "PoiInfluenceArea",
-                        "Tags":  [
-                                     "近海",
-                                     "礁石",
-                                     "危险"
-                                 ],
                         "Enabled":  true,
                         "GeometryIds":  [
                                             "geom-sea-poi-reef-001"
@@ -366,18 +336,13 @@
                                          "Radius":  0
                                      },
                         "SeaStateLabel":  "礁群回流",
-                        "DesignerNotes":  "可在导入 JSON 中继续扩展字段。",
-                        "InteractionHint":  "礁石边缘适合短时垂钓，但航行容错降低。"
+                        "DesignerNotes":  "礁区增强示例。",
+                        "InteractionHint":  "礁石边缘适合短时垂钓。"
                     },
                     {
                         "RegionId":  "sea-event-001",
                         "Name":  "灯塔活动事件圈",
                         "RegionCategory":  "EventArea",
-                        "Tags":  [
-                                     "灯塔",
-                                     "任务",
-                                     "稀有"
-                                 ],
                         "Enabled":  true,
                         "GeometryIds":  [
                                             "geom-sea-event-001"
@@ -393,7 +358,7 @@
                         "NavigationInteractionProfileId":  "nav-no-anchoring",
                         "FishSpawnProfileId":  "spawn-rare-event",
                         "SortOrder":  30,
-                        "Description":  "围绕灯塔生成的限时事件圈，用来演示高优先级事件对多个规则域的接管。",
+                        "Description":  "围绕灯塔生成的限时事件圈。",
                         "AuraSummary":  {
                                             "Environment":  [
                                                                 "StormIntensity +3",
@@ -421,67 +386,8 @@
                                          "Radius":  170
                                      },
                         "SeaStateLabel":  "活动风暴眼",
-                        "DesignerNotes":  "示例：事件区导入后会完整显示自定义字段。",
-                        "InteractionHint":  "进入区域后可触发对应规则。"
-                    },
-                    {
-                        "RegionId":  "sea-access-001",
-                        "Name":  "外侧航道保护带",
-                        "RegionCategory":  "PoiInfluenceArea",
-                        "Tags":  [
-                                     "港口",
-                                     "任务"
-                                 ],
-                        "Enabled":  true,
-                        "GeometryIds":  [
-                                            "geom-sea-access-001"
-                                        ],
-                        "EnvironmentTag":  "OpenSeaCold",
-                        "AccessTag":  "RestrictedWaters",
-                        "FishingInteractionTag":  "CoastalCast",
-                        "NavigationInteractionTag":  "SafeNavigation",
-                        "FishSpawnTag":  "CoastalSchool",
-                        "EnvironmentProfileId":  "env-cold-open-sea",
-                        "AccessProfileId":  "access-controlled-lane",
-                        "FishingInteractionProfileId":  "fish-standard-cast",
-                        "NavigationInteractionProfileId":  "nav-guided-lane",
-                        "FishSpawnProfileId":  "spawn-lane-school",
-                        "SortOrder":  40,
-                        "Description":  "和事件区、礁石区重叠的航道带，用来展示 Access 与 Navigation 规则可由不同区域主导。",
-                        "AuraSummary":  {
-                                            "Environment":  [
-                                                                "ColdWater +1"
-                                                            ],
-                                            "Fishing":  [
-                                                            "WaitTime x1.1"
-                                                        ],
-                                            "Navigation":  [
-                                                               "航道引导"
-                                                           ],
-                                            "FishSpawn":  [
-                                                              "常规航道鱼群"
-                                                          ]
-                                        },
-                        "Geometry":  {
-                                         "Type":  "Rectangle",
-                                         "Points":  [
-                                                        [
-                                                            620,
-                                                            220
-                                                        ],
-                                                        [
-                                                            1080,
-                                                            620
-                                                        ]
-                                                    ],
-                                         "Center":  [
-
-                                                    ],
-                                         "Radius":  0
-                                     },
-                        "SeaStateLabel":  "外侧冷水航道",
-                        "DesignerNotes":  "可在导入 JSON 中继续扩展字段。",
-                        "InteractionHint":  "进入区域后可触发对应规则。"
+                        "DesignerNotes":  "事件区示例。",
+                        "InteractionHint":  "进入后会触发高优先级规则。"
                     }
                 ],
     "sketchLayers":  [
@@ -545,26 +451,7 @@
 
                                                                                                         ]
                                                                                       }
-                                                                         },
-                                               "access-controlled-lane":  {
-                                                                              "ProfileId":  "access-controlled-lane",
-                                                                              "Name":  "受控航道",
-                                                                              "Description":  "允许沿航道通行。",
-                                                                              "Aura":  {
-                                                                                           "Environment":  [
-
-                                                                                                           ],
-                                                                                           "Fishing":  [
-
-                                                                                                       ],
-                                                                                           "Navigation":  [
-                                                                                                              "沿航道通行"
-                                                                                                          ],
-                                                                                           "FishSpawn":  [
-
-                                                                                                         ]
-                                                                                       }
-                                                                          }
+                                                                         }
                                            },
                          "FishingInteractionProfile":  {
                                                            "fish-standard-cast":  {
@@ -683,26 +570,7 @@
 
                                                                                                                   ]
                                                                                                 }
-                                                                                   },
-                                                              "nav-guided-lane":  {
-                                                                                      "ProfileId":  "nav-guided-lane",
-                                                                                      "Name":  "航道引导",
-                                                                                      "Description":  "沿既定航道移动。",
-                                                                                      "Aura":  {
-                                                                                                   "Environment":  [
-
-                                                                                                                   ],
-                                                                                                   "Fishing":  [
-
-                                                                                                               ],
-                                                                                                   "Navigation":  [
-                                                                                                                      "航道引导"
-                                                                                                                  ],
-                                                                                                   "FishSpawn":  [
-
-                                                                                                                 ]
-                                                                                               }
-                                                                                  }
+                                                                                   }
                                                           },
                          "FishSpawnProfile":  {
                                                   "spawn-open-ocean":  {
@@ -761,26 +629,7 @@
                                                                                                           "活动鱼池"
                                                                                                       ]
                                                                                     }
-                                                                       },
-                                                  "spawn-lane-school":  {
-                                                                            "ProfileId":  "spawn-lane-school",
-                                                                            "Name":  "航道鱼群",
-                                                                            "Description":  "沿航道出现的常规鱼群。",
-                                                                            "Aura":  {
-                                                                                         "Environment":  [
-
-                                                                                                         ],
-                                                                                         "Fishing":  [
-
-                                                                                                     ],
-                                                                                         "Navigation":  [
-
-                                                                                                        ],
-                                                                                         "FishSpawn":  [
-                                                                                                           "常规航道鱼群"
-                                                                                                       ]
-                                                                                     }
-                                                                        }
+                                                                       }
                                               },
                          "EnvironmentProfile":  {
                                                     "env-deep-pressure":  {
@@ -841,26 +690,7 @@
 
                                                                                                        ]
                                                                                      }
-                                                                        },
-                                                    "env-cold-open-sea":  {
-                                                                              "ProfileId":  "env-cold-open-sea",
-                                                                              "Name":  "冷水航道",
-                                                                              "Description":  "冷流经过的外海航道。",
-                                                                              "Aura":  {
-                                                                                           "Environment":  [
-                                                                                                               "ColdWater +1"
-                                                                                                           ],
-                                                                                           "Fishing":  [
-
-                                                                                                       ],
-                                                                                           "Navigation":  [
-
-                                                                                                          ],
-                                                                                           "FishSpawn":  [
-
-                                                                                                         ]
-                                                                                       }
-                                                                          }
+                                                                        }
                                                 }
                      }
 }

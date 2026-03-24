@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg: #07131d;
   --panel: rgba(8, 19, 28, 0.82);
   --panel-soft: rgba(12, 29, 42, 0.88);
@@ -133,19 +133,19 @@ body.view-mode-nonrule #editor-panel { display: block !important; }
   background: transparent;
 }
 .map-tooltip {
-  width: min(340px, calc(100vw - 56px));
-  padding: 14px;
-  border-radius: 18px;
-  border: 1px solid rgba(148, 214, 255, 0.24);
-  background: linear-gradient(180deg, rgba(7, 17, 24, 0.96), rgba(8, 20, 30, 0.92));
-  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  width: min(300px, calc(100vw - 44px));
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 214, 255, 0.22);
+  background: linear-gradient(180deg, rgba(7, 17, 24, 0.97), rgba(8, 20, 30, 0.93));
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 .map-tooltip__header {
   display: grid;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 5px;
+  margin-bottom: 8px;
 }
 .map-tooltip__eyebrow {
   color: var(--accent);
@@ -186,8 +186,8 @@ body.view-mode-nonrule #editor-panel { display: block !important; }
 }
 .map-tooltip__row {
   display: grid;
-  grid-template-columns: minmax(0, 120px) minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: minmax(132px, 148px) minmax(0, 1fr);
+  gap: 12px;
   align-items: start;
   padding: 10px 12px;
   border-radius: 12px;
@@ -201,41 +201,18 @@ body.view-mode-nonrule #editor-panel { display: block !important; }
 .map-tooltip__label {
   color: var(--muted);
   font-size: 0.76rem;
+  line-height: 1.45;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .map-tooltip__value {
   color: var(--text);
   font-size: 0.82rem;
-  line-height: 1.5;
+  line-height: 1.45;
   word-break: break-word;
-}
-.map-tooltip-pill,
-.map-tooltip__summary-chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 214, 255, 0.18);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
-  font-size: 0.75rem;
-  line-height: 1;
-}
-.map-tooltip-pill--accent {
-  border-color: rgba(110, 231, 249, 0.38);
-  background: rgba(56, 189, 248, 0.14);
-  color: var(--accent);
-}
-.map-tooltip-pill--environment {
-  border-color: rgba(110, 231, 249, 0.26);
-}
-.map-tooltip-pill--fishing {
-  border-color: rgba(249, 212, 107, 0.3);
-}
-.map-tooltip-pill--navigation {
-  border-color: rgba(255, 140, 122, 0.26);
+  overflow-wrap: anywhere;
 }
 .map-tooltip-pill--fishspawn {
   border-color: rgba(74, 222, 128, 0.28);
@@ -261,3 +238,30 @@ body.view-mode-nonrule #editor-panel { display: block !important; }
 .rule-hover-popup .leaflet-popup-content {
   width: auto !important;
 }
+.floating-map-tooltip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 5000;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px) scale(0.98);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+.floating-map-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.floating-map-tooltip .map-tooltip {
+  width: min(300px, calc(100vw - 44px));
+}
+#map.leaflet-container {
+  overflow: visible;
+}
+.map-wrapper {
+  overflow: visible;
+}
+#map {
+  border-radius: 28px;
+}
+
