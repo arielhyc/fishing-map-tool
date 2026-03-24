@@ -265,3 +265,192 @@ body.view-mode-nonrule #editor-panel { display: block !important; }
   border-radius: 28px;
 }
 
+/* =========================================================
+   UI 视觉优化覆盖 (极简现代、卡片化、留白优化)
+   ========================================================= */
+
+/* 1. 极简暗黑配色体系重建 */
+:root {
+  --bg: #09090b; /* 更深邃纯粹的系统底色 */
+  --panel: rgba(24, 24, 27, 0.55); /* 降低卡片底色厚度，体现毛玻璃通透感 */
+  --panel-soft: rgba(39, 39, 42, 0.3); 
+  --panel-border: rgba(255, 255, 255, 0.08); /* 极细极淡的边界线 */
+  --text: #fafafa;
+  --muted: #a1a1aa;
+  --accent: #38bdf8;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* 2. 重置背景与全局字体，移除旧版繁杂的渐变 */
+html, body {
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#map { background: var(--bg); }
+
+/* 3. 卡片化侧边栏：移除原有侧栏死板的边框与硬背景 */
+.left-panel, .right-panel {
+  background: transparent;
+  border: none;
+}
+
+/* 4. 面板(卡片)现代化 */
+.panel, .floating-panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 20px;
+}
+
+/* 统一移除原有的渐变高光，保持克制简约 */
+.panel--glow { background: var(--panel); }
+
+/* 卡片头部层级梳理 */
+.panel__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.panel__meta {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  color: var(--muted);
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+/* 5. 现代化交互元素 (输入框、下拉框、按钮) */
+.form-field input, .form-field textarea, .form-field select {
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 14px;
+  transition: all 0.2s ease;
+}
+
+.form-field input:focus, .form-field textarea:focus, .form-field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.focus-button, .secondary-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+/* 主按钮采用反差色设计 (白底黑字) */
+.focus-button {
+  background: var(--text);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+.focus-button:hover {
+  background: #e4e4e7;
+  transform: translateY(-1px);
+}
+
+.secondary-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.secondary-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 6. Tooltip (地图弹窗) 优化：减轻视觉负担，提升排版呼吸感 */
+.map-tooltip {
+  border-radius: 12px;
+  background: rgba(24, 24, 27, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  padding: 16px;
+}
+.map-tooltip__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+.map-tooltip__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+/* 去除原来笨重的块状感，改为轻量的下划线分隔 */
+.map-tooltip__row {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 10px 0;
+  border-radius: 0;
+}
+.map-tooltip__row:last-child {
+  border-bottom: none;
+}
+.map-tooltip__label {
+  text-transform: capitalize;
+  letter-spacing: normal;
+  color: var(--muted);
+}
+.map-tooltip__row--accent {
+  background: rgba(56, 189, 248, 0.05);
+  border-color: transparent;
+}
+
+/* 7. 内部列表与项：增加细致的悬浮反馈与留白 */
+.region-card, .analysis-hit-card, .info-item, .priority-row, .candidate-row, .resolution-result, .schema-section, .rule-summary-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: all 0.2s ease;
+}
+.region-card:hover, .analysis-hit-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+.region-card.is-active {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: var(--accent);
+}
+
+/* 8. 修正字体与标题大小，移除机甲感大写 */
+.sidebar__brand h1, .topbar h2, .panel h3 {
+  font-family: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.sidebar__brand h1 { font-size: 1.5rem; }
+.topbar h2 { font-size: 1.25rem; }
+
+/* 9. 全局精美滚动条 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+/* 10. 纯视觉环境光氛围背景 */
+.ambient-bg-glow {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 50% -20%, rgba(56, 189, 248, 0.08), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+.app-shell {
+  position: relative;
+  z-index: 1; /* 保证应用层级在光效之上 */
+}
