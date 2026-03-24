@@ -162,7 +162,7 @@ function rulePopupContent() {
   if (!state.analysis) {
     return `<div class="map-tooltip map-tooltip--rule"><div class="map-tooltip__header"><span class="map-tooltip__eyebrow">Rule View</span><strong class="map-tooltip__title">当前位置未命中区域</strong></div><div class="map-tooltip__empty">点击重叠区域附近，查看各规则域的胜出 Tag。</div></div>`;
   }
-  const summary = `<div class="map-tooltip__summary-chip">命中区域 ${state.analysis.hits.length}</div>`;
+  const summary = `<div class="map-tooltip__summary-chip">命中区域 ${state.analysis.hitRegions.length}</div>`;
   const rows = state.analysis.resolutions.map((resolution) => `
     <div class="map-tooltip__row map-tooltip__row--accent">
       <span class="map-tooltip__label">${escapeHtml(fieldLabel(resolution.tagField))}</span>
