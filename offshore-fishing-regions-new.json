@@ -1,0 +1,498 @@
+{
+  "version": 5,
+  "scene": {
+    "url": "./assets/offshore-chart-fallback.svg",
+    "width": 1600,
+    "height": 900
+  },
+  "options": {
+    "Tags": [
+      "近海",
+      "外海",
+      "深海",
+      "礁石",
+      "沉船",
+      "灯塔",
+      "港口"
+    ],
+    "RegionCategory": [
+      "BaseSeaArea",
+      "PoiInfluenceArea",
+      "EventArea"
+    ]
+  },
+  "schema": {
+    "sections": [
+      {
+        "id": "basic",
+        "title": "基础属性",
+        "fields": [
+          {
+            "key": "RegionId",
+            "label": "RegionId",
+            "type": "text",
+            "source": null
+          },
+          {
+            "key": "Name",
+            "label": "Name",
+            "type": "text",
+            "source": null
+          },
+          {
+            "key": "RegionCategory",
+            "label": "RegionCategory",
+            "type": "select",
+            "source": "RegionCategory"
+          },
+          {
+            "key": "Tags",
+            "label": "Tags",
+            "type": "multiselect",
+            "source": "Tags"
+          },
+          {
+            "key": "Priority",
+            "label": "Priority",
+            "type": "number",
+            "source": null
+          },
+          {
+            "key": "ParentRegionId",
+            "label": "ParentRegionId",
+            "type": "text",
+            "source": null
+          },
+          {
+            "key": "Enabled",
+            "label": "Enabled",
+            "type": "boolean",
+            "source": null
+          },
+          {
+            "key": "EnvironmentTag",
+            "label": "EnvironmentTag",
+            "type": "select",
+            "source": "EnvironmentTag"
+          },
+          {
+            "key": "AccessTag",
+            "label": "AccessTag",
+            "type": "select",
+            "source": "AccessTag"
+          },
+          {
+            "key": "FishingInteractionTag",
+            "label": "FishingInteractionTag",
+            "type": "select",
+            "source": "FishingInteractionTag"
+          },
+          {
+            "key": "NavigationInteractionTag",
+            "label": "NavigationInteractionTag",
+            "type": "select",
+            "source": "NavigationInteractionTag"
+          },
+          {
+            "key": "FishSpawnTag",
+            "label": "FishSpawnTag",
+            "type": "select",
+            "source": "FishSpawnTag"
+          }
+        ]
+      },
+      {
+        "id": "spatial",
+        "title": "空间范围",
+        "fields": [
+          {
+            "key": "GeometryIds",
+            "label": "GeometryIds",
+            "type": "list",
+            "source": null
+          }
+        ]
+      },
+      {
+        "id": "interaction",
+        "title": "交互规则",
+        "fields": [
+          {
+            "key": "AccessProfileId",
+            "label": "AccessProfileId",
+            "type": "text",
+            "source": null
+          },
+          {
+            "key": "FishingInteractionProfileId",
+            "label": "FishingInteractionProfileId",
+            "type": "text",
+            "source": null
+          },
+          {
+            "key": "NavigationInteractionProfileId",
+            "label": "NavigationInteractionProfileId",
+            "type": "text",
+            "source": null
+          },
+          {
+            "key": "EnvironmentProfileId",
+            "label": "EnvironmentProfileId",
+            "type": "text",
+            "source": null
+          }
+        ]
+      },
+      {
+        "id": "output",
+        "title": "产出内容",
+        "fields": [
+          {
+            "key": "FishSpawnProfileId",
+            "label": "FishSpawnProfileId",
+            "type": "text",
+            "source": null
+          }
+        ]
+      },
+      {
+        "id": "support",
+        "title": "辅助",
+        "fields": [
+          {
+            "key": "Description",
+            "label": "Description",
+            "type": "textarea",
+            "source": null
+          }
+        ]
+      }
+    ]
+  },
+  "demoConfig": {
+    "tagEnums": {
+      "EnvironmentTag": [
+        "近海",
+        "远海",
+        "河流",
+        "港口"
+      ],
+      "AccessTag": [
+        "可进入",
+        "限制进入",
+        "禁止进入"
+      ],
+      "FishingInteractionTag": [
+        "河钓",
+        "池钓",
+        "海钓"
+      ],
+      "NavigationInteractionTag": [
+        "可航行",
+        "限制航行",
+        "禁止航行"
+      ],
+      "FishSpawnTag": [
+        "基础鱼池",
+        "特殊鱼池1",
+        "特殊鱼池2"
+      ]
+    },
+    "priorities": {
+      "EnvironmentTag": {
+        "StormEvent": 100,
+        "DeepSeaPressure": 80,
+        "OpenSeaCold": 60,
+        "NearshoreCalm": 40,
+        "远海": 100,
+        "近海": 80,
+        "港口": 60,
+        "河流": 40
+      },
+      "AccessTag": {
+        "EventLockdown": 100,
+        "RestrictedWaters": 80,
+        "PublicRoute": 40,
+        "禁止进入": 100,
+        "限制进入": 80,
+        "可进入": 40
+      },
+      "FishingInteractionTag": {
+        "EventFishingBoost": 100,
+        "ReefFishing": 80,
+        "CoastalCast": 40,
+        "海钓": 100,
+        "河钓": 80,
+        "池钓": 40
+      },
+      "NavigationInteractionTag": {
+        "NoAnchoring": 100,
+        "RockHazard": 80,
+        "SafeNavigation": 40,
+        "禁止航行": 100,
+        "限制航行": 80,
+        "可航行": 40
+      },
+      "FishSpawnTag": {
+        "EventRareSpawn": 100,
+        "ReefHabitat": 80,
+        "CoastalSchool": 40,
+        "特殊鱼池2": 100,
+        "特殊鱼池1": 80,
+        "基础鱼池": 40
+      }
+    }
+  },
+  "ruleProfiles": {
+    "AccessProfile": {},
+    "FishingInteractionProfile": {},
+    "NavigationInteractionProfile": {},
+    "FishSpawnProfile": {},
+    "EnvironmentProfile": {}
+  },
+  "regions": [
+    {
+      "RegionId": "sea-base-001",
+      "Name": "海洋区域1",
+      "RegionCategory": "BaseSeaArea",
+      "Tags": [
+        "深海",
+        "外海"
+      ],
+      "Priority": 20,
+      "Enabled": true,
+      "GeometryIds": [
+        "geom-sea-base-001"
+      ],
+      "EnvironmentTag": "近海",
+      "AccessTag": "可进入",
+      "FishingInteractionTag": "海钓",
+      "NavigationInteractionTag": "可航行",
+      "FishSpawnTag": "基础鱼池",
+      "AccessProfileId": "AccessProfile-1",
+      "FishingInteractionProfileId": "FishingInteractionProfile-1",
+      "NavigationInteractionProfileId": "NavigationInteractionProfile-1",
+      "EnvironmentProfileId": "EnvironmentProfile-1",
+      "FishSpawnProfileId": "FishSpawnProfile-1",
+      "SortOrder": 10,
+      "Description": "基础深海区域，提供默认环境压力与开放通行基线。",
+      "AuraSummary": {
+        "Environment": [
+          "WaveSpeed +2",
+          "Visibility x0.7"
+        ],
+        "Fishing": [
+          "WaitTime x1.0"
+        ],
+        "Navigation": [
+          "可正常通航"
+        ],
+        "FishSpawn": [
+          "基础外海鱼群"
+        ]
+      },
+      "Geometry": {
+        "Type": "Polygon",
+        "Points": [
+          [
+            180,
+            140
+          ],
+          [
+            1360,
+            120
+          ],
+          [
+            1460,
+            740
+          ],
+          [
+            220,
+            800
+          ]
+        ],
+        "Center": [],
+        "Radius": 0
+      },
+      "ParentRegionId": ""
+    },
+    {
+      "RegionId": "sea-poi-reef-001",
+      "Name": "海洋区域2",
+      "RegionCategory": "PoiInfluenceArea",
+      "Tags": [
+        "近海",
+        "礁石"
+      ],
+      "Priority": 60,
+      "Enabled": true,
+      "GeometryIds": [
+        "geom-sea-poi-reef-001"
+      ],
+      "EnvironmentTag": "近海",
+      "AccessTag": "可进入",
+      "FishingInteractionTag": "海钓",
+      "NavigationInteractionTag": "禁止航行",
+      "FishSpawnTag": "特殊鱼池2",
+      "AccessProfileId": "AccessProfile-1",
+      "FishingInteractionProfileId": "FishingInteractionProfile-1",
+      "NavigationInteractionProfileId": "NavigationInteractionProfile-1",
+      "EnvironmentProfileId": "EnvironmentProfile-1",
+      "FishSpawnProfileId": "FishSpawnProfile-1",
+      "SortOrder": 20,
+      "Description": "礁石周边区域，强调危险航行与优质礁群鱼点。",
+      "AuraSummary": {
+        "Environment": [
+          "CurrentNoise +1"
+        ],
+        "Fishing": [
+          "WaitTime x0.8",
+          "HookRate +15%"
+        ],
+        "Navigation": [
+          "转向容错降低"
+        ],
+        "FishSpawn": [
+          "礁群鱼池"
+        ]
+      },
+      "Geometry": {
+        "Type": "Polygon",
+        "Points": [
+          [
+            430,
+            260
+          ],
+          [
+            760,
+            240
+          ],
+          [
+            780,
+            520
+          ],
+          [
+            470,
+            560
+          ]
+        ],
+        "Center": [],
+        "Radius": 0
+      },
+      "ParentRegionId": ""
+    },
+    {
+      "RegionId": "sea-event-001",
+      "Name": "海洋区域3",
+      "RegionCategory": "EventArea",
+      "Tags": [
+        "灯塔"
+      ],
+      "Priority": 90,
+      "Enabled": true,
+      "GeometryIds": [
+        "geom-sea-event-001"
+      ],
+      "EnvironmentTag": "近海",
+      "AccessTag": "禁止进入",
+      "FishingInteractionTag": "海钓",
+      "NavigationInteractionTag": "限制航行",
+      "FishSpawnTag": "特殊鱼池1",
+      "AccessProfileId": "AccessProfile-1",
+      "FishingInteractionProfileId": "FishingInteractionProfile-1",
+      "NavigationInteractionProfileId": "NavigationInteractionProfile-1",
+      "EnvironmentProfileId": "EnvironmentProfile-1",
+      "FishSpawnProfileId": "FishSpawnProfile-1",
+      "SortOrder": 30,
+      "Description": "围绕灯塔生成的限时事件圈，用来演示高优先级事件对多个规则域的接管。",
+      "AuraSummary": {
+        "Environment": [
+          "StormIntensity +3",
+          "Visibility x0.5"
+        ],
+        "Fishing": [
+          "RareChance +40%"
+        ],
+        "Navigation": [
+          "禁止停船"
+        ],
+        "FishSpawn": [
+          "活动鱼池"
+        ]
+      },
+      "Geometry": {
+        "Type": "Circle",
+        "Points": [],
+        "Center": [
+          700,
+          420
+        ],
+        "Radius": 170
+      },
+      "ParentRegionId": ""
+    },
+    {
+      "Geometry": {
+        "Type": "Rectangle",
+        "Points": [
+          [
+            435.25772784657846,
+            459.03394639105034
+          ],
+          [
+            435.25772784657846,
+            646.9286705614803
+          ],
+          [
+            593.3891902268863,
+            646.9286705614803
+          ],
+          [
+            593.3891902268863,
+            459.03394639105034
+          ]
+        ],
+        "Center": [],
+        "Radius": 0
+      },
+      "RegionId": "region-1774262201668-0cc64e",
+      "GeometryIds": [
+        "geom-1774262201668-fef98c"
+      ],
+      "Name": "区域Test1",
+      "RegionCategory": "BaseSeaArea",
+      "Tags": [],
+      "Priority": 0,
+      "Enabled": true,
+      "EnvironmentTag": "近海",
+      "AccessTag": "禁止进入",
+      "FishingInteractionTag": "海钓",
+      "NavigationInteractionTag": "禁止航行",
+      "FishSpawnTag": "基础鱼池",
+      "EnvironmentProfileId": "EnvironmentProfile-1",
+      "AccessProfileId": "AccessProfile-1",
+      "FishingInteractionProfileId": "FishingInteractionProfile-1",
+      "NavigationInteractionProfileId": "NavigationInteractionProfile-1",
+      "FishSpawnProfileId": "FishSpawnProfile-1",
+      "SortOrder": 0,
+      "Description": "",
+      "AuraSummary": {
+        "Environment": [
+          "StormIntensity +5",
+          "Visibility x0.2"
+        ],
+        "Fishing": [
+          "RareChance +70%"
+        ],
+        "Navigation": [
+          "禁止停船"
+        ],
+        "FishSpawn": [
+          "特殊鱼池2"
+        ]
+      },
+      "ParentRegionId": ""
+    }
+  ],
+  "sketchLayers": []
+}
