@@ -302,7 +302,40 @@ const hasStorage = loadStorage(); if (!hasStorage) loadSample(true); ensureFilte
 
 
 
+/* =========================================================
+   UI 遮挡动态修复补丁 (Stacking Context Fixer)
+   ========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+    const fixZIndexOcclusion = () => {
+        // 自动在 DOM 中寻找包含 "当前区域", "可见区域", "分析点" 的 UI 面板
+        const textsToFind =['当前区域', '可见区域', '分析点'];
+        const elements = document.querySelectorAll('div, span, label, p');
+        
+        elements.forEach(el => {
+            const text = el.innerText?.trim();
+            if (textsToFind.some(t => text === t)) {
+                let parent = el.parentElement;
+                // 向上追溯，寻找带有高 z-index 的悬浮父容器
+                for (let i = 0; i < 6; i++) { 
+                    if (!parent || parent === document.body) break;
+                    
+                    const style = window.getComputedStyle(parent);
+                    // 如果发现这个面板的层级异常高（比如 9999），强制将其降至 1000
+                    // 这样 Tooltip (2147483647) 就能轻松浮动在它上面
+                    if ((style.position === 'absolute' || style.position === 'fixed') && parseInt(style.zIndex) > 1000) {
+                        parent.style.setProperty('z-index', '1000', 'important');
+                    }
+                    parent = parent.parentElement;
+                }
+            }
+        });
+    };
 
+    // 监听用户的点击动作（因为点出 Tooltip 或面板通常伴随点击），延迟 50ms 修复层级
+    window.addEventListener('click', () => setTimeout(fixZIndexOcclusion, 50));
+    // 启动低频后台守护（应对动态数据加载渲染的面板），每 1.5 秒检查一次，几乎零性能损耗
+    setInterval(fixZIndexOcclusion, 1500);
+});
 
 
 
