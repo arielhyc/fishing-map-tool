@@ -62,10 +62,6 @@
             <span>RegionCategory（每行一个）</span>
             <textarea id="options-categories" rows="4"></textarea>
           </label>
-          <label class="form-field form-field--full" style="display:none">
-            <span>Tags（兼容占位）</span>
-            <textarea id="options-tags" rows="1"></textarea>
-          </label>
           <label class="form-field form-field--full">
             <span>Tag / Priority 配置 JSON</span>
             <textarea id="demo-config" rows="12" placeholder='{"tagEnums":{...},"priorities":{...}}'></textarea>
@@ -96,10 +92,6 @@
           <span class="panel__meta">Filters</span>
         </div>
         <div class="form-grid">
-          <label class="form-field" style="display:none">
-            <span>Tags</span>
-            <select id="tag-filter-select" multiple size="1"></select>
-          </label>
           <label class="form-field">
             <span>EnvironmentTag</span>
             <select id="environment-filter-select" multiple size="4"></select>
@@ -193,7 +185,6 @@
       <section id="detail-panel" class="panel panel--glow">
         <div class="panel__header">
           <span>区域详情</span>
-        <div id="detail-tags" style="display:none"></div>
           <span id="detail-category" class="panel__meta">None</span>
         </div>
         <h3 id="detail-name">未选择区域</h3>

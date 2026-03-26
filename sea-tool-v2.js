@@ -8,23 +8,54 @@ const RULE_DOMAINS = [
   { id: 'EnvironmentRule', label: 'EnvironmentRule', tagField: 'EnvironmentTag', profileField: 'EnvironmentProfileId', auraKey: 'Environment', summaryKey: 'Environment' },
 ];
 const DEFAULT_OPTIONS = {
-  Tags: ['近海', '外海', '深海', '礁石', '沉船', '灯塔', '港口', '危险', '稀有', '任务'],
   RegionCategory: ['BaseSeaArea', 'PoiInfluenceArea', 'EventArea'],
 };
+/** Maps legacy English tag tokens to Chinese labels (demoConfig + old region data). */
+const LEGACY_EN_TO_ZH = {
+  NearshoreCalm: '近岸平静',
+  OpenSeaCold: '外海冷流',
+  DeepSeaPressure: '深海高压',
+  StormEvent: '风暴事件',
+  PublicRoute: '公开航道',
+  RestrictedWaters: '受限水域',
+  EventLockdown: '事件封锁',
+  CoastalCast: '沿岸抛投',
+  ReefFishing: '礁区钓',
+  EventFishingBoost: '活动钓加成',
+  SafeNavigation: '安全通航',
+  RockHazard: '礁石危险',
+  NoAnchoring: '禁止锚泊',
+  CoastalSchool: '沿岸鱼群',
+  ReefHabitat: '礁区栖息地',
+  EventRareSpawn: '活动稀有鱼池',
+};
+function migrateTagString(value) {
+  const s = String(value == null ? '' : value).trim();
+  if (!s) return '';
+  return LEGACY_EN_TO_ZH[s] || s;
+}
+function parseTagEnumEntry(item) {
+  if (item == null) return '';
+  if (typeof item === 'object') {
+    if (item.zh != null) return String(item.zh).trim();
+    if (item.en != null) return migrateTagString(item.en);
+  }
+  return migrateTagString(item);
+}
 const DEMO_CONFIG = {
   tagEnums: {
-    EnvironmentTag: ['NearshoreCalm', 'OpenSeaCold', 'DeepSeaPressure', 'StormEvent'],
-    AccessTag: ['PublicRoute', 'RestrictedWaters', 'EventLockdown'],
-    FishingInteractionTag: ['CoastalCast', 'ReefFishing', 'EventFishingBoost'],
-    NavigationInteractionTag: ['SafeNavigation', 'RockHazard', 'NoAnchoring'],
-    FishSpawnTag: ['CoastalSchool', 'ReefHabitat', 'EventRareSpawn'],
+    EnvironmentTag: ['河流', '港口', '近海', '远海'],
+    AccessTag: ['可进入', '限制进入', '禁止进入'],
+    FishingInteractionTag: ['池钓', '河钓', '海钓'],
+    NavigationInteractionTag: ['可航行', '限制航行', '禁止航行'],
+    FishSpawnTag: ['基础鱼池', '特殊鱼池1', '特殊鱼池2'],
   },
   priorities: {
-    EnvironmentTag: { StormEvent: 100, DeepSeaPressure: 80, OpenSeaCold: 60, NearshoreCalm: 40 },
-    AccessTag: { EventLockdown: 100, RestrictedWaters: 80, PublicRoute: 40 },
-    FishingInteractionTag: { EventFishingBoost: 100, ReefFishing: 80, CoastalCast: 40 },
-    NavigationInteractionTag: { NoAnchoring: 100, RockHazard: 80, SafeNavigation: 40 },
-    FishSpawnTag: { EventRareSpawn: 100, ReefHabitat: 80, CoastalSchool: 40 },
+    EnvironmentTag: { 远海: 100, 近海: 80, 港口: 60, 河流: 40 },
+    AccessTag: { 禁止进入: 100, 限制进入: 80, 可进入: 40 },
+    FishingInteractionTag: { 海钓: 100, 河钓: 80, 池钓: 40 },
+    NavigationInteractionTag: { 禁止航行: 100, 限制航行: 80, 可航行: 40 },
+    FishSpawnTag: { 特殊鱼池2: 100, 特殊鱼池1: 80, 基础鱼池: 40 },
   },
 };
 const DEFAULT_RULE_PROFILES = {
@@ -43,7 +74,6 @@ const DEFAULT_SCHEMA = {
         { key: 'RegionId', label: 'RegionId', type: 'text' },
         { key: 'Name', label: 'Name', type: 'text' },
         { key: 'Color', label: 'Color', type: 'color' },
-        { key: 'Tags', label: 'Tags', type: 'multiselect', source: 'Tags' },
         { key: 'EnvironmentTag', label: 'EnvironmentTag', type: 'select', source: 'EnvironmentTag' },
         { key: 'AccessTag', label: 'AccessTag', type: 'select', source: 'AccessTag' },
         { key: 'FishingInteractionTag', label: 'FishingInteractionTag', type: 'select', source: 'FishingInteractionTag' },
@@ -71,43 +101,146 @@ const DEFAULT_SCHEMA = {
 };
 const SAMPLE_REGIONS = [
   {
-    RegionId: 'sea-base-001', Name: '北部深海基底区', RegionCategory: 'BaseSeaArea', Tags: ['深海', '外海'], Enabled: true,
-    GeometryIds: ['geom-sea-base-001'], EnvironmentTag: 'DeepSeaPressure', AccessTag: 'PublicRoute', FishingInteractionTag: 'CoastalCast', NavigationInteractionTag: 'SafeNavigation', FishSpawnTag: 'CoastalSchool',
-    AccessProfileId: 'access-public-lane', FishingInteractionProfileId: 'fish-standard-cast', NavigationInteractionProfileId: 'nav-safe-passage', EnvironmentProfileId: 'env-deep-pressure', FishSpawnProfileId: 'spawn-open-ocean',
-    SortOrder: 10, Description: '基础深海区域，提供默认环境压力与开放通行基线。',
-    AuraSummary: { Environment: ['WaveSpeed +2', 'Visibility x0.7'], Fishing: ['WaitTime x1.0'], Navigation: ['可正常通航'], FishSpawn: ['基础外海鱼群'] },
-    Geometry: { Type: 'Polygon', Points: [[180, 140], [1360, 120], [1460, 740], [220, 800]], Center: [], Radius: 0 }
+    "RegionId": "sea-base-001",
+    "Name": "海洋区域1",
+    "GeometryIds": ["geom-sea-base-001"],
+    "EnvironmentTag": "近海",
+    "AccessTag": "可进入",
+    "FishingInteractionTag": "海钓",
+    "NavigationInteractionTag": "可航行",
+    "FishSpawnTag": "基础鱼池",
+    "AccessProfileId": "AccessProfile-1",
+    "FishingInteractionProfileId": "FishingInteractionProfile-1",
+    "NavigationInteractionProfileId": "NavigationInteractionProfile-1",
+    "EnvironmentProfileId": "EnvironmentProfile-1",
+    "FishSpawnProfileId": "FishSpawnProfile-1",
+    "SortOrder": 10,
+    "Description": "基础深海区域，提供默认环境压力与开放通行基线。",
+    "AuraSummary": {
+      "Environment": ["WaveSpeed +2", "Visibility x0.7"],
+      "Fishing": ["WaitTime x1.0"],
+      "Navigation": ["可正常通航"],
+      "FishSpawn": ["基础外海鱼群"]
+    },
+    "Geometry": {
+      "Type": "Polygon",
+      "Points": [
+        [180, 140],
+        [1360, 120],
+        [1460, 740],
+        [220, 800]
+      ],
+      "Center": [],
+      "Radius": 0
+    },
+    "Color": "#3b82f6"
   },
   {
-    RegionId: 'sea-poi-reef-001', Name: '西礁群影响区', RegionCategory: 'PoiInfluenceArea', Tags: ['近海', '礁石', '危险'], Enabled: true,
-    GeometryIds: ['geom-sea-poi-reef-001'], EnvironmentTag: 'NearshoreCalm', AccessTag: 'RestrictedWaters', FishingInteractionTag: 'ReefFishing', NavigationInteractionTag: 'RockHazard', FishSpawnTag: 'ReefHabitat',
-    AccessProfileId: 'access-reef-restricted', FishingInteractionProfileId: 'fish-reef-bonus', NavigationInteractionProfileId: 'nav-rock-hazard', EnvironmentProfileId: 'env-reef-current', FishSpawnProfileId: 'spawn-reef-cluster',
-    SortOrder: 20, Description: '礁石周边区域，强调危险航行与优质礁群鱼点。',
-    AuraSummary: { Environment: ['CurrentNoise +1'], Fishing: ['WaitTime x0.8', 'HookRate +15%'], Navigation: ['转向容错降低'], FishSpawn: ['礁群鱼池'] },
-    Geometry: { Type: 'Polygon', Points: [[430, 260], [760, 240], [780, 520], [470, 560]], Center: [], Radius: 0 }
+    "RegionId": "sea-poi-reef-001",
+    "Name": "海洋区域2",
+    "GeometryIds": ["geom-sea-poi-reef-001"],
+    "EnvironmentTag": "近海",
+    "AccessTag": "可进入",
+    "FishingInteractionTag": "海钓",
+    "NavigationInteractionTag": "禁止航行",
+    "FishSpawnTag": "特殊鱼池2",
+    "AccessProfileId": "AccessProfile-1",
+    "FishingInteractionProfileId": "FishingInteractionProfile-1",
+    "NavigationInteractionProfileId": "NavigationInteractionProfile-1",
+    "EnvironmentProfileId": "EnvironmentProfile-1",
+    "FishSpawnProfileId": "FishSpawnProfile-1",
+    "SortOrder": 20,
+    "Description": "礁石周边区域，强调危险航行与优质礁群鱼点。",
+    "AuraSummary": {
+      "Environment": ["CurrentNoise +1"],
+      "Fishing": ["WaitTime x0.8", "HookRate +15%"],
+      "Navigation": ["转向容错降低"],
+      "FishSpawn": ["礁群鱼池"]
+    },
+    "Geometry": {
+      "Type": "Polygon",
+      "Points": [
+        [430, 260],
+        [760, 240],
+        [780, 520],
+        [470, 560]
+      ],
+      "Center": [],
+      "Radius": 0
+    },
+    "Color": "#22c55e"
   },
   {
-    RegionId: 'sea-event-001', Name: '灯塔活动事件圈', RegionCategory: 'EventArea', Tags: ['灯塔', '任务', '稀有'], Enabled: true,
-    GeometryIds: ['geom-sea-event-001'], EnvironmentTag: 'StormEvent', AccessTag: 'EventLockdown', FishingInteractionTag: 'EventFishingBoost', NavigationInteractionTag: 'NoAnchoring', FishSpawnTag: 'EventRareSpawn',
-    AccessProfileId: 'access-event-lockdown', FishingInteractionProfileId: 'fish-event-boost', NavigationInteractionProfileId: 'nav-no-anchoring', EnvironmentProfileId: 'env-event-storm', FishSpawnProfileId: 'spawn-rare-event',
-    SortOrder: 30, Description: '围绕灯塔生成的限时事件圈，用来演示高优先级事件对多个规则域的接管。',
-    AuraSummary: { Environment: ['StormIntensity +3', 'Visibility x0.5'], Fishing: ['RareChance +40%'], Navigation: ['禁止停船'], FishSpawn: ['活动鱼池'] },
-    Geometry: { Type: 'Circle', Points: [], Center: [700, 420], Radius: 170 }
+    "RegionId": "sea-event-001",
+    "Name": "海洋区域3",
+    "GeometryIds": ["geom-sea-event-001"],
+    "EnvironmentTag": "近海",
+    "AccessTag": "禁止进入",
+    "FishingInteractionTag": "海钓",
+    "NavigationInteractionTag": "限制航行",
+    "FishSpawnTag": "特殊鱼池1",
+    "AccessProfileId": "AccessProfile-1",
+    "FishingInteractionProfileId": "FishingInteractionProfile-1",
+    "NavigationInteractionProfileId": "NavigationInteractionProfile-1",
+    "EnvironmentProfileId": "EnvironmentProfile-1",
+    "FishSpawnProfileId": "FishSpawnProfile-1",
+    "SortOrder": 30,
+    "Description": "围绕灯塔生成的限时事件圈，用来演示高优先级事件对多个规则域的接管。",
+    "AuraSummary": {
+      "Environment": ["StormIntensity +3", "Visibility x0.5"],
+      "Fishing": ["RareChance +40%"],
+      "Navigation": ["禁止停船"],
+      "FishSpawn": ["活动鱼池"]
+    },
+    "Geometry": {
+      "Type": "Circle",
+      "Points": [],
+      "Center": [700, 420],
+      "Radius": 170
+    },
+    "Color": "#ef4444"
   },
   {
-    RegionId: 'sea-access-001', Name: '外侧航道保护带', RegionCategory: 'PoiInfluenceArea', Tags: ['港口', '任务'], Enabled: true,
-    GeometryIds: ['geom-sea-access-001'], EnvironmentTag: 'OpenSeaCold', AccessTag: 'RestrictedWaters', FishingInteractionTag: 'CoastalCast', NavigationInteractionTag: 'SafeNavigation', FishSpawnTag: 'CoastalSchool',
-    AccessProfileId: 'access-controlled-lane', FishingInteractionProfileId: 'fish-standard-cast', NavigationInteractionProfileId: 'nav-guided-lane', EnvironmentProfileId: 'env-cold-open-sea', FishSpawnProfileId: 'spawn-lane-school',
-    SortOrder: 40, Description: '和事件区、礁石区重叠的航道带，用来展示 Access 与 Navigation 规则可由不同区域主导。',
-    AuraSummary: { Environment: ['ColdWater +1'], Fishing: ['WaitTime x1.1'], Navigation: ['航道引导'], FishSpawn: ['常规航道鱼群'] },
-    Geometry: { Type: 'Rectangle', Points: [[620, 220], [1080, 620]], Center: [], Radius: 0 }
+    "Geometry": {
+      "Type": "Rectangle",
+      "Points": [
+        [435.25772784657846, 459.03394639105034],
+        [435.25772784657846, 646.9286705614803],
+        [593.3891902268863, 646.9286705614803],
+        [593.3891902268863, 459.03394639105034]
+      ],
+      "Center": [],
+      "Radius": 0
+    },
+    "RegionId": "region-1774262201668-0cc64e",
+    "GeometryIds": ["geom-1774262201668-fef98c"],
+    "Name": "海洋区域4",
+    "EnvironmentTag": "近海",
+    "AccessTag": "禁止进入",
+    "FishingInteractionTag": "海钓",
+    "NavigationInteractionTag": "禁止航行",
+    "FishSpawnTag": "基础鱼池",
+    "EnvironmentProfileId": "EnvironmentProfile-1",
+    "AccessProfileId": "AccessProfile-1",
+    "FishingInteractionProfileId": "FishingInteractionProfile-1",
+    "NavigationInteractionProfileId": "NavigationInteractionProfile-1",
+    "FishSpawnProfileId": "FishSpawnProfile-1",
+    "SortOrder": 0,
+    "Description": "",
+    "AuraSummary": {
+      "Environment": ["StormIntensity +5", "Visibility x0.2"],
+      "Fishing": ["RareChance +70%"],
+      "Navigation": ["禁止停船"],
+      "FishSpawn": ["特殊鱼池2"]
+    },
+    "Color": "#e13bf7"
   }
 ];
 
-const REMOVED_REGION_FIELD_KEYS = new Set(['RegionCategory', 'Priority', 'ParentRegionId', 'Enabled']);
+const REMOVED_REGION_FIELD_KEYS = new Set(['RegionCategory', 'Priority', 'ParentRegionId', 'Enabled', 'Tags']);
 
-const state = { scene: { ...DEFAULT_SCENE }, options: clone(DEFAULT_OPTIONS), schema: clone(DEFAULT_SCHEMA), demoConfig: clone(DEMO_CONFIG), ruleProfiles: clone(DEFAULT_RULE_PROFILES), regions: [], sketchLayers: [], selectedId: null, selectedLayerKey: null, showUnmatched: true, layers: new Map(), viewMode: 'region', analysisEnabled: true, analysis: null, filters: { tags: new Set(), environment: new Set(), access: new Set(), fishing: new Set(), navigation: new Set(), spawn: new Set() }, brush: { enabled: false, drawing: false, radius: 28, points: [], preview: null }, sketch: { enabled: false, drawing: false, width: 3, points: [], preview: null }, rulePopup: null, topRulePopupPaneName: 'topRulePopupPane', topRulePopupPaneReady: false, rulePopupEl: null, rulePopupLatlng: null, rulePopupMoveHandler: null, topRegionTooltipPaneName: 'topRegionTooltipPane', topRegionTooltipPaneReady: false };
-const els = { mapUpload: document.querySelector('#map-upload'), configUpload: document.querySelector('#config-upload'), exportConfig: document.querySelector('#export-config'), clearStorage: document.querySelector('#clear-storage'), optionsTags: document.querySelector('#options-tags'), optionsCategories: document.querySelector('#options-categories'), demoConfig: document.querySelector('#demo-config'), schemaConfig: document.querySelector('#schema-config'), applyOptions: document.querySelector('#apply-options'), loadSample: document.querySelector('#load-sample'), ruleBindingList: document.querySelector('#rule-binding-list'), priorityBoard: document.querySelector('#priority-board'), tagFilter: document.querySelector('#tag-filter-select'), environmentFilter: document.querySelector('#environment-filter-select'), accessFilter: document.querySelector('#access-filter-select'), fishingFilter: document.querySelector('#fishing-filter-select'), navigationFilter: document.querySelector('#navigation-filter-select'), spawnFilter: document.querySelector('#spawn-filter-select'), resetFilters: document.querySelector('#reset-filters'), toggleUnmatched: document.querySelector('#toggle-unmatched'), layerPanel: document.querySelector('#layer-panel'), regionList: document.querySelector('#region-list'), layerList: document.querySelector('#layer-list'), deleteLayer: document.querySelector('#delete-layer'), activeRegionName: document.querySelector('#active-region-name'), visibleRegionCount: document.querySelector('#visible-region-count'), analysisCoords: document.querySelector('#analysis-coords'), detailPanel: document.querySelector('#detail-panel'), rulePanel: document.querySelector('#rule-panel'), auraPanel: document.querySelector('#aura-panel'), detailCategory: document.querySelector('#detail-category'), detailName: document.querySelector('#detail-name'), detailDescription: document.querySelector('#detail-description'), detailTags: document.querySelector('#detail-tags'), detailSections: document.querySelector('#detail-sections'), analysisSummary: document.querySelector('#analysis-summary'), hitRegionList: document.querySelector('#hit-region-list'), ruleResolutionList: document.querySelector('#rule-resolution-list'), auraGrid: document.querySelector('#aura-grid'), editorPanel: document.querySelector('#editor-panel'), editorSections: document.querySelector('#region-editor-sections'), saveRegion: document.querySelector('#save-region'), resetEditor: document.querySelector('#reset-editor'), deleteRegion: document.querySelector('#delete-region'), viewModeControl: document.querySelector('#view-mode-control') };
+const state = { scene: { ...DEFAULT_SCENE }, options: clone(DEFAULT_OPTIONS), schema: clone(DEFAULT_SCHEMA), demoConfig: clone(DEMO_CONFIG), ruleProfiles: clone(DEFAULT_RULE_PROFILES), regions: [], sketchLayers: [], selectedId: null, selectedLayerKey: null, showUnmatched: true, layers: new Map(), viewMode: 'region', analysisEnabled: true, analysis: null, filters: { environment: new Set(), access: new Set(), fishing: new Set(), navigation: new Set(), spawn: new Set() }, brush: { enabled: false, drawing: false, radius: 28, points: [], preview: null }, sketch: { enabled: false, drawing: false, width: 3, points: [], preview: null }, rulePopup: null, topRulePopupPaneName: 'topRulePopupPane', topRulePopupPaneReady: false, rulePopupEl: null, rulePopupLatlng: null, rulePopupMoveHandler: null, topRegionTooltipPaneName: 'topRegionTooltipPane', topRegionTooltipPaneReady: false };
+const els = { mapUpload: document.querySelector('#map-upload'), configUpload: document.querySelector('#config-upload'), exportConfig: document.querySelector('#export-config'), clearStorage: document.querySelector('#clear-storage'), optionsCategories: document.querySelector('#options-categories'), demoConfig: document.querySelector('#demo-config'), schemaConfig: document.querySelector('#schema-config'), applyOptions: document.querySelector('#apply-options'), loadSample: document.querySelector('#load-sample'), ruleBindingList: document.querySelector('#rule-binding-list'), priorityBoard: document.querySelector('#priority-board'), environmentFilter: document.querySelector('#environment-filter-select'), accessFilter: document.querySelector('#access-filter-select'), fishingFilter: document.querySelector('#fishing-filter-select'), navigationFilter: document.querySelector('#navigation-filter-select'), spawnFilter: document.querySelector('#spawn-filter-select'), resetFilters: document.querySelector('#reset-filters'), toggleUnmatched: document.querySelector('#toggle-unmatched'), layerPanel: document.querySelector('#layer-panel'), regionList: document.querySelector('#region-list'), layerList: document.querySelector('#layer-list'), deleteLayer: document.querySelector('#delete-layer'), activeRegionName: document.querySelector('#active-region-name'), visibleRegionCount: document.querySelector('#visible-region-count'), analysisCoords: document.querySelector('#analysis-coords'), detailPanel: document.querySelector('#detail-panel'), rulePanel: document.querySelector('#rule-panel'), auraPanel: document.querySelector('#aura-panel'), detailCategory: document.querySelector('#detail-category'), detailName: document.querySelector('#detail-name'), detailDescription: document.querySelector('#detail-description'), detailSections: document.querySelector('#detail-sections'), analysisSummary: document.querySelector('#analysis-summary'), hitRegionList: document.querySelector('#hit-region-list'), ruleResolutionList: document.querySelector('#rule-resolution-list'), auraGrid: document.querySelector('#aura-grid'), editorPanel: document.querySelector('#editor-panel'), editorSections: document.querySelector('#region-editor-sections'), saveRegion: document.querySelector('#save-region'), resetEditor: document.querySelector('#reset-editor'), deleteRegion: document.querySelector('#delete-region'), viewModeControl: document.querySelector('#view-mode-control') };
 const map = L.map('map', { crs: L.CRS.Simple, minZoom: -2, maxZoom: 3, zoomSnap: 0.25, attributionControl: false });
 let bounds = [[0, 0], [state.scene.height, state.scene.width]];
 let overlay = L.imageOverlay(state.scene.url, bounds, { interactive: false }).addTo(map);
@@ -140,7 +273,7 @@ function tooltipRow(label, value, accent = false) { return `<div class="map-tool
 function tooltipSection(title, content) { return `<section class="map-tooltip__section"><div class="map-tooltip__section-title">${escapeHtml(title)}</div>${content}</section>`; }
 function regionBaseTooltip(region) {
   const rows = regionBaseFields()
-    .filter((field) => !['Name', 'RegionId', 'Color', 'Tags'].includes(field.key))
+    .filter((field) => !['Name', 'RegionId', 'Color'].includes(field.key))
     .map((field) => tooltipRow(field.label, formatFieldValue(field, region[field.key])))
     .join('');
   return `
@@ -150,7 +283,6 @@ function regionBaseTooltip(region) {
         <strong class="map-tooltip__title">${escapeHtml(region.Name || region.RegionId)}</strong>
         <div class="map-tooltip__meta">${tooltipPills([region.Color || DEFAULT_REGION_COLOR], 'muted')}</div>
       </div>
-      ${tooltipSection('Tags', `<div class="map-tooltip__pills">${tooltipPills(region.Tags)}</div>`) }
       ${tooltipSection('Base Attributes', `<div class="map-tooltip__rows">${tooltipRow('RegionId', region.RegionId || '-')}${rows || tooltipRow('Status', 'No extra fields')}</div>`) }
     </div>`;
 }
@@ -283,8 +415,31 @@ function updateRightPanelVisibility() {
 function loadLocalImage(file, callback) { const reader = new FileReader(); reader.onload = () => callback(reader.result); reader.readAsDataURL(file); }
 function loadTextFile(file, callback) { const reader = new FileReader(); reader.onload = () => callback(reader.result); reader.readAsText(file, 'utf-8'); }
 function normalizeScene(scene) { return { url: scene?.url || DEFAULT_SCENE.url, width: Number(scene?.width) || DEFAULT_SCENE.width, height: Number(scene?.height) || DEFAULT_SCENE.height }; }
-function normalizeOptions(options) { return { Tags: Array.isArray(options?.Tags) ? options.Tags.map(String).filter(Boolean) : clone(DEFAULT_OPTIONS.Tags), RegionCategory: Array.isArray(options?.RegionCategory) ? options.RegionCategory.map(String).filter(Boolean) : clone(DEFAULT_OPTIONS.RegionCategory) }; }
-function normalizeDemoConfig(config) { const base = clone(DEMO_CONFIG); if (!config) return base; Object.keys(base.tagEnums).forEach((key) => { if (Array.isArray(config?.tagEnums?.[key])) base.tagEnums[key] = config.tagEnums[key].map(String); }); Object.keys(base.priorities).forEach((key) => { if (config?.priorities?.[key]) base.priorities[key] = { ...base.priorities[key], ...config.priorities[key] }; }); return base; }
+function normalizeOptions(options) {
+  return {
+    RegionCategory: Array.isArray(options?.RegionCategory) ? options.RegionCategory.map(String).filter(Boolean) : clone(DEFAULT_OPTIONS.RegionCategory),
+  };
+}
+function normalizeDemoConfig(config) {
+  const base = clone(DEMO_CONFIG);
+  if (!config) return base;
+  Object.keys(base.tagEnums).forEach((key) => {
+    if (Array.isArray(config?.tagEnums?.[key])) {
+      base.tagEnums[key] = config.tagEnums[key].map(parseTagEnumEntry).filter(Boolean);
+    }
+  });
+  Object.keys(base.priorities).forEach((key) => {
+    if (config?.priorities?.[key] && typeof config.priorities[key] === 'object') {
+      const next = { ...base.priorities[key] };
+      Object.entries(config.priorities[key]).forEach(([tag, p]) => {
+        const k = migrateTagString(tag);
+        if (k) next[k] = Number(p) || 0;
+      });
+      base.priorities[key] = next;
+    }
+  });
+  return base;
+}
 function normalizeRuleProfiles(config) {
   const base = clone(DEFAULT_RULE_PROFILES);
   if (!config || typeof config !== 'object') return base;
@@ -371,15 +526,13 @@ function normalizeRegion(region) {
       : DEFAULT_REGION_COLOR;
   next.Color = String(derivedColor || DEFAULT_REGION_COLOR);
 
-  next.Tags = Array.isArray(next.Tags) ? next.Tags.map(String).filter(Boolean) : [];
-
   next.GeometryIds = Array.isArray(next.GeometryIds) ? next.GeometryIds.map(String).filter(Boolean) : [];
 
-  next.EnvironmentTag = String(next.EnvironmentTag || getDefaultTag("EnvironmentTag"));
-  next.AccessTag = String(next.AccessTag || getDefaultTag("AccessTag"));
-  next.FishingInteractionTag = String(next.FishingInteractionTag || getDefaultTag("FishingInteractionTag"));
-  next.NavigationInteractionTag = String(next.NavigationInteractionTag || getDefaultTag("NavigationInteractionTag"));
-  next.FishSpawnTag = String(next.FishSpawnTag || getDefaultTag("FishSpawnTag"));
+  next.EnvironmentTag = migrateTagString(next.EnvironmentTag || getDefaultTag("EnvironmentTag"));
+  next.AccessTag = migrateTagString(next.AccessTag || getDefaultTag("AccessTag"));
+  next.FishingInteractionTag = migrateTagString(next.FishingInteractionTag || getDefaultTag("FishingInteractionTag"));
+  next.NavigationInteractionTag = migrateTagString(next.NavigationInteractionTag || getDefaultTag("NavigationInteractionTag"));
+  next.FishSpawnTag = migrateTagString(next.FishSpawnTag || getDefaultTag("FishSpawnTag"));
 
   next.EnvironmentProfileId = String(next.EnvironmentProfileId || "");
   next.AccessProfileId = String(next.AccessProfileId || "");
@@ -403,6 +556,8 @@ function normalizeRegion(region) {
     next[field.key] = normalizeFieldValue(field, next[field.key] !== undefined ? next[field.key] : fieldDefaultValue(field));
   });
 
+  delete next.Tags;
+
   if (!next.GeometryIds.length) next.GeometryIds = [`geom-${next.RegionId}`];
   return next;
 }
@@ -416,6 +571,7 @@ function stripRegionFieldsForExport(region) {
   delete out.Priority;
   delete out.ParentRegionId;
   delete out.Enabled;
+  delete out.Tags;
   return out;
 }
 
@@ -443,11 +599,10 @@ function tagPriority(tagField, tag) { return state.demoConfig.priorities[tagFiel
 function resolveRuleDomain(hitRegions, domain) { const candidates = hitRegions.filter((region) => region[domain.tagField]).map((region) => { const profile = profileForDomain(domain, region[domain.profileField]); return { regionId: region.RegionId, regionName: region.Name || region.RegionId, tag: region[domain.tagField], priority: tagPriority(domain.tagField, region[domain.tagField]), regionPriority: Number(region.Priority || 0), profileId: region[domain.profileField] || '', profileName: profile?.Name || '', aura: resolvedAuraForDomain(domain, region) }; }).sort((a, b) => (b.priority - a.priority) || (b.regionPriority - a.regionPriority) || a.regionName.localeCompare(b.regionName, 'zh-CN')); const winner = candidates[0] || null; return { domainId: domain.id, domainLabel: domain.label, tagField: domain.tagField, profileField: domain.profileField, candidates, winner }; }
 function analyzeAtPoint(xy) { const hitRegions = state.regions.filter((region) => region.Enabled !== false && regionContainsPoint(region, xy)); const resolutions = RULE_DOMAINS.map((domain) => resolveRuleDomain(hitRegions, domain)); const aura = { Environment: [], Fishing: [], Navigation: [], FishSpawn: [] }; resolutions.forEach((resolution) => { if (!resolution.winner) return; if (resolution.domainId === 'EnvironmentRule') aura.Environment = resolution.winner.aura || []; if (resolution.domainId === 'FishingInteractionRule') aura.Fishing = resolution.winner.aura || []; if (resolution.domainId === 'NavigationInteractionRule' || resolution.domainId === 'AccessRule') aura.Navigation = [...new Set([...(aura.Navigation || []), ...(resolution.winner.aura || [])])]; if (resolution.domainId === 'FishSpawnRule') aura.FishSpawn = resolution.winner.aura || []; }); state.analysis = { xy, hitRegions, resolutions, aura }; }
 function regionCenter(region) { if (region.Geometry.Type === 'Circle') return region.Geometry.Center; const xs = region.Geometry.Points.map((point) => point[0]); const ys = region.Geometry.Points.map((point) => point[1]); return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2]; }
-function syncTextareas() { els.optionsTags.value = state.options.Tags.join('\n'); els.optionsCategories.value = state.options.RegionCategory.join('\n'); if (els.demoConfig) els.demoConfig.value = JSON.stringify(state.demoConfig, null, 2); els.schemaConfig.value = JSON.stringify(state.schema, null, 2); els.toggleUnmatched.textContent = state.showUnmatched ? '显示全部' : '仅显示命中'; [...els.viewModeControl.querySelectorAll('button')].forEach((button) => button.classList.toggle('is-active', button.dataset.viewMode === state.viewMode)); }
+function syncTextareas() { els.optionsCategories.value = state.options.RegionCategory.join('\n'); if (els.demoConfig) els.demoConfig.value = JSON.stringify(state.demoConfig, null, 2); els.schemaConfig.value = JSON.stringify(state.schema, null, 2); els.toggleUnmatched.textContent = state.showUnmatched ? '显示全部' : '仅显示命中'; [...els.viewModeControl.querySelectorAll('button')].forEach((button) => button.classList.toggle('is-active', button.dataset.viewMode === state.viewMode)); }
 function setSelectOptions(select, values, selectedSet) { select.innerHTML = values.map((value) => `<option value="${value}">${value}</option>`).join(''); [...select.options].forEach((option) => { option.selected = selectedSet.has(option.value); }); }
 function ensureFilterDefaults(force = false) {
   if (!force) return;
-  state.filters.tags = new Set(state.options.Tags);
   state.filters.environment = new Set(state.demoConfig.tagEnums.EnvironmentTag);
   state.filters.access = new Set(state.demoConfig.tagEnums.AccessTag);
   state.filters.fishing = new Set(state.demoConfig.tagEnums.FishingInteractionTag);
@@ -455,7 +610,6 @@ function ensureFilterDefaults(force = false) {
   state.filters.spawn = new Set(state.demoConfig.tagEnums.FishSpawnTag);
 }
 function syncFilterState() {
-  state.filters.tags = new Set([...els.tagFilter.selectedOptions].map((option) => option.value));
   state.filters.environment = new Set([...els.environmentFilter.selectedOptions].map((option) => option.value));
   state.filters.access = new Set([...els.accessFilter.selectedOptions].map((option) => option.value));
   state.filters.fishing = new Set([...els.fishingFilter.selectedOptions].map((option) => option.value));
@@ -463,7 +617,6 @@ function syncFilterState() {
   state.filters.spawn = new Set([...els.spawnFilter.selectedOptions].map((option) => option.value));
 }
 function renderFilters() {
-  setSelectOptions(els.tagFilter, state.options.Tags, state.filters.tags);
   setSelectOptions(els.environmentFilter, state.demoConfig.tagEnums.EnvironmentTag, state.filters.environment);
   setSelectOptions(els.accessFilter, state.demoConfig.tagEnums.AccessTag, state.filters.access);
   setSelectOptions(els.fishingFilter, state.demoConfig.tagEnums.FishingInteractionTag, state.filters.fishing);
@@ -473,7 +626,6 @@ function renderFilters() {
 function allowFilter(set, allValues, predicate) { if (!allValues.length) return true; if (!set.size) return false; return predicate(); }
 function matchesFilters(region) {
   return (
-    allowFilter(state.filters.tags, state.options.Tags, () => region.Tags.some((tag) => state.filters.tags.has(tag))) &&
     allowFilter(state.filters.environment, state.demoConfig.tagEnums.EnvironmentTag, () => state.filters.environment.has(region.EnvironmentTag)) &&
     allowFilter(state.filters.access, state.demoConfig.tagEnums.AccessTag, () => state.filters.access.has(region.AccessTag)) &&
     allowFilter(state.filters.fishing, state.demoConfig.tagEnums.FishingInteractionTag, () => state.filters.fishing.has(region.FishingInteractionTag)) &&
@@ -526,7 +678,6 @@ function updateDetail(region) {
     els.detailCategory.textContent = 'None';
     els.detailName.textContent = '未选择区域';
     els.detailDescription.textContent = '点击一个区域后，这里会按五类分区显示字段、规则映射和 Aura 摘要。';
-    els.detailTags.innerHTML = '';
     els.detailSections.innerHTML = '';
     return;
   }
@@ -534,7 +685,6 @@ function updateDetail(region) {
   els.detailCategory.textContent = region.Color || DEFAULT_REGION_COLOR;
   els.detailName.textContent = region.Name || region.RegionId;
   els.detailDescription.textContent = region.Description || '暂无备注。';
-  els.detailTags.innerHTML = (Array.isArray(region.Tags) ? region.Tags : []).map((tag) => `<span class="detail-tag">${escapeHtml(tag)}</span>`).join('');
   const schemaSections = state.schema.sections.map((section) => {
     const fields = (section.fields || []).map((field) => `<div class="info-item"><span class="info-item__label">${escapeHtml(field.label)}</span><strong>${escapeHtml(formatFieldValue(field, region[field.key]))}</strong></div>`).join('');
     return `<section class="schema-section"><div class="panel__header"><span>${escapeHtml(section.title)}</span><span class="panel__meta">${escapeHtml(section.id)}</span></div><div class="detail-grid">${fields || '<div class="empty-state">无字段</div>'}</div></section>`;
@@ -547,7 +697,7 @@ function updateDetail(region) {
   const auraSection = `<section class="schema-section"><div class="panel__header"><span>Aura 摘要区</span><span class="panel__meta">Aura</span></div><div class="detail-grid">${RULE_DOMAINS.map((domain) => `<div class="info-item"><span class="info-item__label">${escapeHtml(domain.label)}</span><strong>${escapeHtml((resolvedAuraForDomain(domain, region) || []).join(' / ') || '-')}</strong></div>`).join('')}</div></section>`;
   els.detailSections.innerHTML = `${schemaSections.join('')}${mappingSection}${auraSection}`;
 }
-function fieldOptions(field) { if (field.source === 'Tags') return state.options.Tags; if (field.source === 'RegionCategory') return state.options.RegionCategory; if (field.source && state.demoConfig.tagEnums[field.source]) return state.demoConfig.tagEnums[field.source]; return []; }
+function fieldOptions(field) { if (field.source === 'RegionCategory') return state.options.RegionCategory; if (field.source && state.demoConfig.tagEnums[field.source]) return state.demoConfig.tagEnums[field.source]; return []; }
 function controlFor(field, value) {
   let control;
   const options = fieldOptions(field);
@@ -604,7 +754,7 @@ function renderRegionList(visibleRegions) {
   }
   els.regionList.innerHTML = visibleRegions
     .map(
-      (region) => `<button type="button" class="region-card${region.RegionId === state.selectedId ? ' is-active' : ''}" data-region-id="${region.RegionId}"><span><strong>${region.Name || region.RegionId}</strong><span class="region-card__meta">${region.Color || DEFAULT_REGION_COLOR}</span></span><span class="panel__meta">${region.Tags.join('/') || '-'}</span></button>`
+      (region) => `<button type="button" class="region-card${region.RegionId === state.selectedId ? ' is-active' : ''}" data-region-id="${region.RegionId}"><span><strong>${region.Name || region.RegionId}</strong><span class="region-card__meta">${region.Color || DEFAULT_REGION_COLOR}</span></span><span class="panel__meta">${formatTagSummary(region)}</span></button>`
     )
     .join('');
   [...els.regionList.querySelectorAll('[data-region-id]')].forEach((button) => button.addEventListener('click', () => selectRegion(button.dataset.regionId, true)));
@@ -772,12 +922,12 @@ map.on('mouseout', () => { if (state.sketch.drawing) endSketch(); if (state.brus
 map.on('click', (event) => { if (!state.analysisEnabled || state.brush.enabled || state.sketch.enabled) return; analyzeAtPoint([event.latlng.lng, event.latlng.lat]); renderAll(); if (state.viewMode === 'rule') openRulePopup(event.latlng); else closeRulePopup(); });
 
 els.mapUpload.addEventListener('change', (event) => { const file = event.target.files?.[0]; if (!file) return; loadLocalImage(file, (result) => { const image = new Image(); image.onload = () => setScene(result, image.width, image.height); image.src = result; }); });
-els.applyOptions.addEventListener('click', () => { state.options = { Tags: listText(els.optionsTags.value), RegionCategory: listText(els.optionsCategories.value) }; try { state.demoConfig = normalizeDemoConfig(JSON.parse(els.demoConfig.value)); state.schema = normalizeSchema(JSON.parse(els.schemaConfig.value)); } catch (error) { console.error(error); els.detailCategory.textContent = 'Error'; els.detailName.textContent = 'Schema / Tag 配置解析失败'; els.detailDescription.textContent = '请检查 Tag / Priority 配置 JSON 和 Region Schema JSON。'; return; } state.regions = state.regions.map(normalizeRegion); ensureFilterDefaults(true); saveStorage(); renderAll(); fillEditor(selectedRegion()); });
+els.applyOptions.addEventListener('click', () => { state.options = { RegionCategory: listText(els.optionsCategories.value) }; try { state.demoConfig = normalizeDemoConfig(JSON.parse(els.demoConfig.value)); state.schema = normalizeSchema(JSON.parse(els.schemaConfig.value)); } catch (error) { console.error(error); els.detailCategory.textContent = 'Error'; els.detailName.textContent = 'Schema / Tag 配置解析失败'; els.detailDescription.textContent = '请检查 Tag / Priority 配置 JSON 和 Region Schema JSON。'; return; } state.regions = state.regions.map(normalizeRegion); ensureFilterDefaults(true); saveStorage(); renderAll(); fillEditor(selectedRegion()); });
 els.loadSample.addEventListener('click', () => loadSample(true));
 els.configUpload.addEventListener('change', (event) => { const file = event.target.files?.[0]; if (!file) return; loadTextFile(file, (text) => { try { importConfig(text); els.configUpload.value = ''; } catch (error) { console.error(error); els.detailCategory.textContent = 'Error'; els.detailName.textContent = '导入失败'; els.detailDescription.textContent = 'JSON 解析失败，请检查文件格式。'; } }); });
 els.exportConfig.addEventListener('click', () => { const blob = new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'offshore-fishing-regions.json'; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url); });
 els.clearStorage.addEventListener('click', () => { localStorage.removeItem(STORAGE_KEY); state.scene = { ...DEFAULT_SCENE }; state.options = clone(DEFAULT_OPTIONS); state.schema = clone(DEFAULT_SCHEMA); state.demoConfig = clone(DEMO_CONFIG); state.regions = []; state.sketchLayers = []; state.selectedId = null; state.selectedLayerKey = null; state.analysis = null; state.showUnmatched = true; state.viewMode = 'region'; ensureFilterDefaults(true); setScene(state.scene.url, state.scene.width, state.scene.height, false); fillEditor(null); renderAll(); });
-[els.tagFilter, els.environmentFilter, els.accessFilter, els.fishingFilter, els.navigationFilter, els.spawnFilter].forEach((select) => select.addEventListener('change', () => { syncFilterState(); renderAll(); }));
+[els.environmentFilter, els.accessFilter, els.fishingFilter, els.navigationFilter, els.spawnFilter].forEach((select) => select.addEventListener('change', () => { syncFilterState(); renderAll(); }));
 els.resetFilters.addEventListener('click', () => { ensureFilterDefaults(true); renderAll(); });
 els.toggleUnmatched.addEventListener('click', () => { state.showUnmatched = !state.showUnmatched; renderAll(); });
 [...els.viewModeControl.querySelectorAll('button')].forEach((button) => button.addEventListener('click', () => { state.viewMode = button.dataset.viewMode; if (state.viewMode !== 'rule') closeRulePopup(); saveStorage(); renderAll(); }));

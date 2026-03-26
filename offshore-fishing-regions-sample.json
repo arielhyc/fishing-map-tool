@@ -6,15 +6,6 @@
     "height": 900
   },
   "options": {
-    "Tags": [
-      "近海",
-      "外海",
-      "深海",
-      "礁石",
-      "沉船",
-      "灯塔",
-      "港口"
-    ],
     "RegionCategory": [
       "BaseSeaArea",
       "PoiInfluenceArea",
@@ -40,33 +31,9 @@
             "source": null
           },
           {
-            "key": "RegionCategory",
-            "label": "RegionCategory",
-            "type": "select",
-            "source": "RegionCategory"
-          },
-          {
-            "key": "Tags",
-            "label": "Tags",
-            "type": "multiselect",
-            "source": "Tags"
-          },
-          {
-            "key": "Priority",
-            "label": "Priority",
-            "type": "number",
-            "source": null
-          },
-          {
-            "key": "ParentRegionId",
-            "label": "ParentRegionId",
-            "type": "text",
-            "source": null
-          },
-          {
-            "key": "Enabled",
-            "label": "Enabled",
-            "type": "boolean",
+            "key": "Color",
+            "label": "Color",
+            "type": "color",
             "source": null
           },
           {
@@ -200,43 +167,28 @@
     },
     "priorities": {
       "EnvironmentTag": {
-        "StormEvent": 100,
-        "DeepSeaPressure": 80,
-        "OpenSeaCold": 60,
-        "NearshoreCalm": 40,
         "远海": 100,
         "近海": 80,
         "港口": 60,
         "河流": 40
       },
       "AccessTag": {
-        "EventLockdown": 100,
-        "RestrictedWaters": 80,
-        "PublicRoute": 40,
         "禁止进入": 100,
         "限制进入": 80,
         "可进入": 40
       },
       "FishingInteractionTag": {
-        "EventFishingBoost": 100,
-        "ReefFishing": 80,
-        "CoastalCast": 40,
+        "沿岸抛投": 40,
         "海钓": 100,
         "河钓": 80,
         "池钓": 40
       },
       "NavigationInteractionTag": {
-        "NoAnchoring": 100,
-        "RockHazard": 80,
-        "SafeNavigation": 40,
         "禁止航行": 100,
         "限制航行": 80,
         "可航行": 40
       },
       "FishSpawnTag": {
-        "EventRareSpawn": 100,
-        "ReefHabitat": 80,
-        "CoastalSchool": 40,
         "特殊鱼池2": 100,
         "特殊鱼池1": 80,
         "基础鱼池": 40
@@ -254,13 +206,6 @@
     {
       "RegionId": "sea-base-001",
       "Name": "海洋区域1",
-      "RegionCategory": "BaseSeaArea",
-      "Tags": [
-        "深海",
-        "外海"
-      ],
-      "Priority": 20,
-      "Enabled": true,
       "GeometryIds": [
         "geom-sea-base-001"
       ],
@@ -314,18 +259,11 @@
         "Center": [],
         "Radius": 0
       },
-      "ParentRegionId": ""
+      "Color": "#3b82f6"
     },
     {
       "RegionId": "sea-poi-reef-001",
       "Name": "海洋区域2",
-      "RegionCategory": "PoiInfluenceArea",
-      "Tags": [
-        "近海",
-        "礁石"
-      ],
-      "Priority": 60,
-      "Enabled": true,
       "GeometryIds": [
         "geom-sea-poi-reef-001"
       ],
@@ -379,17 +317,11 @@
         "Center": [],
         "Radius": 0
       },
-      "ParentRegionId": ""
+      "Color": "#22c55e"
     },
     {
       "RegionId": "sea-event-001",
       "Name": "海洋区域3",
-      "RegionCategory": "EventArea",
-      "Tags": [
-        "灯塔"
-      ],
-      "Priority": 90,
-      "Enabled": true,
       "GeometryIds": [
         "geom-sea-event-001"
       ],
@@ -429,7 +361,7 @@
         ],
         "Radius": 170
       },
-      "ParentRegionId": ""
+      "Color": "#ef4444"
     },
     {
       "Geometry": {
@@ -459,11 +391,7 @@
       "GeometryIds": [
         "geom-1774262201668-fef98c"
       ],
-      "Name": "区域Test1",
-      "RegionCategory": "BaseSeaArea",
-      "Tags": [],
-      "Priority": 0,
-      "Enabled": true,
+      "Name": "海洋区域4",
       "EnvironmentTag": "近海",
       "AccessTag": "禁止进入",
       "FishingInteractionTag": "海钓",
@@ -491,7 +419,7 @@
           "特殊鱼池2"
         ]
       },
-      "ParentRegionId": ""
+      "Color": "#e13bf7"
     }
   ],
   "sketchLayers": []
