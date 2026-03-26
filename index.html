@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -101,14 +101,6 @@
             <select id="tag-filter-select" multiple size="1"></select>
           </label>
           <label class="form-field">
-            <span>RegionCategory</span>
-            <select id="category-filter-select" multiple size="4"></select>
-          </label>
-          <label class="form-field">
-            <span>Enabled</span>
-            <select id="enabled-filter-select" multiple size="2"></select>
-          </label>
-          <label class="form-field">
             <span>EnvironmentTag</span>
             <select id="environment-filter-select" multiple size="4"></select>
           </label>
@@ -182,18 +174,7 @@
           </div>
         </div>
 
-        <div class="floating-panel floating-panel--legend">
-          <div class="panel__header">
-            <span>颜色图例</span>
-            <span class="panel__meta">Category</span>
-          </div>
-          <div class="legend">
-            <div><i class="legend-dot legend-dot--base"></i><span>BaseSeaArea</span></div>
-            <div><i class="legend-dot legend-dot--function"></i><span>PoiInfluenceArea</span></div>
-            <div><i class="legend-dot legend-dot--poi"></i><span>EventArea</span></div>
-          </div>
-          <div class="inline-note">Rule View 会强调胜出区域，Aura View 会突出最终生效效果摘要。</div>
-        </div>
+        <!-- 颜色图例在新版里改为使用 Region 基础属性自定义色，不再展示分类图例 -->
       </div>
     </main>
 

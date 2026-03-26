@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --bg: #07131d;
   --panel: rgba(8, 19, 28, 0.82);
   --panel-soft: rgba(12, 29, 42, 0.88);
@@ -73,6 +73,8 @@ body { min-height: 100vh; overflow: hidden; }
 .legend-dot--base { background: #3b82f6; }
 .legend-dot--function { background: #22c55e; }
 .legend-dot--poi { background: #ef4444; }
+
+.layer-color-dot { display: inline-block; width: 12px; height: 12px; border-radius: 999px; border: 1px solid rgba(125, 211, 252, 0.24); vertical-align: middle; }
 .region-card, .analysis-hit-card { display: flex; justify-content: space-between; gap: 12px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(125, 211, 252, 0.12); background: var(--panel-soft); color: var(--text); cursor: pointer; }
 .region-card.is-active, .analysis-hit-card:hover { border-color: rgba(110, 231, 249, 0.4); box-shadow: 0 0 0 1px rgba(110, 231, 249, 0.2) inset; }
 .region-card__meta, .layer-card__type { display: block; margin-top: 4px; color: var(--muted); font-size: 0.76rem; }
@@ -237,6 +239,25 @@ body.view-mode-nonrule #editor-panel { display: block !important; }
 }
 .rule-hover-popup .leaflet-popup-content {
   width: auto !important;
+}
+
+/* Ensure the click-generated Rule popup is always above map floating panels */
+.leaflet-popup.rule-hover-popup,
+.leaflet-popup.rule-hover-popup .leaflet-popup-content-wrapper {
+  z-index: 999999 !important;
+}
+
+/* Region hover/click tooltip (bindTooltip) stacking order insurance */
+.leaflet-tooltip.map-region-tooltip,
+.leaflet-tooltip.map-region-tooltip .leaflet-tooltip-content-wrapper {
+  z-index: 2147483647 !important;
+}
+
+/* Rule popup (click-generated) should always be above UI floating panels */
+.rule-floating-popup {
+  position: fixed;
+  z-index: 99999999 !important;
+  pointer-events: auto;
 }
 .floating-map-tooltip {
   position: fixed;
@@ -646,6 +667,11 @@ canvas.mapboxgl-canvas,
 .leaflet-bottom,
 .mapboxgl-ctrl-top-left {
     z-index: 1000 !important;
+}
+
+/* The left "stats cards" should never cover map-region tooltips */
+.floating-panel--stats {
+  z-index: 1 !important;
 }
 
 /* =========================================================

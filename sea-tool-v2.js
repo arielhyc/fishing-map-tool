@@ -35,16 +35,15 @@ const DEFAULT_RULE_PROFILES = {
   EnvironmentProfile: {},
 };
 const CATEGORY_COLORS = { BaseSeaArea: '#3b82f6', PoiInfluenceArea: '#22c55e', EventArea: '#ef4444' };
-const FILTER_BOOLEAN_OPTIONS = ['Enabled', 'Disabled'];
+const DEFAULT_REGION_COLOR = CATEGORY_COLORS.BaseSeaArea;
 const DEFAULT_SCHEMA = {
   sections: [
     {
       id: 'basic', title: '基础属性', fields: [
         { key: 'RegionId', label: 'RegionId', type: 'text' },
         { key: 'Name', label: 'Name', type: 'text' },
-        { key: 'RegionCategory', label: 'RegionCategory', type: 'select', source: 'RegionCategory' },
+        { key: 'Color', label: 'Color', type: 'color' },
         { key: 'Tags', label: 'Tags', type: 'multiselect', source: 'Tags' },
-        { key: 'Enabled', label: 'Enabled', type: 'boolean' },
         { key: 'EnvironmentTag', label: 'EnvironmentTag', type: 'select', source: 'EnvironmentTag' },
         { key: 'AccessTag', label: 'AccessTag', type: 'select', source: 'AccessTag' },
         { key: 'FishingInteractionTag', label: 'FishingInteractionTag', type: 'select', source: 'FishingInteractionTag' },
@@ -104,15 +103,18 @@ const SAMPLE_REGIONS = [
     Geometry: { Type: 'Rectangle', Points: [[620, 220], [1080, 620]], Center: [], Radius: 0 }
   }
 ];
-const state = { scene: { ...DEFAULT_SCENE }, options: clone(DEFAULT_OPTIONS), schema: clone(DEFAULT_SCHEMA), demoConfig: clone(DEMO_CONFIG), ruleProfiles: clone(DEFAULT_RULE_PROFILES), regions: [], sketchLayers: [], selectedId: null, selectedLayerKey: null, showUnmatched: true, layers: new Map(), viewMode: 'region', analysisEnabled: true, analysis: null, filters: { tags: new Set(), categories: new Set(), enabled: new Set(), environment: new Set(), access: new Set(), fishing: new Set(), navigation: new Set(), spawn: new Set() }, brush: { enabled: false, drawing: false, radius: 28, points: [], preview: null }, sketch: { enabled: false, drawing: false, width: 3, points: [], preview: null }, rulePopup: null };
-const els = { mapUpload: document.querySelector('#map-upload'), configUpload: document.querySelector('#config-upload'), exportConfig: document.querySelector('#export-config'), clearStorage: document.querySelector('#clear-storage'), optionsTags: document.querySelector('#options-tags'), optionsCategories: document.querySelector('#options-categories'), demoConfig: document.querySelector('#demo-config'), schemaConfig: document.querySelector('#schema-config'), applyOptions: document.querySelector('#apply-options'), loadSample: document.querySelector('#load-sample'), ruleBindingList: document.querySelector('#rule-binding-list'), priorityBoard: document.querySelector('#priority-board'), tagFilter: document.querySelector('#tag-filter-select'), categoryFilter: document.querySelector('#category-filter-select'), enabledFilter: document.querySelector('#enabled-filter-select'), environmentFilter: document.querySelector('#environment-filter-select'), accessFilter: document.querySelector('#access-filter-select'), fishingFilter: document.querySelector('#fishing-filter-select'), navigationFilter: document.querySelector('#navigation-filter-select'), spawnFilter: document.querySelector('#spawn-filter-select'), resetFilters: document.querySelector('#reset-filters'), toggleUnmatched: document.querySelector('#toggle-unmatched'), layerPanel: document.querySelector('#layer-panel'), regionList: document.querySelector('#region-list'), layerList: document.querySelector('#layer-list'), deleteLayer: document.querySelector('#delete-layer'), activeRegionName: document.querySelector('#active-region-name'), visibleRegionCount: document.querySelector('#visible-region-count'), analysisCoords: document.querySelector('#analysis-coords'), detailPanel: document.querySelector('#detail-panel'), rulePanel: document.querySelector('#rule-panel'), auraPanel: document.querySelector('#aura-panel'), detailCategory: document.querySelector('#detail-category'), detailName: document.querySelector('#detail-name'), detailDescription: document.querySelector('#detail-description'), detailTags: document.querySelector('#detail-tags'), detailSections: document.querySelector('#detail-sections'), analysisSummary: document.querySelector('#analysis-summary'), hitRegionList: document.querySelector('#hit-region-list'), ruleResolutionList: document.querySelector('#rule-resolution-list'), auraGrid: document.querySelector('#aura-grid'), editorPanel: document.querySelector('#editor-panel'), editorSections: document.querySelector('#region-editor-sections'), saveRegion: document.querySelector('#save-region'), resetEditor: document.querySelector('#reset-editor'), deleteRegion: document.querySelector('#delete-region'), viewModeControl: document.querySelector('#view-mode-control') };
+
+const REMOVED_REGION_FIELD_KEYS = new Set(['RegionCategory', 'Priority', 'ParentRegionId', 'Enabled']);
+
+const state = { scene: { ...DEFAULT_SCENE }, options: clone(DEFAULT_OPTIONS), schema: clone(DEFAULT_SCHEMA), demoConfig: clone(DEMO_CONFIG), ruleProfiles: clone(DEFAULT_RULE_PROFILES), regions: [], sketchLayers: [], selectedId: null, selectedLayerKey: null, showUnmatched: true, layers: new Map(), viewMode: 'region', analysisEnabled: true, analysis: null, filters: { tags: new Set(), environment: new Set(), access: new Set(), fishing: new Set(), navigation: new Set(), spawn: new Set() }, brush: { enabled: false, drawing: false, radius: 28, points: [], preview: null }, sketch: { enabled: false, drawing: false, width: 3, points: [], preview: null }, rulePopup: null, topRulePopupPaneName: 'topRulePopupPane', topRulePopupPaneReady: false, rulePopupEl: null, rulePopupLatlng: null, rulePopupMoveHandler: null, topRegionTooltipPaneName: 'topRegionTooltipPane', topRegionTooltipPaneReady: false };
+const els = { mapUpload: document.querySelector('#map-upload'), configUpload: document.querySelector('#config-upload'), exportConfig: document.querySelector('#export-config'), clearStorage: document.querySelector('#clear-storage'), optionsTags: document.querySelector('#options-tags'), optionsCategories: document.querySelector('#options-categories'), demoConfig: document.querySelector('#demo-config'), schemaConfig: document.querySelector('#schema-config'), applyOptions: document.querySelector('#apply-options'), loadSample: document.querySelector('#load-sample'), ruleBindingList: document.querySelector('#rule-binding-list'), priorityBoard: document.querySelector('#priority-board'), tagFilter: document.querySelector('#tag-filter-select'), environmentFilter: document.querySelector('#environment-filter-select'), accessFilter: document.querySelector('#access-filter-select'), fishingFilter: document.querySelector('#fishing-filter-select'), navigationFilter: document.querySelector('#navigation-filter-select'), spawnFilter: document.querySelector('#spawn-filter-select'), resetFilters: document.querySelector('#reset-filters'), toggleUnmatched: document.querySelector('#toggle-unmatched'), layerPanel: document.querySelector('#layer-panel'), regionList: document.querySelector('#region-list'), layerList: document.querySelector('#layer-list'), deleteLayer: document.querySelector('#delete-layer'), activeRegionName: document.querySelector('#active-region-name'), visibleRegionCount: document.querySelector('#visible-region-count'), analysisCoords: document.querySelector('#analysis-coords'), detailPanel: document.querySelector('#detail-panel'), rulePanel: document.querySelector('#rule-panel'), auraPanel: document.querySelector('#aura-panel'), detailCategory: document.querySelector('#detail-category'), detailName: document.querySelector('#detail-name'), detailDescription: document.querySelector('#detail-description'), detailTags: document.querySelector('#detail-tags'), detailSections: document.querySelector('#detail-sections'), analysisSummary: document.querySelector('#analysis-summary'), hitRegionList: document.querySelector('#hit-region-list'), ruleResolutionList: document.querySelector('#rule-resolution-list'), auraGrid: document.querySelector('#aura-grid'), editorPanel: document.querySelector('#editor-panel'), editorSections: document.querySelector('#region-editor-sections'), saveRegion: document.querySelector('#save-region'), resetEditor: document.querySelector('#reset-editor'), deleteRegion: document.querySelector('#delete-region'), viewModeControl: document.querySelector('#view-mode-control') };
 const map = L.map('map', { crs: L.CRS.Simple, minZoom: -2, maxZoom: 3, zoomSnap: 0.25, attributionControl: false });
 let bounds = [[0, 0], [state.scene.height, state.scene.width]];
 let overlay = L.imageOverlay(state.scene.url, bounds, { interactive: false }).addTo(map);
 const drawnItems = new L.FeatureGroup().addTo(map);
 map.fitBounds(bounds);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
-map.addControl(new L.Control.Draw({ position: 'topleft', draw: { polyline: false, marker: false, circlemarker: false, polygon: { allowIntersection: false, shapeOptions: { color: CATEGORY_COLORS.BaseSeaArea, weight: 2, fillOpacity: 0.28 } }, rectangle: { shapeOptions: { color: CATEGORY_COLORS.PoiInfluenceArea, weight: 2, fillOpacity: 0.28 } }, circle: { shapeOptions: { color: CATEGORY_COLORS.EventArea, weight: 2, fillOpacity: 0.28 } } }, edit: { featureGroup: drawnItems } }));
+map.addControl(new L.Control.Draw({ position: 'topleft', draw: { polyline: false, marker: false, circlemarker: false, polygon: { allowIntersection: false, shapeOptions: { color: DEFAULT_REGION_COLOR, weight: 2, fillOpacity: 0.28 } }, rectangle: { shapeOptions: { color: DEFAULT_REGION_COLOR, weight: 2, fillOpacity: 0.28 } }, circle: { shapeOptions: { color: DEFAULT_REGION_COLOR, weight: 2, fillOpacity: 0.28 } } }, edit: { featureGroup: drawnItems } }));
 function clone(v) { return JSON.parse(JSON.stringify(v)); }
 function uid(prefix) { return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`; }
 function listText(text) { return text.split('\n').map((v) => v.trim()).filter(Boolean); }
@@ -120,7 +122,14 @@ function selectedRegion() { return state.regions.find((region) => region.RegionI
 function allFields() { return state.schema.sections.flatMap((section) => section.fields || []); }
 function schemaField(key) { return allFields().find((field) => field.key === key) || null; }
 function fieldLabel(key) { return schemaField(key)?.label || key; }
-function fieldDefaultValue(field) { if (field.type === 'multiselect' || field.type === 'list') return []; if (field.type === 'boolean') return false; if (field.type === 'number') return 0; if (field.source && state.demoConfig.tagEnums[field.source]?.length) return state.demoConfig.tagEnums[field.source][0]; if (field.source === 'RegionCategory') return state.options.RegionCategory[0] || ''; return ''; }
+function fieldDefaultValue(field) {
+  if (field.key === "Color") return DEFAULT_REGION_COLOR;
+  if (field.type === 'multiselect' || field.type === 'list') return [];
+  if (field.type === 'boolean') return false;
+  if (field.type === 'number') return 0;
+  if (field.source && state.demoConfig.tagEnums[field.source]?.length) return state.demoConfig.tagEnums[field.source][0];
+  return '';
+}
 function normalizeFieldValue(field, value) { if (field.type === 'number') return Number(value || 0); if (field.type === 'boolean') return value !== undefined ? Boolean(value) : false; if (field.type === 'multiselect' || field.type === 'list') return Array.isArray(value) ? value.map(String).filter(Boolean) : []; return value === undefined || value === null ? '' : String(value); }
 function escapeHtml(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;'); }
 function formatFieldValue(field, value) { if (field.type === 'boolean') return value ? 'true' : 'false'; if (field.type === 'multiselect' || field.type === 'list') return Array.isArray(value) && value.length ? value.join(' / ') : '-'; return value === undefined || value === null || value === '' ? '-' : String(value); }
@@ -131,7 +140,7 @@ function tooltipRow(label, value, accent = false) { return `<div class="map-tool
 function tooltipSection(title, content) { return `<section class="map-tooltip__section"><div class="map-tooltip__section-title">${escapeHtml(title)}</div>${content}</section>`; }
 function regionBaseTooltip(region) {
   const rows = regionBaseFields()
-    .filter((field) => !['Name', 'RegionId', 'RegionCategory', 'Tags'].includes(field.key))
+    .filter((field) => !['Name', 'RegionId', 'Color', 'Tags'].includes(field.key))
     .map((field) => tooltipRow(field.label, formatFieldValue(field, region[field.key])))
     .join('');
   return `
@@ -139,7 +148,7 @@ function regionBaseTooltip(region) {
       <div class="map-tooltip__header">
         <span class="map-tooltip__eyebrow">Region View</span>
         <strong class="map-tooltip__title">${escapeHtml(region.Name || region.RegionId)}</strong>
-        <div class="map-tooltip__meta">${tooltipPills([region.RegionCategory || 'Uncategorized'], 'accent')}</div>
+        <div class="map-tooltip__meta">${tooltipPills([region.Color || DEFAULT_REGION_COLOR], 'muted')}</div>
       </div>
       ${tooltipSection('Tags', `<div class="map-tooltip__pills">${tooltipPills(region.Tags)}</div>`) }
       ${tooltipSection('Base Attributes', `<div class="map-tooltip__rows">${tooltipRow('RegionId', region.RegionId || '-')}${rows || tooltipRow('Status', 'No extra fields')}</div>`) }
@@ -152,7 +161,7 @@ function regionAuraTooltip(region) {
       <div class="map-tooltip__header">
         <span class="map-tooltip__eyebrow">Aura View</span>
         <strong class="map-tooltip__title">${escapeHtml(region.Name || region.RegionId)}</strong>
-        <div class="map-tooltip__meta">${tooltipPills([region.RegionCategory || 'Uncategorized'], 'accent')}</div>
+        <div class="map-tooltip__meta">${tooltipPills([region.Color || DEFAULT_REGION_COLOR], 'muted')}</div>
       </div>
       ${auraEntries}
     </div>`;
@@ -178,8 +187,89 @@ function rulePopupContent() {
       <div class="map-tooltip__rows">${rows}</div>
     </div>`;
 }
-function closeRulePopup() { if (state.rulePopup) { map.closePopup(state.rulePopup); state.rulePopup = null; } }
-function openRulePopup(latlng) { closeRulePopup(); state.rulePopup = L.popup({ closeButton: false, autoClose: false, closeOnClick: false, autoPan: false, offset: [0, -16], className: 'rule-hover-popup map-popup-shell' }).setLatLng(latlng).setContent(rulePopupContent()).openOn(map); }
+function closeRulePopup() {
+  if (state.rulePopupMoveHandler) {
+    map.off('move', state.rulePopupMoveHandler);
+    state.rulePopupMoveHandler = null;
+  }
+  state.rulePopupLatlng = null;
+
+  if (state.rulePopupEl) {
+    state.rulePopupEl.remove();
+    state.rulePopupEl = null;
+  }
+
+  // Keep the original Leaflet popup close path (in case older instances still exist).
+  if (state.rulePopup) {
+    map.closePopup(state.rulePopup);
+    state.rulePopup = null;
+  }
+}
+function ensureRulePopupTopPane() {
+  if (state.topRulePopupPaneReady) return;
+  if (!map || typeof map.createPane !== "function" || typeof map.getPane !== "function") {
+    state.topRulePopupPaneReady = true;
+    return;
+  }
+
+  try {
+    map.createPane(state.topRulePopupPaneName);
+    const pane = map.getPane(state.topRulePopupPaneName);
+    if (pane && pane.style) pane.style.zIndex = "99999";
+  } catch (e) {
+    // If pane creation fails (older Leaflet / unexpected), we fallback to regular popup z-index rules.
+  } finally {
+    state.topRulePopupPaneReady = true;
+  }
+}
+
+function ensureRegionTooltipTopPane() {
+  if (state.topRegionTooltipPaneReady) return;
+  if (!map || typeof map.createPane !== "function" || typeof map.getPane !== "function") {
+    state.topRegionTooltipPaneReady = true;
+    return;
+  }
+
+  try {
+    map.createPane(state.topRegionTooltipPaneName);
+    const pane = map.getPane(state.topRegionTooltipPaneName);
+    if (pane && pane.style) pane.style.zIndex = "99999";
+  } catch (e) {
+    // Fallback to CSS z-index rules if pane creation fails.
+  } finally {
+    state.topRegionTooltipPaneReady = true;
+  }
+}
+
+function updateRulePopupPosition() {
+  if (!state.rulePopupEl || !state.rulePopupLatlng) return;
+  const point = map.latLngToContainerPoint(state.rulePopupLatlng);
+  const rect = map.getContainer().getBoundingClientRect();
+
+  // Leaflet popup offset: [0, -16] roughly means "slightly above the click point"
+  const left = rect.left + point.x;
+  const top = rect.top + point.y - 16;
+
+  state.rulePopupEl.style.left = `${Math.round(left)}px`;
+  state.rulePopupEl.style.top = `${Math.round(top)}px`;
+}
+
+function openRulePopup(latlng) {
+  closeRulePopup();
+  ensureRulePopupTopPane(); // Keep the pane logic as a harmless fallback.
+
+  state.rulePopupLatlng = latlng;
+  state.rulePopupEl = document.createElement('div');
+  state.rulePopupEl.className = 'rule-floating-popup';
+  state.rulePopupEl.innerHTML = rulePopupContent();
+  document.body.appendChild(state.rulePopupEl);
+
+  updateRulePopupPosition();
+
+  // Track map movements so the popup stays next to the clicked location.
+  state.rulePopupMoveHandler = () => updateRulePopupPosition();
+  map.on('move', state.rulePopupMoveHandler);
+}
 function updateRightPanelVisibility() {
   const showRule = state.viewMode === 'rule';
   document.body.classList.toggle('view-mode-rule', showRule);
@@ -214,7 +304,43 @@ function normalizeRuleProfiles(config) {
   });
   return base;
 }
-function normalizeSchema(schema) { if (!schema || !Array.isArray(schema.sections) || !schema.sections.length) return clone(DEFAULT_SCHEMA); return { sections: schema.sections.map((section, index) => ({ id: section.id || `section-${index + 1}`, title: section.title || section.id || `Section ${index + 1}`, fields: Array.isArray(section.fields) ? section.fields.map((field, fieldIndex) => ({ key: field.key || `Field${index + 1}_${fieldIndex + 1}`, label: field.label || field.key || `Field ${fieldIndex + 1}`, type: field.type || 'text', source: field.source || null })) : [] })) }; }
+function normalizeSchema(schema) {
+  if (!schema || !Array.isArray(schema.sections) || !schema.sections.length) return clone(DEFAULT_SCHEMA);
+
+  const normalizedSections = schema.sections.map((section, index) => {
+    const secId = section.id || `section-${index + 1}`;
+    const secTitle = section.title || section.id || `Section ${index + 1}`;
+
+    const rawFields = Array.isArray(section.fields) ? section.fields : [];
+    const normalizedFields = rawFields
+      .filter((field) => field && typeof field === "object" && typeof field.key === "string" && !REMOVED_REGION_FIELD_KEYS.has(field.key))
+      .map((field, fieldIndex) => ({
+        key: field.key || `Field${index + 1}_${fieldIndex + 1}`,
+        label: field.label || field.key || `Field ${fieldIndex + 1}`,
+        type: field.type || "text",
+        source: field.source || null,
+      }));
+
+    // Ensure Color exists in "basic" section
+    if (secId === "basic") {
+      const hasColor = normalizedFields.some((f) => f.key === "Color");
+      if (!hasColor) {
+        const colorField = { key: "Color", label: "Color", type: "color", source: null };
+        const nameIdx = normalizedFields.findIndex((f) => f.key === "Name");
+        if (nameIdx >= 0) normalizedFields.splice(nameIdx + 1, 0, colorField);
+        else normalizedFields.push(colorField);
+      } else {
+        normalizedFields.forEach((f) => {
+          if (f.key === "Color") f.type = "color";
+        });
+      }
+    }
+
+    return { id: secId, title: secTitle, fields: normalizedFields };
+  });
+
+  return { sections: normalizedSections };
+}
 function normalizeGeometry(geometry) { if (geometry?.Type === 'Circle') return { Type: 'Circle', Points: [], Center: [Number(geometry.Center?.[0]) || 0, Number(geometry.Center?.[1]) || 0], Radius: Number(geometry.Radius || 0) }; const points = Array.isArray(geometry?.Points) ? geometry.Points.map((point) => [Number(point[0]) || 0, Number(point[1]) || 0]) : []; return { Type: geometry?.Type === 'Rectangle' ? 'Rectangle' : 'Polygon', Points: points, Center: [], Radius: 0 }; }
 function ensureAuraSummary(value) { return { Environment: Array.isArray(value?.Environment) ? value.Environment : [], Fishing: Array.isArray(value?.Fishing) ? value.Fishing : [], Navigation: Array.isArray(value?.Navigation) ? value.Navigation : [], FishSpawn: Array.isArray(value?.FishSpawn) ? value.FishSpawn : [] }; }
 function profileGroupForDomain(domain) { return domain.id.replace('Rule', 'Profile'); }
@@ -229,12 +355,82 @@ function resolvedAuraForDomain(domain, region) {
   return ensureAuraSummary(region?.AuraSummary)[domain.summaryKey] || [];
 }
 function getDefaultTag(field) { return state.demoConfig.tagEnums[field]?.[0] || ''; }
-function normalizeRegion(region) { const next = { ...(region || {}) }; next.RegionId = String(next.RegionId || uid('region')); next.Name = String(next.Name || ''); next.RegionCategory = String(next.RegionCategory || state.options.RegionCategory[0] || DEFAULT_OPTIONS.RegionCategory[0]); next.Tags = Array.isArray(next.Tags) ? next.Tags.map(String).filter(Boolean) : []; next.Priority = Number(next.Priority || 0); next.Enabled = next.Enabled !== undefined ? Boolean(next.Enabled) : true; next.GeometryIds = Array.isArray(next.GeometryIds) ? next.GeometryIds.map(String).filter(Boolean) : []; next.EnvironmentTag = String(next.EnvironmentTag || getDefaultTag('EnvironmentTag')); next.AccessTag = String(next.AccessTag || getDefaultTag('AccessTag')); next.FishingInteractionTag = String(next.FishingInteractionTag || getDefaultTag('FishingInteractionTag')); next.NavigationInteractionTag = String(next.NavigationInteractionTag || getDefaultTag('NavigationInteractionTag')); next.FishSpawnTag = String(next.FishSpawnTag || getDefaultTag('FishSpawnTag')); next.EnvironmentProfileId = String(next.EnvironmentProfileId || ''); next.AccessProfileId = String(next.AccessProfileId || ''); next.FishingInteractionProfileId = String(next.FishingInteractionProfileId || ''); next.NavigationInteractionProfileId = String(next.NavigationInteractionProfileId || ''); next.FishSpawnProfileId = String(next.FishSpawnProfileId || ''); next.SortOrder = Number(next.SortOrder || 0); next.Description = String(next.Description || ''); next.AuraSummary = ensureAuraSummary(next.AuraSummary); next.Geometry = normalizeGeometry(next.Geometry); delete next.ParentRegionId; delete next.LinkedPoiIds; allFields().forEach((field) => { next[field.key] = normalizeFieldValue(field, next[field.key] !== undefined ? next[field.key] : fieldDefaultValue(field)); }); if (!next.GeometryIds.length) next.GeometryIds = [`geom-${next.RegionId}`]; return next; }
+function normalizeRegion(region) {
+  const next = { ...(region || {}) };
+
+  next.RegionId = String(next.RegionId || uid("region"));
+  next.Name = String(next.Name || "");
+
+  // Backward compatibility: if legacy RegionCategory exists and Color is missing, derive Color.
+  const legacyCategory = next.RegionCategory;
+  const derivedColor =
+    typeof next.Color === "string" && next.Color.trim()
+      ? next.Color.trim()
+      : legacyCategory && CATEGORY_COLORS[legacyCategory]
+      ? CATEGORY_COLORS[legacyCategory]
+      : DEFAULT_REGION_COLOR;
+  next.Color = String(derivedColor || DEFAULT_REGION_COLOR);
+
+  next.Tags = Array.isArray(next.Tags) ? next.Tags.map(String).filter(Boolean) : [];
+
+  next.GeometryIds = Array.isArray(next.GeometryIds) ? next.GeometryIds.map(String).filter(Boolean) : [];
+
+  next.EnvironmentTag = String(next.EnvironmentTag || getDefaultTag("EnvironmentTag"));
+  next.AccessTag = String(next.AccessTag || getDefaultTag("AccessTag"));
+  next.FishingInteractionTag = String(next.FishingInteractionTag || getDefaultTag("FishingInteractionTag"));
+  next.NavigationInteractionTag = String(next.NavigationInteractionTag || getDefaultTag("NavigationInteractionTag"));
+  next.FishSpawnTag = String(next.FishSpawnTag || getDefaultTag("FishSpawnTag"));
+
+  next.EnvironmentProfileId = String(next.EnvironmentProfileId || "");
+  next.AccessProfileId = String(next.AccessProfileId || "");
+  next.FishingInteractionProfileId = String(next.FishingInteractionProfileId || "");
+  next.NavigationInteractionProfileId = String(next.NavigationInteractionProfileId || "");
+  next.FishSpawnProfileId = String(next.FishSpawnProfileId || "");
+
+  next.SortOrder = Number(next.SortOrder || 0);
+  next.Description = String(next.Description || "");
+  next.AuraSummary = ensureAuraSummary(next.AuraSummary);
+  next.Geometry = normalizeGeometry(next.Geometry);
+
+  // NOTE:
+  // Keep legacy fields (RegionCategory/Priority/ParentRegionId/Enabled) in region data
+  // to avoid changing rule arbitration behaviour unexpectedly.
+  // They are removed from the UI by normalizeSchema() filtering.
+  delete next.LinkedPoiIds;
+
+  // Normalize according to (possibly customized) schema: includes Color
+  allFields().forEach((field) => {
+    next[field.key] = normalizeFieldValue(field, next[field.key] !== undefined ? next[field.key] : fieldDefaultValue(field));
+  });
+
+  if (!next.GeometryIds.length) next.GeometryIds = [`geom-${next.RegionId}`];
+  return next;
+}
 function normalizeSketchLayer(layer, index) { return { LayerId: String(layer?.LayerId || uid('sketch')), LayerType: 'Sketch', Name: String(layer?.Name || `线稿图层 ${index + 1}`), Geometry: { Type: 'OpenPath', Points: Array.isArray(layer?.Geometry?.Points) ? layer.Geometry.Points.map((point) => [Number(point[0]) || 0, Number(point[1]) || 0]) : [] }, Style: { Color: layer?.Style?.Color || '#ffffff', Weight: Number(layer?.Style?.Weight || 3), DashArray: layer?.Style?.DashArray || '8 6' } }; }
 function saveStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ scene: state.scene, options: state.options, schema: state.schema, demoConfig: state.demoConfig, ruleProfiles: state.ruleProfiles, regions: state.regions, sketchLayers: state.sketchLayers, showUnmatched: state.showUnmatched, viewMode: state.viewMode })); }
 function setScene(url, width, height, persist = true) { state.scene = { url, width, height }; bounds = [[0, 0], [height, width]]; if (overlay) map.removeLayer(overlay); overlay = L.imageOverlay(url, bounds, { interactive: false }).addTo(map); map.fitBounds(bounds); if (persist) saveStorage(); }
 function loadStorage() { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return false; try { const parsed = JSON.parse(raw); state.options = normalizeOptions(parsed.options); state.demoConfig = normalizeDemoConfig(parsed.demoConfig); state.ruleProfiles = normalizeRuleProfiles(parsed.ruleProfiles); state.schema = normalizeSchema(parsed.schema); const scene = normalizeScene(parsed.scene); setScene(scene.url, scene.width, scene.height, false); state.regions = Array.isArray(parsed.regions) ? parsed.regions.map(normalizeRegion) : []; state.sketchLayers = Array.isArray(parsed.sketchLayers) ? parsed.sketchLayers.map(normalizeSketchLayer) : []; state.showUnmatched = parsed.showUnmatched !== undefined ? Boolean(parsed.showUnmatched) : true; state.viewMode = parsed.viewMode || 'region'; return true; } catch (error) { console.error(error); return false; } }
-function exportPayload() { return { version: 5, scene: state.scene, options: state.options, schema: state.schema, demoConfig: state.demoConfig, ruleProfiles: state.ruleProfiles, regions: state.regions, sketchLayers: state.sketchLayers }; }
+function stripRegionFieldsForExport(region) {
+  const out = { ...region };
+  delete out.RegionCategory;
+  delete out.Priority;
+  delete out.ParentRegionId;
+  delete out.Enabled;
+  return out;
+}
+
+function exportPayload() {
+  return {
+    version: 5,
+    scene: state.scene,
+    options: state.options,
+    schema: state.schema,
+    demoConfig: state.demoConfig,
+    ruleProfiles: state.ruleProfiles,
+    regions: state.regions.map(stripRegionFieldsForExport),
+    sketchLayers: state.sketchLayers,
+  };
+}
 function importConfig(text) { const parsed = JSON.parse(text); state.options = normalizeOptions(parsed.options); state.demoConfig = normalizeDemoConfig(parsed.demoConfig); state.ruleProfiles = normalizeRuleProfiles(parsed.ruleProfiles); state.schema = normalizeSchema(parsed.schema); const scene = normalizeScene(parsed.scene); setScene(scene.url, scene.width, scene.height, false); state.regions = (Array.isArray(parsed.regions) ? parsed.regions : []).map(normalizeRegion); state.sketchLayers = (Array.isArray(parsed.sketchLayers) ? parsed.sketchLayers : []).map(normalizeSketchLayer); state.selectedId = null; state.selectedLayerKey = null; state.analysis = null; ensureFilterDefaults(true); syncTextareas(); saveStorage(); fillEditor(null); renderAll(); fitToRenderedLayers(); }
 function loadSample(includeRegions = true) { state.options = clone(DEFAULT_OPTIONS); state.demoConfig = clone(DEMO_CONFIG); state.ruleProfiles = clone(DEFAULT_RULE_PROFILES); state.schema = clone(DEFAULT_SCHEMA); state.regions = includeRegions ? SAMPLE_REGIONS.map(normalizeRegion) : []; state.sketchLayers = []; state.selectedId = null; state.selectedLayerKey = null; state.analysis = null; state.showUnmatched = true; state.viewMode = 'region'; ensureFilterDefaults(true); syncTextareas(); saveStorage(); fillEditor(null); renderAll(); if (includeRegions) fitToRenderedLayers(); }
 function geometryFromLayer(layer) { if (layer instanceof L.Circle) { const center = layer.getLatLng(); return { Type: 'Circle', Points: [], Center: [center.lng, center.lat], Radius: layer.getRadius() }; } return { Type: layer instanceof L.Rectangle ? 'Rectangle' : 'Polygon', Points: (layer.getLatLngs()[0] || []).map((point) => [point.lng, point.lat]), Center: [], Radius: 0 }; }
@@ -245,30 +441,322 @@ function pointInPolygon(point, points) { let inside = false; for (let i = 0, j =
 function regionContainsPoint(region, xy) { if (region.Geometry.Type === 'Circle') { const dx = xy[0] - region.Geometry.Center[0]; const dy = xy[1] - region.Geometry.Center[1]; return Math.hypot(dx, dy) <= region.Geometry.Radius; } return pointInPolygon(xy, region.Geometry.Points); }
 function tagPriority(tagField, tag) { return state.demoConfig.priorities[tagField]?.[tag] || 0; }
 function resolveRuleDomain(hitRegions, domain) { const candidates = hitRegions.filter((region) => region[domain.tagField]).map((region) => { const profile = profileForDomain(domain, region[domain.profileField]); return { regionId: region.RegionId, regionName: region.Name || region.RegionId, tag: region[domain.tagField], priority: tagPriority(domain.tagField, region[domain.tagField]), regionPriority: Number(region.Priority || 0), profileId: region[domain.profileField] || '', profileName: profile?.Name || '', aura: resolvedAuraForDomain(domain, region) }; }).sort((a, b) => (b.priority - a.priority) || (b.regionPriority - a.regionPriority) || a.regionName.localeCompare(b.regionName, 'zh-CN')); const winner = candidates[0] || null; return { domainId: domain.id, domainLabel: domain.label, tagField: domain.tagField, profileField: domain.profileField, candidates, winner }; }
-function analyzeAtPoint(xy) { const hitRegions = state.regions.filter((region) => region.Enabled && regionContainsPoint(region, xy)); const resolutions = RULE_DOMAINS.map((domain) => resolveRuleDomain(hitRegions, domain)); const aura = { Environment: [], Fishing: [], Navigation: [], FishSpawn: [] }; resolutions.forEach((resolution) => { if (!resolution.winner) return; if (resolution.domainId === 'EnvironmentRule') aura.Environment = resolution.winner.aura || []; if (resolution.domainId === 'FishingInteractionRule') aura.Fishing = resolution.winner.aura || []; if (resolution.domainId === 'NavigationInteractionRule' || resolution.domainId === 'AccessRule') aura.Navigation = [...new Set([...(aura.Navigation || []), ...(resolution.winner.aura || [])])]; if (resolution.domainId === 'FishSpawnRule') aura.FishSpawn = resolution.winner.aura || []; }); state.analysis = { xy, hitRegions, resolutions, aura }; }
+function analyzeAtPoint(xy) { const hitRegions = state.regions.filter((region) => region.Enabled !== false && regionContainsPoint(region, xy)); const resolutions = RULE_DOMAINS.map((domain) => resolveRuleDomain(hitRegions, domain)); const aura = { Environment: [], Fishing: [], Navigation: [], FishSpawn: [] }; resolutions.forEach((resolution) => { if (!resolution.winner) return; if (resolution.domainId === 'EnvironmentRule') aura.Environment = resolution.winner.aura || []; if (resolution.domainId === 'FishingInteractionRule') aura.Fishing = resolution.winner.aura || []; if (resolution.domainId === 'NavigationInteractionRule' || resolution.domainId === 'AccessRule') aura.Navigation = [...new Set([...(aura.Navigation || []), ...(resolution.winner.aura || [])])]; if (resolution.domainId === 'FishSpawnRule') aura.FishSpawn = resolution.winner.aura || []; }); state.analysis = { xy, hitRegions, resolutions, aura }; }
 function regionCenter(region) { if (region.Geometry.Type === 'Circle') return region.Geometry.Center; const xs = region.Geometry.Points.map((point) => point[0]); const ys = region.Geometry.Points.map((point) => point[1]); return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2]; }
 function syncTextareas() { els.optionsTags.value = state.options.Tags.join('\n'); els.optionsCategories.value = state.options.RegionCategory.join('\n'); if (els.demoConfig) els.demoConfig.value = JSON.stringify(state.demoConfig, null, 2); els.schemaConfig.value = JSON.stringify(state.schema, null, 2); els.toggleUnmatched.textContent = state.showUnmatched ? '显示全部' : '仅显示命中'; [...els.viewModeControl.querySelectorAll('button')].forEach((button) => button.classList.toggle('is-active', button.dataset.viewMode === state.viewMode)); }
 function setSelectOptions(select, values, selectedSet) { select.innerHTML = values.map((value) => `<option value="${value}">${value}</option>`).join(''); [...select.options].forEach((option) => { option.selected = selectedSet.has(option.value); }); }
-function ensureFilterDefaults(force = false) { if (!force) return; state.filters.tags = new Set(state.options.Tags); state.filters.categories = new Set(state.options.RegionCategory); state.filters.enabled = new Set(FILTER_BOOLEAN_OPTIONS); state.filters.environment = new Set(state.demoConfig.tagEnums.EnvironmentTag); state.filters.access = new Set(state.demoConfig.tagEnums.AccessTag); state.filters.fishing = new Set(state.demoConfig.tagEnums.FishingInteractionTag); state.filters.navigation = new Set(state.demoConfig.tagEnums.NavigationInteractionTag); state.filters.spawn = new Set(state.demoConfig.tagEnums.FishSpawnTag); }
-function syncFilterState() { state.filters.tags = new Set([...els.tagFilter.selectedOptions].map((option) => option.value)); state.filters.categories = new Set([...els.categoryFilter.selectedOptions].map((option) => option.value)); state.filters.enabled = new Set([...els.enabledFilter.selectedOptions].map((option) => option.value)); state.filters.environment = new Set([...els.environmentFilter.selectedOptions].map((option) => option.value)); state.filters.access = new Set([...els.accessFilter.selectedOptions].map((option) => option.value)); state.filters.fishing = new Set([...els.fishingFilter.selectedOptions].map((option) => option.value)); state.filters.navigation = new Set([...els.navigationFilter.selectedOptions].map((option) => option.value)); state.filters.spawn = new Set([...els.spawnFilter.selectedOptions].map((option) => option.value)); }
-function renderFilters() { setSelectOptions(els.tagFilter, state.options.Tags, state.filters.tags); setSelectOptions(els.categoryFilter, state.options.RegionCategory, state.filters.categories); setSelectOptions(els.enabledFilter, FILTER_BOOLEAN_OPTIONS, state.filters.enabled); setSelectOptions(els.environmentFilter, state.demoConfig.tagEnums.EnvironmentTag, state.filters.environment); setSelectOptions(els.accessFilter, state.demoConfig.tagEnums.AccessTag, state.filters.access); setSelectOptions(els.fishingFilter, state.demoConfig.tagEnums.FishingInteractionTag, state.filters.fishing); setSelectOptions(els.navigationFilter, state.demoConfig.tagEnums.NavigationInteractionTag, state.filters.navigation); setSelectOptions(els.spawnFilter, state.demoConfig.tagEnums.FishSpawnTag, state.filters.spawn); }
+function ensureFilterDefaults(force = false) {
+  if (!force) return;
+  state.filters.tags = new Set(state.options.Tags);
+  state.filters.environment = new Set(state.demoConfig.tagEnums.EnvironmentTag);
+  state.filters.access = new Set(state.demoConfig.tagEnums.AccessTag);
+  state.filters.fishing = new Set(state.demoConfig.tagEnums.FishingInteractionTag);
+  state.filters.navigation = new Set(state.demoConfig.tagEnums.NavigationInteractionTag);
+  state.filters.spawn = new Set(state.demoConfig.tagEnums.FishSpawnTag);
+}
+function syncFilterState() {
+  state.filters.tags = new Set([...els.tagFilter.selectedOptions].map((option) => option.value));
+  state.filters.environment = new Set([...els.environmentFilter.selectedOptions].map((option) => option.value));
+  state.filters.access = new Set([...els.accessFilter.selectedOptions].map((option) => option.value));
+  state.filters.fishing = new Set([...els.fishingFilter.selectedOptions].map((option) => option.value));
+  state.filters.navigation = new Set([...els.navigationFilter.selectedOptions].map((option) => option.value));
+  state.filters.spawn = new Set([...els.spawnFilter.selectedOptions].map((option) => option.value));
+}
+function renderFilters() {
+  setSelectOptions(els.tagFilter, state.options.Tags, state.filters.tags);
+  setSelectOptions(els.environmentFilter, state.demoConfig.tagEnums.EnvironmentTag, state.filters.environment);
+  setSelectOptions(els.accessFilter, state.demoConfig.tagEnums.AccessTag, state.filters.access);
+  setSelectOptions(els.fishingFilter, state.demoConfig.tagEnums.FishingInteractionTag, state.filters.fishing);
+  setSelectOptions(els.navigationFilter, state.demoConfig.tagEnums.NavigationInteractionTag, state.filters.navigation);
+  setSelectOptions(els.spawnFilter, state.demoConfig.tagEnums.FishSpawnTag, state.filters.spawn);
+}
 function allowFilter(set, allValues, predicate) { if (!allValues.length) return true; if (!set.size) return false; return predicate(); }
-function matchesFilters(region) { return allowFilter(state.filters.tags, state.options.Tags, () => region.Tags.some((tag) => state.filters.tags.has(tag))) && allowFilter(state.filters.categories, state.options.RegionCategory, () => state.filters.categories.has(region.RegionCategory)) && allowFilter(state.filters.enabled, FILTER_BOOLEAN_OPTIONS, () => state.filters.enabled.has(region.Enabled ? 'Enabled' : 'Disabled')) && allowFilter(state.filters.environment, state.demoConfig.tagEnums.EnvironmentTag, () => state.filters.environment.has(region.EnvironmentTag)) && allowFilter(state.filters.access, state.demoConfig.tagEnums.AccessTag, () => state.filters.access.has(region.AccessTag)) && allowFilter(state.filters.fishing, state.demoConfig.tagEnums.FishingInteractionTag, () => state.filters.fishing.has(region.FishingInteractionTag)) && allowFilter(state.filters.navigation, state.demoConfig.tagEnums.NavigationInteractionTag, () => state.filters.navigation.has(region.NavigationInteractionTag)) && allowFilter(state.filters.spawn, state.demoConfig.tagEnums.FishSpawnTag, () => state.filters.spawn.has(region.FishSpawnTag)); }
+function matchesFilters(region) {
+  return (
+    allowFilter(state.filters.tags, state.options.Tags, () => region.Tags.some((tag) => state.filters.tags.has(tag))) &&
+    allowFilter(state.filters.environment, state.demoConfig.tagEnums.EnvironmentTag, () => state.filters.environment.has(region.EnvironmentTag)) &&
+    allowFilter(state.filters.access, state.demoConfig.tagEnums.AccessTag, () => state.filters.access.has(region.AccessTag)) &&
+    allowFilter(state.filters.fishing, state.demoConfig.tagEnums.FishingInteractionTag, () => state.filters.fishing.has(region.FishingInteractionTag)) &&
+    allowFilter(state.filters.navigation, state.demoConfig.tagEnums.NavigationInteractionTag, () => state.filters.navigation.has(region.NavigationInteractionTag)) &&
+    allowFilter(state.filters.spawn, state.demoConfig.tagEnums.FishSpawnTag, () => state.filters.spawn.has(region.FishSpawnTag))
+  );
+}
 function winnerRegionIds() { if (!state.analysis) return new Set(); return new Set(state.analysis.resolutions.filter((resolution) => resolution.winner).map((resolution) => resolution.winner.regionId)); }
-function styleLayer(layer, region, matched, selected) { const baseColor = CATEGORY_COLORS[region.RegionCategory] || CATEGORY_COLORS.BaseSeaArea; const isWinner = winnerRegionIds().has(region.RegionId); const hit = state.analysis?.hitRegions?.some((item) => item.RegionId === region.RegionId); let color = baseColor; let fillOpacity = matched ? 0.28 : 0.08; let opacity = matched ? 0.96 : 0.18; let weight = selected ? 4 : 2; if (state.viewMode === 'rule') { if (isWinner) { color = '#f9d46b'; fillOpacity = 0.42; opacity = 1; weight = 5; } else if (hit) { color = '#7dd3fc'; fillOpacity = 0.22; opacity = 0.88; } } if (state.viewMode === 'aura') { if (hit) { color = '#6ee7f9'; fillOpacity = 0.36; opacity = 0.98; weight = 4; } if (isWinner) { color = '#fde68a'; fillOpacity = 0.5; opacity = 1; weight = 5; } } layer.setStyle({ color, weight, fillColor: color, fillOpacity, opacity }); }
+function styleLayer(layer, region, matched, selected) {
+  const baseColor = region.Color || DEFAULT_REGION_COLOR;
+  const isWinner = winnerRegionIds().has(region.RegionId);
+  const hit = state.analysis?.hitRegions?.some((item) => item.RegionId === region.RegionId);
+  let color = baseColor;
+  let fillOpacity = matched ? 0.28 : 0.08;
+  let opacity = matched ? 0.96 : 0.18;
+  let weight = selected ? 4 : 2;
+  if (state.viewMode === 'rule') {
+    if (isWinner) {
+      color = '#f9d46b';
+      fillOpacity = 0.42;
+      opacity = 1;
+      weight = 5;
+    } else if (hit) {
+      color = '#7dd3fc';
+      fillOpacity = 0.22;
+      opacity = 0.88;
+    }
+  }
+  if (state.viewMode === 'aura') {
+    if (hit) {
+      color = '#6ee7f9';
+      fillOpacity = 0.36;
+      opacity = 0.98;
+      weight = 4;
+    }
+    if (isWinner) {
+      color = '#fde68a';
+      fillOpacity = 0.5;
+      opacity = 1;
+      weight = 5;
+    }
+  }
+  layer.setStyle({ color, weight, fillColor: color, fillOpacity, opacity });
+}
 function formatTagSummary(region) { return `E:${region.EnvironmentTag} | A:${region.AccessTag} | F:${region.FishingInteractionTag} | N:${region.NavigationInteractionTag} | S:${region.FishSpawnTag}`; }
 function renderRuleConfig() { els.ruleBindingList.innerHTML = RULE_DOMAINS.map((domain) => `<div class="rule-summary-card"><strong>${domain.label}</strong><span>绑定 TagCategory: ${fieldLabel(domain.tagField)}</span><span>输出 Profile: ${fieldLabel(domain.profileField)}</span></div>`).join(''); els.priorityBoard.innerHTML = Object.entries(state.demoConfig.priorities).map(([field, priorityMap]) => { const ordered = Object.entries(priorityMap).sort((a, b) => b[1] - a[1]); return `<section class="priority-card"><div class="panel__header"><span>${fieldLabel(field)}</span><span class="panel__meta">Priority</span></div>${ordered.map(([tag, priority]) => `<div class="priority-row"><span>${tag}</span><strong>${priority}</strong></div>`).join('')}</section>`; }).join(''); }
-function updateDetail(region) { if (!region) { els.activeRegionName.textContent = '未选择'; els.detailCategory.textContent = 'None'; els.detailName.textContent = '未选择区域'; els.detailDescription.textContent = '点击一个区域后，这里会按五类分区显示字段、规则映射和 Aura 摘要。'; els.detailTags.innerHTML = ''; els.detailSections.innerHTML = ''; return; } els.activeRegionName.textContent = region.Name || region.RegionId; els.detailCategory.textContent = region.RegionCategory; els.detailName.textContent = region.Name || region.RegionId; els.detailDescription.textContent = region.Description || '暂无备注。'; els.detailTags.innerHTML = (Array.isArray(region.Tags) ? region.Tags : []).map((tag) => `<span class="detail-tag">${escapeHtml(tag)}</span>`).join(''); const schemaSections = state.schema.sections.map((section) => { const fields = (section.fields || []).map((field) => `<div class="info-item"><span class="info-item__label">${escapeHtml(field.label)}</span><strong>${escapeHtml(formatFieldValue(field, region[field.key]))}</strong></div>`).join(''); return `<section class="schema-section"><div class="panel__header"><span>${escapeHtml(section.title)}</span><span class="panel__meta">${escapeHtml(section.id)}</span></div><div class="detail-grid">${fields || '<div class="empty-state">无字段</div>'}</div></section>`; }); const mappingSection = `<section class="schema-section"><div class="panel__header"><span>规则映射区</span><span class="panel__meta">Profiles</span></div><div class="detail-grid">${RULE_DOMAINS.map((domain) => { const profile = profileForDomain(domain, region[domain.profileField]); const label = profile ? `${profile.ProfileId} / ${profile.Name}` : (region[domain.profileField] || '-'); return `<div class="info-item"><span class="info-item__label">${escapeHtml(domain.label)}</span><strong>${escapeHtml(label)}</strong></div>`; }).join('')}</div></section>`; const auraSection = `<section class="schema-section"><div class="panel__header"><span>Aura 摘要区</span><span class="panel__meta">Aura</span></div><div class="detail-grid">${RULE_DOMAINS.map((domain) => `<div class="info-item"><span class="info-item__label">${escapeHtml(domain.label)}</span><strong>${escapeHtml((resolvedAuraForDomain(domain, region) || []).join(' / ') || '-')}</strong></div>`).join('')}</div></section>`; els.detailSections.innerHTML = `${schemaSections.join('')}${mappingSection}${auraSection}`; }
+function updateDetail(region) {
+  if (!region) {
+    els.activeRegionName.textContent = '未选择';
+    els.detailCategory.textContent = 'None';
+    els.detailName.textContent = '未选择区域';
+    els.detailDescription.textContent = '点击一个区域后，这里会按五类分区显示字段、规则映射和 Aura 摘要。';
+    els.detailTags.innerHTML = '';
+    els.detailSections.innerHTML = '';
+    return;
+  }
+  els.activeRegionName.textContent = region.Name || region.RegionId;
+  els.detailCategory.textContent = region.Color || DEFAULT_REGION_COLOR;
+  els.detailName.textContent = region.Name || region.RegionId;
+  els.detailDescription.textContent = region.Description || '暂无备注。';
+  els.detailTags.innerHTML = (Array.isArray(region.Tags) ? region.Tags : []).map((tag) => `<span class="detail-tag">${escapeHtml(tag)}</span>`).join('');
+  const schemaSections = state.schema.sections.map((section) => {
+    const fields = (section.fields || []).map((field) => `<div class="info-item"><span class="info-item__label">${escapeHtml(field.label)}</span><strong>${escapeHtml(formatFieldValue(field, region[field.key]))}</strong></div>`).join('');
+    return `<section class="schema-section"><div class="panel__header"><span>${escapeHtml(section.title)}</span><span class="panel__meta">${escapeHtml(section.id)}</span></div><div class="detail-grid">${fields || '<div class="empty-state">无字段</div>'}</div></section>`;
+  });
+  const mappingSection = `<section class="schema-section"><div class="panel__header"><span>规则映射区</span><span class="panel__meta">Profiles</span></div><div class="detail-grid">${RULE_DOMAINS.map((domain) => {
+    const profile = profileForDomain(domain, region[domain.profileField]);
+    const label = profile ? `${profile.ProfileId} / ${profile.Name}` : (region[domain.profileField] || '-');
+    return `<div class="info-item"><span class="info-item__label">${escapeHtml(domain.label)}</span><strong>${escapeHtml(label)}</strong></div>`;
+  }).join('')}</div></section>`;
+  const auraSection = `<section class="schema-section"><div class="panel__header"><span>Aura 摘要区</span><span class="panel__meta">Aura</span></div><div class="detail-grid">${RULE_DOMAINS.map((domain) => `<div class="info-item"><span class="info-item__label">${escapeHtml(domain.label)}</span><strong>${escapeHtml((resolvedAuraForDomain(domain, region) || []).join(' / ') || '-')}</strong></div>`).join('')}</div></section>`;
+  els.detailSections.innerHTML = `${schemaSections.join('')}${mappingSection}${auraSection}`;
+}
 function fieldOptions(field) { if (field.source === 'Tags') return state.options.Tags; if (field.source === 'RegionCategory') return state.options.RegionCategory; if (field.source && state.demoConfig.tagEnums[field.source]) return state.demoConfig.tagEnums[field.source]; return []; }
-function controlFor(field, value) { let control; const options = fieldOptions(field); if (field.type === 'textarea') { control = document.createElement('textarea'); control.rows = 4; control.value = value || ''; } else if (field.type === 'number') { control = document.createElement('input'); control.type = 'number'; control.value = Number(value || 0); } else if (field.type === 'boolean') { control = document.createElement('select'); control.innerHTML = '<option value="true">true</option><option value="false">false</option>'; control.value = value ? 'true' : 'false'; } else if (field.type === 'select') { control = document.createElement('select'); control.innerHTML = options.map((option) => `<option value="${option}">${option}</option>`).join(''); control.value = value || options[0] || ''; } else if (field.type === 'multiselect') { control = document.createElement('select'); control.multiple = true; control.size = Math.max(4, Math.min(8, options.length || 4)); control.innerHTML = options.map((option) => `<option value="${option}">${option}</option>`).join(''); [...control.options].forEach((option) => { option.selected = Array.isArray(value) && value.includes(option.value); }); } else if (field.type === 'list') { control = document.createElement('textarea'); control.rows = 4; control.value = Array.isArray(value) ? value.join('\n') : ''; } else { control = document.createElement('input'); control.type = 'text'; control.value = value || ''; } control.dataset.fieldKey = field.key; control.dataset.fieldType = field.type; return control; }
+function controlFor(field, value) {
+  let control;
+  const options = fieldOptions(field);
+
+  if (field.type === 'textarea') {
+    control = document.createElement('textarea');
+    control.rows = 4;
+    control.value = value || '';
+  } else if (field.type === 'number') {
+    control = document.createElement('input');
+    control.type = 'number';
+    control.value = Number(value || 0);
+  } else if (field.type === 'boolean') {
+    control = document.createElement('select');
+    control.innerHTML = '<option value="true">true</option><option value="false">false</option>';
+    control.value = value ? 'true' : 'false';
+  } else if (field.type === 'select') {
+    control = document.createElement('select');
+    control.innerHTML = options.map((option) => `<option value="${option}">${option}</option>`).join('');
+    control.value = value || options[0] || '';
+  } else if (field.type === 'multiselect') {
+    control = document.createElement('select');
+    control.multiple = true;
+    control.size = Math.max(4, Math.min(8, options.length || 4));
+    control.innerHTML = options.map((option) => `<option value="${option}">${option}</option>`).join('');
+    [...control.options].forEach((option) => {
+      option.selected = Array.isArray(value) && value.includes(option.value);
+    });
+  } else if (field.type === 'list') {
+    control = document.createElement('textarea');
+    control.rows = 4;
+    control.value = Array.isArray(value) ? value.join('\n') : '';
+  } else if (field.type === 'color') {
+    control = document.createElement('input');
+    control.type = 'color';
+    control.value = value || DEFAULT_REGION_COLOR;
+  } else {
+    control = document.createElement('input');
+    control.type = 'text';
+    control.value = value || '';
+  }
+
+  control.dataset.fieldKey = field.key;
+  control.dataset.fieldType = field.type;
+  return control;
+}
 function renderEditorSections(region) { const data = region || normalizeRegion({ Geometry: { Type: 'Polygon', Points: [], Center: [], Radius: 0 } }); els.editorSections.innerHTML = state.schema.sections.map((section) => { const fieldsHtml = (section.fields || []).map((field) => { const wrapClass = (field.type === 'textarea' || field.type === 'multiselect' || field.type === 'list') ? 'form-field form-field--full' : 'form-field'; return `<label class="${wrapClass}" data-field-wrap="${field.key}"><span>${field.label}</span></label>`; }).join(''); return `<section class="schema-section"><div class="panel__header"><span>${section.title}</span><span class="panel__meta">${section.id}</span></div><div class="form-grid">${fieldsHtml}${section.id === 'spatial' ? `<label class="form-field form-field--full"><span>GeometryType</span><input type="text" value="${data.Geometry.Type}" readonly></label>` : ''}</div></section>`; }).join(''); state.schema.sections.forEach((section) => { section.fields.forEach((field) => { const wrap = els.editorSections.querySelector(`[data-field-wrap="${field.key}"]`); if (!wrap) return; wrap.appendChild(controlFor(field, data[field.key])); }); }); }
 function fillEditor(region) { state.selectedId = region ? region.RegionId : null; renderEditorSections(region); els.deleteRegion.disabled = !region; updateDetail(region); }
 function readEditorValues() { const out = {}; allFields().forEach((field) => { const input = els.editorSections.querySelector(`[data-field-key="${field.key}"]`); if (!input) return; if (field.type === 'number') out[field.key] = Number(input.value || 0); else if (field.type === 'boolean') out[field.key] = input.value === 'true'; else if (field.type === 'multiselect') out[field.key] = [...input.selectedOptions].map((option) => option.value); else if (field.type === 'list') out[field.key] = listText(input.value); else out[field.key] = input.value.trim(); }); return out; }
-function renderRegionList(visibleRegions) { if (!state.regions.length) { els.regionList.innerHTML = '<div class="empty-state">还没有区域。请先绘制一个区域。</div>'; return; } els.regionList.innerHTML = visibleRegions.map((region) => `<button type="button" class="region-card${region.RegionId === state.selectedId ? ' is-active' : ''}" data-region-id="${region.RegionId}"><span><strong>${region.Name || region.RegionId}</strong><span class="region-card__meta">${region.RegionCategory} | ${region.Enabled ? 'Enabled' : 'Disabled'}</span></span><span class="panel__meta">${region.Tags.join('/') || '-'}</span></button>`).join(''); [...els.regionList.querySelectorAll('[data-region-id]')].forEach((button) => button.addEventListener('click', () => selectRegion(button.dataset.regionId, true))); }
-function renderLayerList() { const items = [...state.regions.map((region) => ({ key: `region:${region.RegionId}`, title: region.Name || region.RegionId, meta: `${region.Geometry.Type} | ${region.RegionCategory}`, click: () => selectRegion(region.RegionId, true) })), ...state.sketchLayers.map((layer) => ({ key: `sketch:${layer.LayerId}`, title: layer.Name, meta: `${layer.Geometry.Type} | width ${layer.Style.Weight}`, click: () => { state.selectedLayerKey = `sketch:${layer.LayerId}`; renderLayerList(); } }))]; if (!items.length) { els.layerList.innerHTML = '<div class="empty-state">还没有图层。</div>'; return; } els.layerList.innerHTML = items.map((item) => `<button type="button" class="region-card${item.key === state.selectedLayerKey ? ' is-active' : ''}" data-layer-key="${item.key}"><span><strong>${item.title}</strong><span class="layer-card__type">${item.meta}</span></span></button>`).join(''); [...els.layerList.querySelectorAll('[data-layer-key]')].forEach((button, index) => button.addEventListener('click', items[index].click)); }
-function renderAnalysisPanels() { if (!state.analysis) { els.analysisSummary.innerHTML = '<div class="empty-state">点击地图任意点，查看命中的 Region 与规则仲裁结果。</div>'; els.hitRegionList.innerHTML = '<div class="empty-state">等待选择分析点。</div>'; els.ruleResolutionList.innerHTML = '<div class="empty-state">Rule Resolution 会在这里显示各 RuleDomain 的胜出结果。</div>'; els.auraGrid.innerHTML = '<div class="empty-state">Aura View 会在这里展示最终效果摘要。</div>'; return; } const { xy, hitRegions, resolutions, aura } = state.analysis; els.analysisCoords.textContent = `${Math.round(xy[0])}, ${Math.round(xy[1])}`; els.analysisSummary.innerHTML = `<div class="analysis-card"><strong>命中区域 ${hitRegions.length}</strong><span>分析点坐标：${Math.round(xy[0])}, ${Math.round(xy[1])}</span><span>当前视图：${state.viewMode}</span></div>`; els.hitRegionList.innerHTML = hitRegions.length ? hitRegions.map((region) => `<button type="button" class="analysis-hit-card" data-hit-region="${region.RegionId}"><strong>${region.Name || region.RegionId}</strong><span>${region.RegionCategory}</span><small>${formatTagSummary(region)}</small></button>`).join('') : '<div class="empty-state">该点没有命中任何启用中的 Region。</div>'; [...els.hitRegionList.querySelectorAll('[data-hit-region]')].forEach((button) => button.addEventListener('click', () => selectRegion(button.dataset.hitRegion, true))); els.ruleResolutionList.innerHTML = resolutions.map((resolution) => { const candidateRows = resolution.candidates.length ? resolution.candidates.map((candidate) => `<div class="candidate-row${resolution.winner?.regionId === candidate.regionId ? ' is-winner' : ''}"><span>${candidate.regionName}</span><span>${candidate.tag}</span><strong>P${candidate.priority}</strong></div>`).join('') : '<div class="empty-state">无候选 Region</div>'; const winner = resolution.winner; const profileLabel = winner?.profileName ? `${winner.profileId} / ${winner.profileName}` : (winner?.profileId || '-'); return `<section class="resolution-card"><div class="panel__header"><span>${resolution.domainLabel}</span><span class="panel__meta">${fieldLabel(resolution.tagField)}</span></div><div class="candidate-list">${candidateRows}</div><div class="resolution-result"><span>Winning Region</span><strong>${winner?.regionName || '-'}</strong><span>Winning Tag</span><strong>${winner?.tag || '-'}</strong><span>Resolved Profile</span><strong>${profileLabel}</strong><span>Aura Summary</span><strong>${winner?.aura?.join(' / ') || '-'}</strong></div></section>`; }).join(''); els.auraGrid.innerHTML = Object.entries(aura).map(([key, values]) => `<section class="aura-card"><div class="panel__header"><span>${key} Aura</span><span class="panel__meta">Aura</span></div><div class="aura-lines">${(values || []).length ? values.map((value) => `<span>${value}</span>`).join('') : '<span>-</span>'}</div></section>`).join(''); }
+function renderRegionList(visibleRegions) {
+  if (!state.regions.length) {
+    els.regionList.innerHTML = '<div class="empty-state">还没有区域。请先绘制一个区域。</div>';
+    return;
+  }
+  els.regionList.innerHTML = visibleRegions
+    .map(
+      (region) => `<button type="button" class="region-card${region.RegionId === state.selectedId ? ' is-active' : ''}" data-region-id="${region.RegionId}"><span><strong>${region.Name || region.RegionId}</strong><span class="region-card__meta">${region.Color || DEFAULT_REGION_COLOR}</span></span><span class="panel__meta">${region.Tags.join('/') || '-'}</span></button>`
+    )
+    .join('');
+  [...els.regionList.querySelectorAll('[data-region-id]')].forEach((button) => button.addEventListener('click', () => selectRegion(button.dataset.regionId, true)));
+}
+function renderLayerList() {
+  const regionItems = state.regions.map((region) => ({
+    key: `region:${region.RegionId}`,
+    title: region.Name || region.RegionId,
+    meta: `<span class="layer-color-dot" style="background:${region.Color || DEFAULT_REGION_COLOR}"></span>`,
+    click: () => selectRegion(region.RegionId, true),
+  }));
+
+  const sketchItems = state.sketchLayers.map((layer) => ({
+    key: `sketch:${layer.LayerId}`,
+    title: layer.Name,
+    meta: `<span class="layer-color-dot" style="background:${layer.Style?.Color || '#ffffff'}"></span>`,
+    click: () => {
+      state.selectedLayerKey = `sketch:${layer.LayerId}`;
+      renderLayerList();
+    },
+  }));
+
+  const items = [...regionItems, ...sketchItems];
+
+  if (!items.length) {
+    els.layerList.innerHTML = '<div class="empty-state">还没有图层。</div>';
+    return;
+  }
+
+  els.layerList.innerHTML = items
+    .map(
+      (item) =>
+        `<button type="button" class="region-card${item.key === state.selectedLayerKey ? ' is-active' : ''}" data-layer-key="${item.key}"><span><strong>${item.title}</strong><span class="layer-card__type">${item.meta}</span></span></button>`
+    )
+    .join('');
+
+  [...els.layerList.querySelectorAll('[data-layer-key]')].forEach((button, index) => button.addEventListener('click', items[index].click));
+}
+function renderAnalysisPanels() {
+  if (!state.analysis) {
+    els.analysisSummary.innerHTML = '<div class="empty-state">点击地图任意点，查看命中的 Region 与规则仲裁结果。</div>';
+    els.hitRegionList.innerHTML = '<div class="empty-state">等待选择分析点。</div>';
+    els.ruleResolutionList.innerHTML = '<div class="empty-state">Rule Resolution 会在这里显示各 RuleDomain 的胜出结果。</div>';
+    els.auraGrid.innerHTML = '<div class="empty-state">Aura View 会在这里展示最终效果摘要。</div>';
+    return;
+  }
+
+  const { xy, hitRegions, resolutions, aura } = state.analysis;
+  els.analysisCoords.textContent = `${Math.round(xy[0])}, ${Math.round(xy[1])}`;
+  els.analysisSummary.innerHTML = `<div class="analysis-card"><strong>命中区域 ${hitRegions.length}</strong><span>分析点坐标：${Math.round(xy[0])}, ${Math.round(xy[1])}</span><span>当前视图：${state.viewMode}</span></div>`;
+  els.hitRegionList.innerHTML = hitRegions.length
+    ? hitRegions
+        .map(
+          (region) =>
+            `<button type="button" class="analysis-hit-card" data-hit-region="${region.RegionId}"><strong>${region.Name || region.RegionId}</strong><span>${region.Color || DEFAULT_REGION_COLOR}</span><small>${formatTagSummary(region)}</small></button>`
+        )
+        .join('')
+    : '<div class="empty-state">该点没有命中任何启用中的 Region。</div>';
+
+  [...els.hitRegionList.querySelectorAll('[data-hit-region]')].forEach((button) => button.addEventListener('click', () => selectRegion(button.dataset.hitRegion, true)));
+
+  els.ruleResolutionList.innerHTML = resolutions
+    .map((resolution) => {
+      const candidateRows = resolution.candidates.length
+        ? resolution.candidates
+            .map(
+              (candidate) =>
+                `<div class="candidate-row${resolution.winner?.regionId === candidate.regionId ? ' is-winner' : ''}"><span>${candidate.regionName}</span><span>${candidate.tag}</span><strong>P${candidate.priority}</strong></div>`
+            )
+            .join('')
+        : '<div class="empty-state">无候选 Region</div>';
+
+      const winner = resolution.winner;
+      const profileLabel = winner?.profileName ? `${winner.profileId} / ${winner.profileName}` : (winner?.profileId || '-');
+
+      return `<section class="resolution-card"><div class="panel__header"><span>${resolution.domainLabel}</span><span class="panel__meta">${fieldLabel(resolution.tagField)}</span></div><div class="candidate-list">${candidateRows}</div><div class="resolution-result"><span>Winning Region</span><strong>${winner?.regionName || '-'}</strong><span>Winning Tag</span><strong>${winner?.tag || '-'}</strong><span>Resolved Profile</span><strong>${profileLabel}</strong><span>Aura Summary</span><strong>${winner?.aura?.join(' / ') || '-'}</strong></div></section>`;
+    })
+    .join('');
+
+  els.auraGrid.innerHTML = Object.entries(aura)
+    .map(
+      ([key, values]) =>
+        `<section class="aura-card"><div class="panel__header"><span>${key} Aura</span><span class="panel__meta">Aura</span></div><div class="aura-lines">${(values || []).length ? values.map((value) => `<span>${value}</span>`).join('') : '<span>-</span>'}</div></section>`
+    )
+    .join('');
+}
 function selectRegion(regionId, fit = false) { state.selectedId = regionId; state.selectedLayerKey = `region:${regionId}`; const region = selectedRegion(); fillEditor(region); if (region) analyzeAtPoint(regionCenter(region)); closeRulePopup(); renderRegions(); const layer = state.layers.get(`region:${regionId}`); if (fit && layer?.getBounds) map.fitBounds(layer.getBounds(), { padding: [40, 40] }); }
-function renderRegions() { drawnItems.clearLayers(); state.layers.clear(); const visible = []; state.regions.forEach((region) => { const matched = matchesFilters(region); const selected = region.RegionId === state.selectedId; if (matched) visible.push(region); if (matched || state.showUnmatched) { const layer = layerFromRegion(region); layer.__regionId = region.RegionId; layer.__layerKey = `region:${region.RegionId}`; styleLayer(layer, region, matched, selected); if (state.viewMode !== 'rule') layer.bindTooltip(tooltipContentForRegion(region), { sticky: true, direction: 'top', opacity: 1, className: 'map-region-tooltip' }); layer.on('click', (event) => { if (state.viewMode === 'rule') { analyzeAtPoint([event.latlng.lng, event.latlng.lat]); renderAll(); openRulePopup(event.latlng); return; } selectRegion(region.RegionId, false); }); drawnItems.addLayer(layer); state.layers.set(layer.__layerKey, layer); } }); state.sketchLayers.forEach((item) => { const layer = L.polyline(item.Geometry.Points.map((point) => [point[1], point[0]]), { color: item.Style.Color, weight: item.Style.Weight, dashArray: item.Style.DashArray, opacity: 0.95 }); layer.__layerKey = `sketch:${item.LayerId}`; layer.bindTooltip(item.Name, { sticky: true }); layer.on('click', () => { state.selectedLayerKey = layer.__layerKey; renderLayerList(); }); drawnItems.addLayer(layer); state.layers.set(layer.__layerKey, layer); }); els.visibleRegionCount.textContent = String(visible.length); renderRegionList(visible); renderLayerList(); updateDetail(selectedRegion()); renderAnalysisPanels(); }
+function renderRegions() {
+  ensureRegionTooltipTopPane();
+  drawnItems.clearLayers();
+  state.layers.clear();
+  const visible = [];
+
+  state.regions.forEach((region) => {
+    const matched = matchesFilters(region);
+    const selected = region.RegionId === state.selectedId;
+    if (matched) visible.push(region);
+
+    if (matched || state.showUnmatched) {
+      const layer = layerFromRegion(region);
+      layer.__regionId = region.RegionId;
+      layer.__layerKey = `region:${region.RegionId}`;
+      styleLayer(layer, region, matched, selected);
+
+      if (state.viewMode !== 'rule') {
+        layer.bindTooltip(tooltipContentForRegion(region), {
+          sticky: true,
+          direction: 'top',
+          opacity: 1,
+          className: 'map-region-tooltip',
+          pane: state.topRegionTooltipPaneName,
+        });
+      }
+
+      layer.on('click', (event) => {
+        if (state.viewMode === 'rule') {
+          analyzeAtPoint([event.latlng.lng, event.latlng.lat]);
+          renderAll();
+          openRulePopup(event.latlng);
+          return;
+        }
+        selectRegion(region.RegionId, false);
+      });
+
+      drawnItems.addLayer(layer);
+      state.layers.set(layer.__layerKey, layer);
+    }
+  });
+
+  state.sketchLayers.forEach((item) => {
+    const layer = L.polyline(item.Geometry.Points.map((point) => [point[1], point[0]]), {
+      color: item.Style.Color,
+      weight: item.Style.Weight,
+      dashArray: item.Style.DashArray,
+      opacity: 0.95,
+    });
+    layer.__layerKey = `sketch:${item.LayerId}`;
+    layer.bindTooltip(item.Name, { sticky: true });
+    layer.on('click', () => {
+      state.selectedLayerKey = layer.__layerKey;
+      renderLayerList();
+    });
+    drawnItems.addLayer(layer);
+    state.layers.set(layer.__layerKey, layer);
+  });
+
+  els.visibleRegionCount.textContent = String(visible.length);
+  renderRegionList(visible);
+  renderLayerList();
+  updateDetail(selectedRegion());
+  renderAnalysisPanels();
+}
 function renderAll() { updateRightPanelVisibility(); renderRuleConfig(); renderFilters(); renderRegions(); syncTextareas(); }
 function fitToRenderedLayers() { const layers = [...state.layers.values()].filter((layer) => typeof layer.getBounds === 'function'); if (!layers.length) { map.fitBounds(bounds); return; } map.fitBounds(L.featureGroup(layers).getBounds(), { padding: [40, 40] }); }
 function createRegion(geometry) { const region = normalizeRegion({ Geometry: geometry, RegionId: uid('region'), GeometryIds: [uid('geom')] }); state.regions.push(region); state.selectedId = region.RegionId; state.selectedLayerKey = `region:${region.RegionId}`; analyzeAtPoint(regionCenter(region)); saveStorage(); renderAll(); fillEditor(region); }
@@ -289,7 +777,7 @@ els.loadSample.addEventListener('click', () => loadSample(true));
 els.configUpload.addEventListener('change', (event) => { const file = event.target.files?.[0]; if (!file) return; loadTextFile(file, (text) => { try { importConfig(text); els.configUpload.value = ''; } catch (error) { console.error(error); els.detailCategory.textContent = 'Error'; els.detailName.textContent = '导入失败'; els.detailDescription.textContent = 'JSON 解析失败，请检查文件格式。'; } }); });
 els.exportConfig.addEventListener('click', () => { const blob = new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'offshore-fishing-regions.json'; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url); });
 els.clearStorage.addEventListener('click', () => { localStorage.removeItem(STORAGE_KEY); state.scene = { ...DEFAULT_SCENE }; state.options = clone(DEFAULT_OPTIONS); state.schema = clone(DEFAULT_SCHEMA); state.demoConfig = clone(DEMO_CONFIG); state.regions = []; state.sketchLayers = []; state.selectedId = null; state.selectedLayerKey = null; state.analysis = null; state.showUnmatched = true; state.viewMode = 'region'; ensureFilterDefaults(true); setScene(state.scene.url, state.scene.width, state.scene.height, false); fillEditor(null); renderAll(); });
-[els.tagFilter, els.categoryFilter, els.enabledFilter, els.environmentFilter, els.accessFilter, els.fishingFilter, els.navigationFilter, els.spawnFilter].forEach((select) => select.addEventListener('change', () => { syncFilterState(); renderAll(); }));
+[els.tagFilter, els.environmentFilter, els.accessFilter, els.fishingFilter, els.navigationFilter, els.spawnFilter].forEach((select) => select.addEventListener('change', () => { syncFilterState(); renderAll(); }));
 els.resetFilters.addEventListener('click', () => { ensureFilterDefaults(true); renderAll(); });
 els.toggleUnmatched.addEventListener('click', () => { state.showUnmatched = !state.showUnmatched; renderAll(); });
 [...els.viewModeControl.querySelectorAll('button')].forEach((button) => button.addEventListener('click', () => { state.viewMode = button.dataset.viewMode; if (state.viewMode !== 'rule') closeRulePopup(); saveStorage(); renderAll(); }));
