@@ -240,7 +240,7 @@ const SAMPLE_REGIONS = [
 const REMOVED_REGION_FIELD_KEYS = new Set(['RegionCategory', 'Priority', 'ParentRegionId', 'Enabled', 'Tags']);
 
 const state = { scene: { ...DEFAULT_SCENE }, options: clone(DEFAULT_OPTIONS), schema: clone(DEFAULT_SCHEMA), demoConfig: clone(DEMO_CONFIG), ruleProfiles: clone(DEFAULT_RULE_PROFILES), regions: [], sketchLayers: [], selectedId: null, selectedLayerKey: null, showUnmatched: true, layers: new Map(), viewMode: 'region', analysisEnabled: true, analysis: null, filters: { environment: new Set(), access: new Set(), fishing: new Set(), navigation: new Set(), spawn: new Set() }, brush: { enabled: false, drawing: false, radius: 28, points: [], preview: null }, sketch: { enabled: false, drawing: false, width: 3, points: [], preview: null }, rulePopup: null, topRulePopupPaneName: 'topRulePopupPane', topRulePopupPaneReady: false, rulePopupEl: null, rulePopupLatlng: null, rulePopupMoveHandler: null, topRegionTooltipPaneName: 'topRegionTooltipPane', topRegionTooltipPaneReady: false };
-const els = { mapUpload: document.querySelector('#map-upload'), configUpload: document.querySelector('#config-upload'), exportConfig: document.querySelector('#export-config'), clearStorage: document.querySelector('#clear-storage'), optionsCategories: document.querySelector('#options-categories'), demoConfig: document.querySelector('#demo-config'), schemaConfig: document.querySelector('#schema-config'), applyOptions: document.querySelector('#apply-options'), loadSample: document.querySelector('#load-sample'), ruleBindingList: document.querySelector('#rule-binding-list'), priorityBoard: document.querySelector('#priority-board'), environmentFilter: document.querySelector('#environment-filter-select'), accessFilter: document.querySelector('#access-filter-select'), fishingFilter: document.querySelector('#fishing-filter-select'), navigationFilter: document.querySelector('#navigation-filter-select'), spawnFilter: document.querySelector('#spawn-filter-select'), resetFilters: document.querySelector('#reset-filters'), toggleUnmatched: document.querySelector('#toggle-unmatched'), layerPanel: document.querySelector('#layer-panel'), regionList: document.querySelector('#region-list'), layerList: document.querySelector('#layer-list'), deleteLayer: document.querySelector('#delete-layer'), activeRegionName: document.querySelector('#active-region-name'), visibleRegionCount: document.querySelector('#visible-region-count'), analysisCoords: document.querySelector('#analysis-coords'), detailPanel: document.querySelector('#detail-panel'), rulePanel: document.querySelector('#rule-panel'), auraPanel: document.querySelector('#aura-panel'), detailCategory: document.querySelector('#detail-category'), detailName: document.querySelector('#detail-name'), detailDescription: document.querySelector('#detail-description'), detailSections: document.querySelector('#detail-sections'), analysisSummary: document.querySelector('#analysis-summary'), hitRegionList: document.querySelector('#hit-region-list'), ruleResolutionList: document.querySelector('#rule-resolution-list'), auraGrid: document.querySelector('#aura-grid'), editorPanel: document.querySelector('#editor-panel'), editorSections: document.querySelector('#region-editor-sections'), saveRegion: document.querySelector('#save-region'), resetEditor: document.querySelector('#reset-editor'), deleteRegion: document.querySelector('#delete-region'), viewModeControl: document.querySelector('#view-mode-control') };
+const els = { mapUpload: document.querySelector('#map-upload'), configUpload: document.querySelector('#config-upload'), exportConfig: document.querySelector('#export-config'), clearStorage: document.querySelector('#clear-storage'), optionsCategories: document.querySelector('#options-categories'), demoConfig: document.querySelector('#demo-config'), schemaConfig: document.querySelector('#schema-config'), applyOptions: document.querySelector('#apply-options'), loadSample: document.querySelector('#load-sample'), ruleBindingList: document.querySelector('#rule-binding-list'), priorityBoard: document.querySelector('#priority-board'), filterBar: document.querySelector('#filter-bar'), resetFilters: document.querySelector('#reset-filters'), toggleUnmatched: document.querySelector('#toggle-unmatched'), layerPanel: document.querySelector('#layer-panel'), regionList: document.querySelector('#region-list'), layerList: document.querySelector('#layer-list'), deleteLayer: document.querySelector('#delete-layer'), activeRegionName: document.querySelector('#active-region-name'), visibleRegionCount: document.querySelector('#visible-region-count'), analysisCoords: document.querySelector('#analysis-coords'), detailPanel: document.querySelector('#detail-panel'), rulePanel: document.querySelector('#rule-panel'), auraPanel: document.querySelector('#aura-panel'), detailCategory: document.querySelector('#detail-category'), detailName: document.querySelector('#detail-name'), detailDescription: document.querySelector('#detail-description'), detailSections: document.querySelector('#detail-sections'), analysisSummary: document.querySelector('#analysis-summary'), hitRegionList: document.querySelector('#hit-region-list'), ruleResolutionList: document.querySelector('#rule-resolution-list'), auraGrid: document.querySelector('#aura-grid'), editorPanel: document.querySelector('#editor-panel'), editorSections: document.querySelector('#region-editor-sections'), saveRegion: document.querySelector('#save-region'), resetEditor: document.querySelector('#reset-editor'), deleteRegion: document.querySelector('#delete-region'), viewModeControl: document.querySelector('#view-mode-control') };
 const map = L.map('map', { crs: L.CRS.Simple, minZoom: -2, maxZoom: 3, zoomSnap: 0.25, attributionControl: false });
 let bounds = [[0, 0], [state.scene.height, state.scene.width]];
 let overlay = L.imageOverlay(state.scene.url, bounds, { interactive: false }).addTo(map);
@@ -599,8 +599,7 @@ function tagPriority(tagField, tag) { return state.demoConfig.priorities[tagFiel
 function resolveRuleDomain(hitRegions, domain) { const candidates = hitRegions.filter((region) => region[domain.tagField]).map((region) => { const profile = profileForDomain(domain, region[domain.profileField]); return { regionId: region.RegionId, regionName: region.Name || region.RegionId, tag: region[domain.tagField], priority: tagPriority(domain.tagField, region[domain.tagField]), regionPriority: Number(region.Priority || 0), profileId: region[domain.profileField] || '', profileName: profile?.Name || '', aura: resolvedAuraForDomain(domain, region) }; }).sort((a, b) => (b.priority - a.priority) || (b.regionPriority - a.regionPriority) || a.regionName.localeCompare(b.regionName, 'zh-CN')); const winner = candidates[0] || null; return { domainId: domain.id, domainLabel: domain.label, tagField: domain.tagField, profileField: domain.profileField, candidates, winner }; }
 function analyzeAtPoint(xy) { const hitRegions = state.regions.filter((region) => region.Enabled !== false && regionContainsPoint(region, xy)); const resolutions = RULE_DOMAINS.map((domain) => resolveRuleDomain(hitRegions, domain)); const aura = { Environment: [], Fishing: [], Navigation: [], FishSpawn: [] }; resolutions.forEach((resolution) => { if (!resolution.winner) return; if (resolution.domainId === 'EnvironmentRule') aura.Environment = resolution.winner.aura || []; if (resolution.domainId === 'FishingInteractionRule') aura.Fishing = resolution.winner.aura || []; if (resolution.domainId === 'NavigationInteractionRule' || resolution.domainId === 'AccessRule') aura.Navigation = [...new Set([...(aura.Navigation || []), ...(resolution.winner.aura || [])])]; if (resolution.domainId === 'FishSpawnRule') aura.FishSpawn = resolution.winner.aura || []; }); state.analysis = { xy, hitRegions, resolutions, aura }; }
 function regionCenter(region) { if (region.Geometry.Type === 'Circle') return region.Geometry.Center; const xs = region.Geometry.Points.map((point) => point[0]); const ys = region.Geometry.Points.map((point) => point[1]); return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2]; }
-function syncTextareas() { els.optionsCategories.value = state.options.RegionCategory.join('\n'); if (els.demoConfig) els.demoConfig.value = JSON.stringify(state.demoConfig, null, 2); els.schemaConfig.value = JSON.stringify(state.schema, null, 2); els.toggleUnmatched.textContent = state.showUnmatched ? '显示全部' : '仅显示命中'; [...els.viewModeControl.querySelectorAll('button')].forEach((button) => button.classList.toggle('is-active', button.dataset.viewMode === state.viewMode)); }
-function setSelectOptions(select, values, selectedSet) { select.innerHTML = values.map((value) => `<option value="${value}">${value}</option>`).join(''); [...select.options].forEach((option) => { option.selected = selectedSet.has(option.value); }); }
+function syncTextareas() { els.optionsCategories.value = state.options.RegionCategory.join('\n'); if (els.demoConfig) els.demoConfig.value = JSON.stringify(state.demoConfig, null, 2); els.schemaConfig.value = JSON.stringify(state.schema, null, 2); [...els.viewModeControl.querySelectorAll('button')].forEach((button) => button.classList.toggle('is-active', button.dataset.viewMode === state.viewMode)); }
 function ensureFilterDefaults(force = false) {
   if (!force) return;
   state.filters.environment = new Set(state.demoConfig.tagEnums.EnvironmentTag);
@@ -609,19 +608,82 @@ function ensureFilterDefaults(force = false) {
   state.filters.navigation = new Set(state.demoConfig.tagEnums.NavigationInteractionTag);
   state.filters.spawn = new Set(state.demoConfig.tagEnums.FishSpawnTag);
 }
-function syncFilterState() {
-  state.filters.environment = new Set([...els.environmentFilter.selectedOptions].map((option) => option.value));
-  state.filters.access = new Set([...els.accessFilter.selectedOptions].map((option) => option.value));
-  state.filters.fishing = new Set([...els.fishingFilter.selectedOptions].map((option) => option.value));
-  state.filters.navigation = new Set([...els.navigationFilter.selectedOptions].map((option) => option.value));
-  state.filters.spawn = new Set([...els.spawnFilter.selectedOptions].map((option) => option.value));
+const FILTER_DEFS = [
+  { key: "environment", label: "EnvironmentTag", enumKey: "EnvironmentTag" },
+  { key: "access", label: "AccessTag", enumKey: "AccessTag" },
+  { key: "fishing", label: "FishingInteractionTag", enumKey: "FishingInteractionTag" },
+  { key: "navigation", label: "NavigationInteractionTag", enumKey: "NavigationInteractionTag" },
+  { key: "spawn", label: "FishSpawnTag", enumKey: "FishSpawnTag" },
+];
+function closeAllFilterDropdowns() {
+  if (!els.filterBar) return;
+  [...els.filterBar.querySelectorAll(".filter-dropdown.is-open")].forEach((el) => el.classList.remove("is-open"));
 }
 function renderFilters() {
-  setSelectOptions(els.environmentFilter, state.demoConfig.tagEnums.EnvironmentTag, state.filters.environment);
-  setSelectOptions(els.accessFilter, state.demoConfig.tagEnums.AccessTag, state.filters.access);
-  setSelectOptions(els.fishingFilter, state.demoConfig.tagEnums.FishingInteractionTag, state.filters.fishing);
-  setSelectOptions(els.navigationFilter, state.demoConfig.tagEnums.NavigationInteractionTag, state.filters.navigation);
-  setSelectOptions(els.spawnFilter, state.demoConfig.tagEnums.FishSpawnTag, state.filters.spawn);
+  if (!els.filterBar) return;
+
+  const spacer = els.filterBar.querySelector(".filter-bar__spacer");
+  if (!spacer) return;
+
+  // Remove old dropdowns (keep spacer + buttons)
+  [...els.filterBar.querySelectorAll(".filter-dropdown")].forEach((node) => node.remove());
+
+  const frag = document.createDocumentFragment();
+  FILTER_DEFS.forEach((def) => {
+    const values = state.demoConfig.tagEnums[def.enumKey] || [];
+    const set = state.filters[def.key] || new Set();
+    const selectedCount = set.size;
+    const totalCount = values.length;
+
+    const wrap = document.createElement("div");
+    wrap.className = "filter-dropdown";
+    wrap.dataset.filterKey = def.key;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "filter-dropdown__button";
+    btn.innerHTML = `<span>${escapeHtml(def.label)}</span><span class="filter-dropdown__meta">${selectedCount}/${totalCount || 0}</span>`;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = wrap.classList.contains("is-open");
+      closeAllFilterDropdowns();
+      wrap.classList.toggle("is-open", !isOpen);
+    });
+
+    const panel = document.createElement("div");
+    panel.className = "filter-dropdown__panel";
+    panel.addEventListener("click", (e) => e.stopPropagation());
+
+    panel.innerHTML = values
+      .map((value) => {
+        const checked = set.has(value) ? "checked" : "";
+        const safeValue = escapeHtml(value);
+        return `<label class="filter-option"><input type="checkbox" data-filter="${def.key}" value="${safeValue}" ${checked}><span class="filter-option__label">${safeValue}</span></label>`;
+      })
+      .join("");
+
+    panel.querySelectorAll('input[type="checkbox"][data-filter]').forEach((input) => {
+      input.addEventListener("change", () => {
+        const k = input.dataset.filter;
+        const v = input.value;
+        if (!state.filters[k]) state.filters[k] = new Set();
+        if (input.checked) state.filters[k].add(v);
+        else state.filters[k].delete(v);
+        // Keep dropdown open while selecting (Excel-like).
+        // Avoid renderAll() because it re-renders filter UI and would close the dropdown.
+        const nextCount = state.filters[def.key]?.size || 0;
+        const meta = btn.querySelector(".filter-dropdown__meta");
+        if (meta) meta.textContent = `${nextCount}/${totalCount || 0}`;
+        renderRegions();
+      });
+    });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(panel);
+    frag.appendChild(wrap);
+  });
+
+  els.filterBar.insertBefore(frag, spacer);
 }
 function allowFilter(set, allValues, predicate) { if (!allValues.length) return true; if (!set.size) return false; return predicate(); }
 function matchesFilters(region) {
@@ -927,9 +989,9 @@ els.loadSample.addEventListener('click', () => loadSample(true));
 els.configUpload.addEventListener('change', (event) => { const file = event.target.files?.[0]; if (!file) return; loadTextFile(file, (text) => { try { importConfig(text); els.configUpload.value = ''; } catch (error) { console.error(error); els.detailCategory.textContent = 'Error'; els.detailName.textContent = '导入失败'; els.detailDescription.textContent = 'JSON 解析失败，请检查文件格式。'; } }); });
 els.exportConfig.addEventListener('click', () => { const blob = new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'offshore-fishing-regions.json'; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url); });
 els.clearStorage.addEventListener('click', () => { localStorage.removeItem(STORAGE_KEY); state.scene = { ...DEFAULT_SCENE }; state.options = clone(DEFAULT_OPTIONS); state.schema = clone(DEFAULT_SCHEMA); state.demoConfig = clone(DEMO_CONFIG); state.regions = []; state.sketchLayers = []; state.selectedId = null; state.selectedLayerKey = null; state.analysis = null; state.showUnmatched = true; state.viewMode = 'region'; ensureFilterDefaults(true); setScene(state.scene.url, state.scene.width, state.scene.height, false); fillEditor(null); renderAll(); });
-[els.environmentFilter, els.accessFilter, els.fishingFilter, els.navigationFilter, els.spawnFilter].forEach((select) => select.addEventListener('change', () => { syncFilterState(); renderAll(); }));
-els.resetFilters.addEventListener('click', () => { ensureFilterDefaults(true); renderAll(); });
-els.toggleUnmatched.addEventListener('click', () => { state.showUnmatched = !state.showUnmatched; renderAll(); });
+document.addEventListener("click", () => closeAllFilterDropdowns());
+els.resetFilters.addEventListener('click', () => { Object.keys(state.filters).forEach((k) => state.filters[k] = new Set()); renderAll(); });
+els.toggleUnmatched.addEventListener('click', () => { ensureFilterDefaults(true); renderAll(); });
 [...els.viewModeControl.querySelectorAll('button')].forEach((button) => button.addEventListener('click', () => { state.viewMode = button.dataset.viewMode; if (state.viewMode !== 'rule') closeRulePopup(); saveStorage(); renderAll(); }));
 els.saveRegion.addEventListener('click', () => { const region = selectedRegion(); if (!region) { els.detailDescription.textContent = '请先绘制一个区域，再填写右侧表单。'; return; } const previousId = region.RegionId; Object.assign(region, readEditorValues()); region.RegionId = region.RegionId || previousId || uid('region'); if (!region.GeometryIds.length) region.GeometryIds = [`geom-${region.RegionId}`]; region.AuraSummary = ensureAuraSummary(region.AuraSummary); state.selectedId = region.RegionId; state.selectedLayerKey = `region:${region.RegionId}`; saveStorage(); renderAll(); fillEditor(region); });
 els.resetEditor.addEventListener('click', () => fillEditor(selectedRegion()));

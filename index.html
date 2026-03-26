@@ -88,39 +88,6 @@
 
       <section class="panel">
         <div class="panel__header">
-          <span>筛选面板</span>
-          <span class="panel__meta">Filters</span>
-        </div>
-        <div class="form-grid">
-          <label class="form-field">
-            <span>EnvironmentTag</span>
-            <select id="environment-filter-select" multiple size="4"></select>
-          </label>
-          <label class="form-field">
-            <span>AccessTag</span>
-            <select id="access-filter-select" multiple size="4"></select>
-          </label>
-          <label class="form-field">
-            <span>FishingInteractionTag</span>
-            <select id="fishing-filter-select" multiple size="4"></select>
-          </label>
-          <label class="form-field">
-            <span>NavigationInteractionTag</span>
-            <select id="navigation-filter-select" multiple size="4"></select>
-          </label>
-          <label class="form-field">
-            <span>FishSpawnTag</span>
-            <select id="spawn-filter-select" multiple size="4"></select>
-          </label>
-          <div class="button-row button-row--dual">
-            <button id="reset-filters" class="secondary-button" type="button">重置筛选</button>
-            <button id="toggle-unmatched" class="secondary-button" type="button">显示全部</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel__header">
           <span>区域列表</span>
           <span class="panel__meta">Regions</span>
         </div>
@@ -141,6 +108,13 @@
               <button data-view-mode="region" class="is-active" type="button">Region View</button>
               <button data-view-mode="rule" type="button">Rule View</button>
               <button data-view-mode="aura" type="button">Aura View</button>
+            </div>
+          </div>
+          <div id="filter-bar" class="filter-bar">
+            <div class="filter-bar__spacer"></div>
+            <div class="filter-bar__actions">
+              <button id="reset-filters" class="secondary-button filter-bar__button" type="button">重置筛选</button>
+              <button id="toggle-unmatched" class="secondary-button filter-bar__button" type="button">选择全部</button>
             </div>
           </div>
           <div class="brush-toolbar">
