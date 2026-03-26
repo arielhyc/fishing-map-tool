@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'offshore-fishing-region-system-v4';
-const DEFAULT_SCENE = { width: 1600, height: 900, url: './assets/offshore-chart-fallback.svg' };
+const DEFAULT_SCENE = { width: 1600, height: 900, url: './SeaMap1.jpg' };
 const RULE_DOMAINS = [
   { id: 'AccessRule', label: 'AccessRule', tagField: 'AccessTag', profileField: 'AccessProfileId', auraKey: 'Access', summaryKey: 'Navigation' },
   { id: 'FishingInteractionRule', label: 'FishingInteractionRule', tagField: 'FishingInteractionTag', profileField: 'FishingInteractionProfileId', auraKey: 'Fishing', summaryKey: 'Fishing' },

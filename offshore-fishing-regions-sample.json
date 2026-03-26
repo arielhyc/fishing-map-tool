@@ -1,7 +1,7 @@
 {
   "version": 5,
   "scene": {
-    "url": "./assets/offshore-chart-fallback.svg",
+    "url": "./SeaMap1.jpg",
     "width": 1600,
     "height": 900
   },
